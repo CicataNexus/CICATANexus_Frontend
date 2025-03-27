@@ -9,6 +9,8 @@ body {
 
 @import "tailwindcss";
 
+@custom-variant dark (&:is(.dark *));
+
 /* For Tailwind 4 */
 @theme {
     /* Typography */
@@ -33,7 +35,7 @@ body {
     --color-primary-blue: #1591d1;
     --color-secondary-blue: #006ec4;
     --color-dark-blue: #2c4a90;
-    --color-blue-bg-gradient: #2B4A90;
+    --color-blue-bg-gradient: #2b4a90;
     --color-dim-blue-background: #253c6e;
     --color-deep-blue: #5371b1;
     --color-chart-hover: #1e1b39;
@@ -85,4 +87,26 @@ body {
     --color-health-field: #0070c0;
     --color-flammable-field: #c00000;
     --color-reactivity-field: #ffbf00;
+}
+
+:root {
+    --sidebar: #2C4A90;
+    --sidebar-foreground: hsl(0, 100%, 100%);
+    --sidebar-primary: hsl(240 5.9% 10%);
+    --sidebar-primary-foreground: hsl(0 0% 98%);
+    --sidebar-accent: hsl(199, 76%, 74%, 0.30);
+    --sidebar-accent-foreground: hsl(199, 76%, 74%);
+    --sidebar-border: hsl(199, 76%, 74%);
+    --sidebar-ring: hsl(200, 82%, 45%);
+}
+
+@theme inline {
+    --color-sidebar: var(--sidebar);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-ring: var(--sidebar-ring);
 }

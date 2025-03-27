@@ -36,7 +36,7 @@ function Login() {
 
                 <div className="fixed shadow-2xl rounded-2xl min-w-[42vw] max-w-[42vw] min-h-[40vh] max-h-[45vh]">
                     <div className="flex flex-col w-full h-full items-center justify-center text-center p-15 gap-10 bg-white rounded-2xl">
-                        <h1 className="text-3xl text-black font-semibold font-poppins">
+                        <h1 className="text-4xl text-black font-semibold font-poppins">
                             Iniciar Sesión
                         </h1>
                         <div className="flex flex-col items-center justify-center text-center gap-5 flex-grow">
@@ -46,7 +46,7 @@ function Login() {
                                 </span>
                                 <input
                                     type="text"
-                                    className="rounded-md p-1 border-2 border-gray-200 outline-none focus:border-input-focus focus:bg-input-background placeholder:text-sm placeholder:text-placeholder-text"
+                                    className="rounded-md p-1 border-2 border-gray-200 outline-none focus:border-input-focus  placeholder:text-sm placeholder:text-placeholder-text"
                                     placeholder="Ingrese su clave de usuario"
                                 ></input>
                             </div>
@@ -56,12 +56,12 @@ function Login() {
                                 </span>
                                 <input
                                     type="text"
-                                    className="rounded-md p-1 border-2 border-gray-200 outline-none focus:border-input-focus focus:bg-input-background placeholder:text-sm placeholder:text-placeholder-text"
+                                    className="rounded-md p-1 border-2 border-gray-200 outline-none focus:border-input-focus placeholder:text-sm placeholder:text-placeholder-text"
                                     placeholder="Ingrese su contraseña"
                                 ></input>
                             </div>
                             <button
-                                className="rounded-md p-2 min-w-[30vw] max-w-[40vw] items-center justify-center bg-primary-green text-white font-bold font-poppins transition-all duration-200 hover:bg-login-btn-hover hover:scale-102 active:scale-95"
+                                className="rounded-md p-2 min-w-[30vw] max-w-[40vw] items-center justify-center bg-primary-green text-white font-bold font-poppins transition-all duration-200 hover:bg-login-btn-hover hover:scale-102 active:scale-95 mt-4"
                                 onClick={handleLogin}
                             >
                                 Ingresar
