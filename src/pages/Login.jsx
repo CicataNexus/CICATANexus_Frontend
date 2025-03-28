@@ -78,7 +78,7 @@ function Login() {
                                 </span>
                                 <input
                                     type="text"
-                                    value={ matricula}
+                                    value={matricula}
                                     onChange={ (e) => setMatricula(e.target.value) }
                                     className="rounded-md p-1 border-2 border-gray-200 outline-none focus:border-input-focus focus:bg-input-background placeholder:text-sm placeholder:text-placeholder-text"
                                     placeholder="Ingrese su clave de usuario"
@@ -97,7 +97,7 @@ function Login() {
                                     placeholder="Ingrese su contraseña"
                                 />
                                 {/* Mensaje de error */}
-                                {error && <span className="text-red-500 text-sm mt-1">{error}</span>}
+                                {error && <span className="font-montserrat text-red-500 text-sm mt-1">{error}</span>}
                             </div>
                             <button
                                 className="rounded-md p-2 min-w-[30vw] max-w-[40vw] items-center justify-center bg-primary-green text-white font-bold font-poppins transition-all duration-200 hover:bg-login-btn-hover hover:scale-102 active:scale-95"

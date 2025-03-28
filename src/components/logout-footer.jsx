@@ -17,7 +17,7 @@ export function Logout() {
                         size="lg"
                         className="flex items-center justify-center text-sidebar-foreground focus:text-sidebar-accent-foreground text-lg font-semibold mb-8"
                     >
-                        <span className="mr-2">
+                        <span className="mr-1">
                             <LogOut />
                         </span>
                         <span className="text-base">Cerrar Sesión</span>
