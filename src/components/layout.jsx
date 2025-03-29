@@ -33,7 +33,7 @@ export default function Layout() {
                 </header>
 
                 {/* Contenido principal, con margen para no quedar detrás del header */}
-                <main className="p-3">
+                <main className="p-3 w-full max-w-full overflow-x-hidden">
                     <Outlet />
                 </main>
             </SidebarInset>
