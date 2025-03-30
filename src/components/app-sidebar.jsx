@@ -1,17 +1,5 @@
 import * as React from "react"
-import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
-  Settings2,
-  SquareTerminal,
-} from "lucide-react"
-
+import { Icon } from "@iconify/react"
 import { NavMain } from "@/components/nav-main"
 import { Logout } from "@/components/logout-footer"
 import { CicataLogo } from "@/components/cicata-logo-header"
@@ -23,65 +11,42 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 
-// This is sample data.
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
-      icon: SquareTerminal,
+      url: "/dashboard",
+      icon: "material-symbols:home-outline-rounded",
       isActive: true,
     },
     {
       title: "Solicitudes",
-      url: "#",
-      icon: Bot,
+      url: "/gestion/solicitudes",
+      icon: "fluent:form-28-regular",
     },
     {
       title: "Inventarios",
-      url: "#",
-      icon: BookOpen,
+      url: "/inventario/equipos",
+      icon: "ix:product-catalog",
       items: [
         {
           title: "Equipos",
-          url: "#",
+          url: "/inventario/equipos",
         },
         {
           title: "Reactivos",
-          url: "#",
+          url: "/inventario/reactivos",
         },
         {
           title: "Materiales",
-          url: "#",
+          url: "/inventario/materiales",
         },
       ],
     },
     {
       title: "Usuarios",
-      url: "#",
-      icon: Settings2,
+      url: "/gestion/usuarios",
+      icon: "la:users-cog",
     },
   ],
 }

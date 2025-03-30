@@ -187,7 +187,7 @@ export default function InventarioGenerico() {
     const data = datosSimulados[tipo];
 
     return (
-        <div className="p-4 -mt-5 w-full max-w-full overflow-x-hidden">
+        <div className="p-4 -mt-1 w-full max-w-full overflow-x-hidden">
             <h2 className="text-poppins text-2xl font-bold mb-2">
                 Inventario de {tipo}
             </h2>
