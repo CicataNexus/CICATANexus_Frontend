@@ -38,7 +38,7 @@ export default function PanelAgregarEquipo({ onClose }) {
             <div className="grid grid-cols-3 gap-4 divide-x divide-primary-blue">
                 {/* Columna 1 - Información general */}
                 <div className="space-y-2 pr-4">
-                    <h3 className="font-poppins font-bold text-base mb-2 text-center">
+                    <h3 className="font-bold text-base text-center mb-2">
                         Información general
                     </h3>
                     <h4 className="font-montserrat font-semibold">

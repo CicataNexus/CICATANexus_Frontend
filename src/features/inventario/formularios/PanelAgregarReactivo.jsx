@@ -133,7 +133,14 @@ export default function PanelAgregarReactivo({ onClose }) {
                     />
 
                     <h4 className="font-montserrat font-semibold">Imagen</h4>
-                    <InputArchivo name="imagen" onChange={handleChange} />
+                    <InputArchivo
+                        onChange={(e) =>
+                            setFormData((prev) => ({
+                                ...prev,
+                                imagen: e.target.files[0],
+                            }))
+                        }
+                    />
                 </div>
 
                 {/* Columna 2 */}
@@ -158,6 +165,7 @@ export default function PanelAgregarReactivo({ onClose }) {
                         value={formData.llegada}
                         placeholder="Ingrese la fecha de llegada"
                         onChange={handleChange}
+                        className="-mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
                     />
 
                     <h4 className="font-montserrat font-semibold">
@@ -178,6 +186,7 @@ export default function PanelAgregarReactivo({ onClose }) {
                         value={formData.apertura}
                         placeholder="Ingrese la fecha de apertura"
                         onChange={handleChange}
+                        className="-mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
                     />
 
                     <h4 className="font-montserrat font-semibold">
@@ -188,6 +197,7 @@ export default function PanelAgregarReactivo({ onClose }) {
                         value={formData.termino}
                         placeholder="Ingrese la fecha de término"
                         onChange={handleChange}
+                        className="-mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
                     />
 
                     <h4 className="font-montserrat font-semibold">
@@ -198,6 +208,7 @@ export default function PanelAgregarReactivo({ onClose }) {
                         value={formData.caducidad}
                         placeholder="Ingrese la fecha de caducidad"
                         onChange={handleChange}
+                        className="-mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
                     />
 
                     <h4 className="font-montserrat font-semibold">
@@ -304,7 +315,14 @@ export default function PanelAgregarReactivo({ onClose }) {
                     <h4 className="font-montserrat font-semibold">
                         Pictograma
                     </h4>
-                    <InputArchivo name="pictograma" onChange={handleChange} />
+                    <InputArchivo
+                        onChange={(e) =>
+                            setFormData((prev) => ({
+                                ...prev,
+                                pictograma: e.target.files[0],
+                            }))
+                        }
+                    />
                 </div>
 
                 {/* Columna 4 */}
@@ -377,16 +395,13 @@ export default function PanelAgregarReactivo({ onClose }) {
                         className="-mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
                     />
 
-                    <h4 className="font-montserrat font-semibold">
-                        Contacto
-                    </h4>
+                    <h4 className="font-montserrat font-semibold">Contacto</h4>
                     <Input
                         name="cas"
                         placeholder="Ingrese el número CAS"
                         onChange={handleChange}
                         className="-mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
                     />
-
                 </div>
 
                 {/* Columna 5 */}
