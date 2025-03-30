@@ -115,7 +115,7 @@ export default function PanelAgregarReactivo({ onClose }) {
                     </h4>
                     <Input
                         name="lote"
-                        value={formData.factura}
+                        value={formData.lote}
                         onChange={handleChange}
                         placeholder="Ingrese el lote"
                         className="-mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
@@ -169,6 +169,7 @@ export default function PanelAgregarReactivo({ onClose }) {
                             </h4>
                             <Input
                                 name={name}
+                                value={formData[name]}
                                 placeholder={placeholder}
                                 onChange={handleChange}
                                 className="mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
