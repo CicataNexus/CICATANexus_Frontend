@@ -37,15 +37,15 @@ export default function PanelAgregarMaterial({ onClose }) {
     });
 
     const handleChange = (e) => {
-      const { name, value, type, checked, files } = e.target;
-      if (type === "checkbox") {
-          setFormData((prev) => ({ ...prev, [name]: checked }));
-      } else if (type === "file") {
-          setFormData((prev) => ({ ...prev, [name]: files[0] }));
-      } else {
-          setFormData((prev) => ({ ...prev, [name]: value }));
-      }
-  };
+        const { name, value, type, checked, files } = e.target;
+        if (type === "checkbox") {
+            setFormData((prev) => ({ ...prev, [name]: checked }));
+        } else if (type === "file") {
+            setFormData((prev) => ({ ...prev, [name]: files[0] }));
+        } else {
+            setFormData((prev) => ({ ...prev, [name]: value }));
+        }
+    };
 
     const handleSubmit = () => {
         console.log("Nuevo material:", formData);
@@ -54,29 +54,22 @@ export default function PanelAgregarMaterial({ onClose }) {
 
     return (
         <div className="flex flex-col gap-4 text-sm text-black font-montserrat w-full">
+            {/* Grid de columnas */}
             <div className="grid grid-cols-4 divide-x divide-primary-blue w-full">
                 {/* Columna 1 - Información general */}
-                <div className="space-y-2 p-3 mt-2">
-                    <h3 className="font-bold text-base text-center mb-2">
+                <div className="space-y-2 p-4 mt-2">
+                    <h3 className="font-poppins font-bold text-base text-center mb-2">
                         Información general
                     </h3>
                     {[
-                        ["Categoría", "categoria", "Ingrese la categoría"],
-                        [
-                            "Descripción",
-                            "descripcion",
-                            "Ingrese la descripción",
-                        ],
-                        [
-                            "Presentación",
-                            "presentacion",
-                            "Ingrese la presentación",
-                        ],
-                        ["Marca", "marca", "Ingrese la marca"],
-                        ["Proveedor", "proveedor", "Ingrese el proveedor"],
-                        ["Catálogo", "catalogo", "Ingrese el catálogo"],
-                        ["Cantidad", "cantidad", "Ingrese la cantidad"],
-                    ].map(([label, name, placeholder]) => (
+                        ["categoria", "Categoría", "Ingrese la categoría"],
+                        ["descripcion", "Descripción", "Ingrese la descripción"],
+                        ["presentacion", "Presentación", "Ingrese la presentación"],
+                        ["marca", "Marca", "Ingrese la marca"],
+                        ["proveedor", "Proveedor", "Ingrese el proveedor"],
+                        ["catalogo", "Catálogo", "Ingrese el catálogo"],
+                        ["cantidad", "Cantidad", "Ingrese la cantidad"],
+                    ].map(([name, label, placeholder]) => (
                         <div key={name}>
                             <h4 className="font-montserrat font-semibold">
                                 {label}
@@ -102,22 +95,14 @@ export default function PanelAgregarMaterial({ onClose }) {
                 </div>
 
                 {/* Columna 2 - Localización específica */}
-                <div className="space-y-2 p-3 mt-2">
-                    <h3 className="font-bold text-base text-center mb-2">
+                <div className="space-y-2 p-4 mt-2">
+                    <h3 className="font-poppins font-bold text-base text-center mb-2">
                         Localización específica
                     </h3>
                     {[
-                        [
-                            "Unidades en almacén",
-                            "almacen",
-                            "Ingrese las unidades en almacén",
-                        ],
-                        [
-                            "Unidades en laboratorio",
-                            "laboratorio",
-                            "Ingrese las unidades en laboratorio",
-                        ],
-                    ].map(([label, name, placeholder]) => (
+                        ["almacen", "Unidades en almacén", "Ingrese las unidades en almacén"],
+                        ["laboratorio", "Unidades en laboratorio", "Ingrese las unidades en laboratorio"],
+                    ].map(([name, label, placeholder]) => (
                         <div key={name}>
                             <h4 className="font-montserrat font-semibold">
                                 {label}
@@ -147,51 +132,38 @@ export default function PanelAgregarMaterial({ onClose }) {
                             </div>
                         ))}
                     </div>
-                    <h4 className="font-montserrat font-semibold">
-                        CF
-                    </h4>
-                    <Input
-                        name="cf"
-                        placeholder="Ingrese el CF"
-                        onChange={handleChange}
-                        className="-mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
-                    />
-                    <h4 className="font-montserrat font-semibold">
-                        Almacén temporal
-                    </h4>
-                    <Input
-                        name="temp"
-                        placeholder="Ingrese el almacén temporal"
-                        onChange={handleChange}
-                        className="-mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
-                    />
+                    {[
+                        ["cf", "CF", "Ingrese el CF"],
+                        ["temp", "Almacén temporal", "Ingrese el almacén temporal"],
+                    ].map(([name, label, placeholder]) => (
+                        <div key={name}>
+                            <h4 className="font-montserrat font-semibold">
+                                {label}
+                            </h4>
+                            <Input
+                                name={name}
+                                value={formData[name]}
+                                onChange={handleChange}
+                                placeholder={placeholder}
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
+                            />
+                        </div>
+                    ))}
                 </div>
 
                 {/* Columna 3 - Trazabilidad */}
-                <div className="space-y-2 p-3 mt-2">
-                    <h3 className="font-bold text-base text-center mb-2">
+                <div className="space-y-2 p-4 mt-2">
+                    <h3 className="font-poppins font-bold text-base text-center mb-2">
                         Trazabilidad
                     </h3>
                     {[
-                        ["Lote", "lote", "Ingrese el lote"],
-                        [
-                            "Número de factura",
-                            "factura",
-                            "Ingrese el número de factura",
-                        ],
-                        ["Fecha de llegada", "llegada"],
-                        ["Fecha de caducidad", "caducidad"],
-                        [
-                            "Temperatura de recepción",
-                            "temperatura",
-                            "Ingrese la temperatura",
-                        ],
-                        [
-                            "Escanear código de barras",
-                            "codigo_barras",
-                            "Haga clic y escanee",
-                        ],
-                    ].map(([label, name, placeholder]) =>
+                        ["lote", "Lote", "Ingrese el lote"],
+                        ["factura", "Número de factura", "Ingrese el número de factura"],
+                        ["llegada", "Fecha de llegada"],
+                        ["caducidad", "Fecha de caducidad"],
+                        ["temperatura", "Temperatura de recepción", "Ingrese la temperatura"],
+                        ["codigo_barras", "Escanear código de barras", "Haga clic y escanee"]
+                    ].map(([name, label, placeholder]) =>
                         name === "llegada" || name === "caducidad" ? (
                             <div key={name}>
                                 <h4 className="font-montserrat font-semibold">
@@ -223,8 +195,8 @@ export default function PanelAgregarMaterial({ onClose }) {
                 </div>
 
                 {/* Columna 4 - Estado y verificación */}
-                <div className="space-y-2 p-3 mt-2">
-                    <h3 className="font-bold text-base text-center mb-2">
+                <div className="space-y-2 p-4 mt-2">
+                    <h3 className="font-poppins font-bold text-base text-center mb-2">
                         Estado y verificación
                     </h3>
                     <h4 className="font-montserrat font-semibold">Ubicación</h4>

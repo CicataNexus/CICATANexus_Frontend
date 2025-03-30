@@ -33,68 +33,35 @@ export default function PanelAgregarEquipo({ onClose }) {
     };
 
     return (
-        <div className="flex flex-col p-6 gap-4 text-sm text-black font-montserrat">
+        <div className="flex flex-col gap-4 text-sm text-black font-montserrat">
             {/* Grid de columnas */}
-            <div className="grid grid-cols-3 gap-4 divide-x divide-primary-blue">
+            <div className="grid grid-cols-3 divide-x divide-primary-blue">
                 {/* Columna 1 - Información general */}
-                <div className="space-y-2 pr-4">
-                    <h3 className="font-bold text-base text-center mb-2">
+                <div className="space-y-2 p-4 mt-2">
+                    <h3 className="font-poppins font-bold text-base text-center mb-2">
                         Información general
                     </h3>
-                    <h4 className="font-montserrat font-semibold">
-                        Número de inventario
-                    </h4>
-                    <Input
-                        name="no_inventario"
-                        value={formData.no_inventario}
-                        onChange={handleChange}
-                        placeholder="Ingrese el número de inventario"
-                        className="-mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
-                    />
-                    <h4 className="font-montserrat font-semibold">
-                        Nombre del equipo
-                    </h4>
-                    <Input
-                        name="nombre"
-                        value={formData.nombre}
-                        onChange={handleChange}
-                        placeholder="Ingrese el nombre del equipo"
-                        className="-mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
-                    />
-                    <h4 className="font-montserrat font-semibold">Marca</h4>
-                    <Input
-                        name="marca"
-                        value={formData.marca}
-                        onChange={handleChange}
-                        placeholder="Marca"
-                        className="-mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
-                    />
-                    <h4 className="font-montserrat font-semibold">Modelo</h4>
-                    <Input
-                        name="modelo"
-                        value={formData.modelo}
-                        onChange={handleChange}
-                        placeholder="Modelo"
-                        className="-mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
-                    />
-                    <h4 className="font-montserrat font-semibold">
-                        Número de serie
-                    </h4>
-                    <Input
-                        name="no_serie"
-                        value={formData.no_serie}
-                        onChange={handleChange}
-                        placeholder="Número de serie"
-                        className="-mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
-                    />
-                    <h4 className="font-montserrat font-semibold">Proveedor</h4>
-                    <Input
-                        name="proveedor"
-                        value={formData.proveedor}
-                        onChange={handleChange}
-                        placeholder="Proveedor"
-                        className="-mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
-                    />
+                    {[
+                        ["no_inventario", "Número de inventario", "Ingrese el número de inventario"],
+                        ["nombre", "Nombre del equipo", "Ingrese el nombre del equipo"],
+                        ["marca", "Marca", "Marca"],
+                        ["modelo", "Modelo", "Modelo"],
+                        ["no_serie", "Número de serie", "Número de serie"],
+                        ["proveedor", "Proveedor", "Proveedor"],
+                    ].map(([name, label, placeholder]) => (
+                        <div key={name}>
+                            <h4 className="font-montserrat font-semibold">
+                                {label}
+                            </h4>
+                            <Input
+                                name={name}
+                                value={formData[name]}
+                                onChange={handleChange}
+                                placeholder={placeholder}
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
+                            />
+                        </div>
+                    ))}
                     <h4 className="font-montserrat font-semibold">Imagen</h4>
                     <InputArchivo
                         onChange={(e) => console.log(e.target.files[0])}
@@ -102,13 +69,11 @@ export default function PanelAgregarEquipo({ onClose }) {
                 </div>
 
                 {/* Columna 2 - Trazabilidad */}
-                <div className="space-y-2 px-4">
-                    <h3 className="font-bold text-base text-center mb-2">
+                <div className="space-y-2 p-4 mt-2">
+                    <h3 className="font-poppins font-bold text-base text-center mb-2">
                         Trazabilidad
                     </h3>
-                    <h4 className="font-montserrat font-semibold">
-                        Número de factura
-                    </h4>
+                    <h4 className="font-montserrat font-semibold">Número de factura</h4>
                     <Input
                         name="factura"
                         value={formData.factura}
@@ -116,53 +81,40 @@ export default function PanelAgregarEquipo({ onClose }) {
                         placeholder="Ingrese el número de factura"
                         className="-mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
                     />
-                    <h4 className="font-montserrat font-semibold">
-                        Fecha de llegada
-                    </h4>
+                    <h4 className="font-montserrat font-semibold">Fecha de llegada</h4>
                     <InputFecha
                         name="llegada"
                         value={formData.llegada}
                         onChange={handleChange}
                         placeholder="Ingrese la fecha de llegada dd-mm-aaaa"
-                    />
-                    <h4 className="font-montserrat font-semibold">
-                        Registro en SICPat
-                    </h4>
-                    <Input
-                        name="sicpat"
-                        value={formData.sicpat}
-                        onChange={handleChange}
-                        placeholder="Ingrese el registro"
                         className="-mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
                     />
-                    <h4 className="font-montserrat font-semibold">
-                        Proyecto estratégico vinculado
-                    </h4>
-                    <Input
-                        name="proyecto"
-                        value={formData.proyecto}
-                        onChange={handleChange}
-                        placeholder="Ingrese el proyecto vinculado"
-                        className="-mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
-                    />
-                    <h4 className="font-montserrat font-semibold">
-                        Escanear código de barras
-                    </h4>
-                    <Input
-                        name="codigo_barras"
-                        value={formData.codigo_barras}
-                        onChange={handleChange}
-                        placeholder="Haga clic y escanee"
-                        className="-mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
-                    />
+                    {[
+                        ["sicpat", "Registro en SICPat", "Ingrese el registro"],
+                        ["proyecto", "Proyecto estratégico vinculado", "Ingrese el proyecto vinculado"],
+                        ["codigo_barras", "Escanear código de barras", "Haga clic y escanee"],
+                    ].map(([name, label, placeholder]) => (
+                        <div key={name}>
+                            <h4 className="font-montserrat font-semibold">
+                                {label}
+                            </h4>
+                            <Input
+                                name={name}
+                                value={formData[name]}
+                                onChange={handleChange}
+                                placeholder={placeholder}
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
+                            />
+                        </div>
+                    ))}
                 </div>
 
                 {/* Columna 3 - Estado y uso */}
-                <div className="space-y-2 pl-4">
-                    <h3 className="font-bold text-base text-center mb-2">Estado y uso</h3>
-                    <h4 className="font-montserrat font-semibold">
-                        Ubicación
-                    </h4>
+                <div className="space-y-2 p-4 mt-2">
+                    <h3 className="font-poppins font-bold text-base text-center mb-2">
+                        Estado y uso
+                    </h3>
+                    <h4 className="font-montserrat font-semibold">Ubicación</h4>
                     <Input
                         name="ubicacion"
                         value={formData.ubicacion}
@@ -184,7 +136,7 @@ export default function PanelAgregarEquipo({ onClose }) {
             </div>
 
             {/* Botones */}
-            <div className="flex justify-center gap-4 pt-4">
+            <div className="flex justify-center gap-4 pt-4 mb-4">
                 <Button
                     onClick={onClose}
                     className="w-40 bg-reject-btn hover:bg-reject-btn-hover text-white font-poppins font-semibold text-lg"

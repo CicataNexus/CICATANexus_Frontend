@@ -23,8 +23,8 @@ export default function InputArchivo({ onChange }) {
             />
 
             <div className="flex items-center w-full h-8 px-3 py-1 rounded-md border border-input bg-transparent font-montserrat shadow-xs border-gray-500 overflow-hidden whitespace-nowrap text-xs -mt-1">
-                <span className="text-muted-foreground truncate">
-                    {nombreArchivo || "Selecciona una imagen"}
+                <span className="text-placeholder-text truncate">
+                    {nombreArchivo || "Seleccione una imagen"}
                 </span>
 
                 <div className="ml-auto pl-3 flex-shrink-0">
