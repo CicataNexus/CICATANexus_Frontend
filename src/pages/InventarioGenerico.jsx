@@ -156,7 +156,7 @@ const datosSimulados = {
             presentacion: "Polvo",
             peso_volumen: "25g",
             marca: "Sigma Aldrich",
-            sticker: "Naranja",
+            sticker: "Azul",
             ubicacion: "Almacén",
             estado: "En uso",
         },
