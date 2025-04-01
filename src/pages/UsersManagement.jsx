@@ -1,11 +1,9 @@
 import React from 'react';
 
-function GestionUsuarios() {
+export default function UsersManagement() {
   return (
     <div>
       <h1>Gestión de usuarios</h1>
     </div>
   );
 }
-
-export default GestionUsuarios;

@@ -1,11 +1,11 @@
 import { Outlet } from "react-router-dom";
-import { AppSidebar } from "@/components/app-sidebar";
-import { Separator } from "@/components/ui/separator";
+import { AppSidebar } from "@/components/AppSidebar";
+import { Separator } from "@/components/ui/Separator";
 import {
     SidebarInset,
     SidebarProvider,
     SidebarTrigger,
-} from "@/components/ui/sidebar";
+} from "@/components/ui/Sidebar";
 
 export default function Layout() {
     return (
@@ -21,18 +21,17 @@ export default function Layout() {
                         />
                     </div>
                     <img
-                        src="/sep_color.png"
+                        src="/SepColor.png"
                         alt="Logo SEP"
                         className="h-12 w-auto mr-12"
                     />
                     <img
-                        src="/ipn_color.png"
+                        src="/IpnColor.png"
                         alt="Logo IPN"
                         className="h-14 w-auto"
                     />
                 </header>
 
-                {/* Contenido principal, con margen para no quedar detrás del header */}
                 <main className="p-3 w-full max-w-full overflow-x-hidden">
                     <Outlet />
                 </main>

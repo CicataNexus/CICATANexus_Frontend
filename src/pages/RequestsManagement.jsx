@@ -1,11 +1,9 @@
 import React from 'react';
 
-function GestionSolicitudes() {
+export default function RequestsManagement() {
   return (
     <div>
       <h1>Gestión de Solicitudes</h1>
     </div>
   );
 }
-
-export default GestionSolicitudes;

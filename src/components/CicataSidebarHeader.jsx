@@ -1,11 +1,11 @@
 import * as React from "react";
-import { SidebarMenu, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
+import { SidebarMenu, SidebarMenuItem, useSidebar } from "@/components/ui/Sidebar";
 
-export function CicataLogo() {
+export function CicataSidebarHeader() {
   const { state } = useSidebar();
 
   const isCollapsed = state === "collapsed";
-  const logoSrc = isCollapsed ? "/cicata_cuadrado.png" : "/cicata_blanco.png";
+  const logoSrc = isCollapsed ? "/CicataSquare.png" : "/CicataWhite.png";
 
   return (
     <SidebarMenu>
