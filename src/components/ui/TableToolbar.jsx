@@ -25,7 +25,7 @@ export default function TableToolbar({
                 />
             </div>
 
-            {/* Botón agregar */}
+            {/* Add product button */}
             <button
                 onClick={onAddClick}
                 className="bg-deep-blue hover:bg-dark-blue text-white text-sm font-poppins font-semibold py-2 px-4 rounded-md transition inline-flex items-center"

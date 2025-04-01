@@ -4,7 +4,7 @@ import {
     flexRender,
   } from "@tanstack/react-table";
   
-  export default function TablaInventario({ data, columns }) {
+  export default function InventoryTable({ data, columns }) {
     const table = useReactTable({
       data,
       columns,
@@ -32,7 +32,7 @@ import {
             {table.getRowModel().rows.map((row) => (
               <tr
                 key={row.id}
-                className="bg-table-row border-b border-sidebar-border hover:bg-chart-light-blue transition"
+                className="bg-table-row border-b border-sidebar-border hover:bg-table-row-hover transition"
               >
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className="p-3 text-black text-center text-sm">

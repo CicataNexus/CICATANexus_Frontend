@@ -1,15 +1,15 @@
 import * as React from "react"
 import { Icon } from "@iconify/react"
-import { NavMain } from "@/components/nav-main"
-import { Logout } from "@/components/logout-footer"
-import { CicataLogo } from "@/components/cicata-logo-header"
+import { NavMain } from "@/components/NavMain"
+import { Logout } from "@/components/LogoutFooter"
+import { CicataSidebarHeader } from "@/components/CicataSidebarHeader"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/Sidebar"
 
 const data = {
   navMain: [
@@ -57,7 +57,7 @@ export function AppSidebar({
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <CicataLogo />
+        <CicataSidebarHeader />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />

@@ -14,7 +14,7 @@ import {
     SidebarMenuSub,
     SidebarMenuSubButton,
     SidebarMenuSubItem,
-} from "@/components/ui/sidebar";
+} from "@/components/ui/Sidebar";
 import { Icon } from "@iconify/react";
 
 export function NavMain({ items }) {

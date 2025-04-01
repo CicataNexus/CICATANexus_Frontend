@@ -46,17 +46,17 @@ function Login() {
             <div className="w-full h-screen flex items-center justify-center bg-gradient-to-b from-blue-bg-gradient to-dim-blue-background overflow-hidden">
                 <header className="fixed top-0 w-full flex items-center justify-between px-15 py-3">
                     <img
-                        src="/sep_blanco.png"
+                        src="/SepWhite.png"
                         alt="Logo SEP"
                         className="h-12 w-auto"
                     />
                     <img
-                        src="/ipn_blanco.png"
+                        src="/IpnWhite.png"
                         alt="Logo IPN"
                         className="h-14 w-auto"
                     />
                     <img
-                        src="/cicata_blanco.png"
+                        src="/CicataWhite.png"
                         alt="Logo CICATA"
                         className="h-12 w-auto"
                     />

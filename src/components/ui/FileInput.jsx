@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { Icon } from "@iconify/react";
 
-export default function InputArchivo({ onChange }) {
-    const [nombreArchivo, setNombreArchivo] = useState("");
+export default function FileInput({ name: inputName, onChange }) {
+    const [fileName, setFileName] = useState("");
 
-    const handleArchivo = (e) => {
-        const archivo = e.target.files?.[0];
-        if (archivo) {
-            setNombreArchivo(archivo.name);
-            onChange?.(e); // si se pasa una función onChange desde fuera
+    const handleFileChange = (e) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setFileName(file.name);
+            onChange?.(e); // if an onChange function is passed from outside
         }
     };
 
@@ -17,14 +17,15 @@ export default function InputArchivo({ onChange }) {
             <input
                 type="file"
                 id="input-file"
+                name={inputName}
                 accept=".png, .jpg, .jpeg"
-                onChange={handleArchivo}
+                onChange={handleFileChange}
                 className="hidden"
             />
 
             <div className="flex items-center w-full h-8 px-3 py-1 rounded-md border border-input bg-transparent font-montserrat shadow-xs border-gray-500 overflow-hidden whitespace-nowrap text-xs -mt-1">
                 <span className="text-placeholder-text truncate">
-                    {nombreArchivo || "Seleccione una imagen"}
+                    {fileName || "Seleccione una imagen"}
                 </span>
 
                 <div className="ml-auto pl-3 flex-shrink-0">
