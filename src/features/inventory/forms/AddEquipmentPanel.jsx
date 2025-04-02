@@ -31,10 +31,41 @@ export default function AddEquipmentPanel({ onClose }) {
         }
     };
 
-    const handleSubmit = () => {
-        console.log("Nuevo producto:", formData);
-        onClose();
-    };
+    const handleSubmit = async () => {
+        const payload = {
+            inventoryNumber: formData.inventoryNumber,
+            equipmentName: formData.equipmentName,
+            equipmentBrand: formData.equipmentBrand,
+            equipmentModel: formData.equipmentModel,
+            equipmentSerialNumber: formData.equipmentSerialNumber,
+            equipmentSupplier: formData.equipmentSupplier,
+            equipmentImage: formData.equipmentImage,
+            invoiceNumber: formData.invoiceNumber,
+            dateOfReception: formData.dateOfReception,
+            SICPatRegistered: formData.SICPatRegistered,
+            vinculatedStrategicProject: formData.vinculatedStrategicProject,
+            barcode: formData.barcode,
+            location: formData.location,
+            observations: formData.observations,
+            occupiedTime: formData.occupiedTime,
+        };
+    
+        try {
+            const response = await fetch("http://localhost:3000/v1/equipment", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            });
+    
+            if (!response.ok) {
+                throw new Error("Error al agregar el equipo");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };    
 
     return (
         <div className="flex flex-col gap-4 text-sm text-black font-montserrat">
