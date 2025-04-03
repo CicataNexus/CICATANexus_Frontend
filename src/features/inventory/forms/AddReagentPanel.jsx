@@ -59,9 +59,64 @@ export default function PanelAgregarReactivo({ onClose }) {
         }
     };
 
-    const handleSubmit = () => {
-        console.log("Nuevo reactivo:", formData);
-        onClose();
+    const handleSubmit = async () => {
+        const payload = {
+            reagentCode: formData.reagentCode,
+            reagentName: formData.reagentName,
+            reagentPresentation: formData.reagentPresentation,
+            reagentWeightVolume: formData.reagentWeightVolume,
+            reagentBrand: formData.reagentBrand,
+            reagentCatalog: formData.reagentCatalog,
+            reagentSupplier: formData.reagentSupplier,
+            reagentImage: formData.reagentImage,
+            reagentLot: formData.reagentLot,
+            dateOfReception: formData.dateOfReception,
+            receivingTemperature: formData.receivingTemperature,
+            dateOpened: formData.dateOpened,
+            dateFinished: formData.dateFinished,
+            expirationDate: formData.expirationDate,
+            invoiceNumber: formData.invoiceNumber,
+            vinculatedStrategicProject: formData.vinculatedStrategicProject,
+            barcode: formData.barcode,
+            nfpaName: formData.nfpaName,
+            storageClass: formData.storageClass,
+            casNumber: formData.casNumber,
+            safetyDataSheet: formData.safetyDataSheet,
+            sdsLink: formData.sdsLink,
+            verified: formData.verified,
+            pictogramImage: formData.pictogramImage,
+            explosive: formData.explosive,
+            oxidizing: formData.oxidizing,
+            flammable: formData.flammable,
+            corrosive: formData.corrosive,
+            toxic: formData.toxic,
+            mutagenicOrCarcinogenic: formData.mutagenicOrCarcinogenic,
+            irritation: formData.irritation,
+            compressedGases: formData.compressedGases,
+            healthHazard: formData.healthHazard,
+            flammability: formData.flammability,
+            reactivity: formData.reactivity,
+            contact: formData.contact,
+            location: formData.location,
+            reagentSticker: formData.reagentSticker,
+            observations: formData.observations,
+        };
+
+        try {
+            const response = await fetch("http://localhost:3000/v1/reagent", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+                throw new Error("Error al agregar el reactivo");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
     };
 
     return (

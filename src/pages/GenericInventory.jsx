@@ -22,78 +22,36 @@ const addPanelMap = { // For the add product panel
     reactivos: AddReagentPanel,
 };
 
-const mockData = {
-    equipos: [
-        {
-            inventoryNumber: "P0V000I0602019959500022023",
-            equipmentName: "Agitador orbital",
-            equipmentBrand: "Thermo Scientific",
-            equipmentModel: "MAXQ2000",
-            location: "Microbiología",
-            status: "inUse", // It has to be registered as inUse or available so the frontend can translate it
-        },
-        {
-            inventoryNumber: "P0V000I1502004520000012023",
-            equipmentName: "Autoclave vertical",
-            equipmentBrand: "EVAR",
-            equipmentModel: "EV-36",
-            location: "Acondicionamiento de material",
-            status: "available",
-        },
-    ],
-    materiales: [
-        {
-            // code: "MAT001", might leave it out due to security reasons
-            materialDescription: "Agitador de 6X250 mm. K-40500",
-            materialCatalog: "K-40500",
-            materialBrand: "Labware",
-            expirationDate: "N/A",
-            location: "L2,L3,AL",
-            materialQuantity: 10,
-            status: "inUse",
-        },
-        {
-            // code: "MAT002",
-            materialDescription: "Guantes de nitrilo talla M",
-            materialCatalog: "GN-100",
-            materialBrand: "Ansell",
-            expirationDate: "2026-12-01",
-            location: "L1",
-            materialQuantity: 3,
-            status: "available",
-        },
-    ],
-    reactivos: [
-        {
-            reagentCode: "MB1",
-            reagentName: "2-Metil-2-Butanol",
-            reagentPresentation: "Líquido",
-            reagentWeightVolume: "1L",
-            reagentBrand: "Sigma Aldrich",
-            reagentSticker: "Verde",
-            location: "Almacén",
-            status: "inUse",
-        },
-        {
-            reagentCode: "HCL01",
-            reagentName: "Ácido Clorhídrico",
-            reagentPresentation: "Solución",
-            reagentWeightVolume: "500ml",
-            reagentBrand: "J.T. Baker",
-            reagentSticker: "Rojo",
-            location: "L2",
-            status: "available",
-        },
-    ],
+const apiEndpoints = { // For the API endpoints
+    equipos: "http://localhost:3000/v1/equipment",
+    reactivos: "http://localhost:3000/v1/reagent",
+    materiales: "",
 };
 
 export default function GenericInventory() {
     const { type } = useParams();
     const columns = columnsMap[type];
-    const data = mockData[type];
-
     const [search, setSearch] = useState("");
     const [isAddingMode, setIsAddingMode] = useState(false);
+    const [data, setData] = useState(null);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch(apiEndpoints[type]);
+                if (!response.ok) {
+                    throw new Error("Error fetching data");
+                }
+                const result = await response.json();
+                setData(result);
+            } catch (err) {
+                setError(err);
+            }
+        };
+
+        fetchData();
+    }, [type]);
 
     if (!columns || !data) {
         return (
