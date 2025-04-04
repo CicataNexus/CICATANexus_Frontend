@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/Button";
 import { Icon } from "@iconify/react";
 
 export default function TableToolbar({
@@ -26,13 +27,13 @@ export default function TableToolbar({
             </div>
 
             {/* Add product button */}
-            <button
+            <Button
                 onClick={onAddClick}
                 className="bg-deep-blue hover:bg-dark-blue text-white text-sm font-poppins font-semibold py-2 px-4 rounded-md transition inline-flex items-center"
             >
                 <Icon icon="ic:round-plus" className="mr-2 text-xl" />
                 Agregar producto
-            </button>
+            </Button>
         </div>
     );
 }

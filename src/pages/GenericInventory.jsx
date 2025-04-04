@@ -10,19 +10,22 @@ import AddMaterialPanel from "../features/inventory/forms/AddMaterialPanel";
 import AddReagentPanel from "../features/inventory/forms/AddReagentPanel";
 import AddProductPanel from "../features/inventory/AddProductPanel";
 
-const columnsMap = { // For the table columns
+const columnsMap = {
+    // For the table columns
     equipos: EquipmentColumns,
     materiales: MaterialColumns,
     reactivos: ReagentColumns,
 };
 
-const addPanelMap = { // For the add product panel
+const addPanelMap = {
+    // For the add product panel
     equipos: AddEquipmentPanel,
     materiales: AddMaterialPanel,
     reactivos: AddReagentPanel,
 };
 
-const apiEndpoints = { // For the API endpoints
+const apiEndpoints = {
+    // For the API endpoints
     equipos: "http://localhost:3000/v1/equipment",
     reactivos: "http://localhost:3000/v1/reagent",
     materiales: "",
@@ -30,11 +33,20 @@ const apiEndpoints = { // For the API endpoints
 
 export default function GenericInventory() {
     const { type } = useParams();
-    const columns = columnsMap[type];
     const [search, setSearch] = useState("");
-    const [isAddingMode, setIsAddingMode] = useState(false);
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [isAddingMode, setIsAddingMode] = useState(false);
+
+    const handleEdit = (product) => {
+        setSelectedProduct(product);
+        setIsAddingMode(false);
+    };
+    const columns =
+        typeof columnsMap[type] === "function"
+            ? columnsMap[type](handleEdit, selectedProduct)
+            : null; // Get the columns based on the type and pass the handleEdit function
 
     useEffect(() => {
         const fetchData = async () => {
@@ -67,15 +79,22 @@ export default function GenericInventory() {
                 Inventario de {type}
             </h2>
             <h3 className="text-montserrat text-base font-regular mb-4">
-                Gestione el inventario: agregue, edite o elimine {type}, y visualice sus detalles.
+                Gestione el inventario: agregue, edite o elimine {type}, y
+                visualice sus detalles.
             </h3>
             <TableToolbar
                 type={type}
                 searchTerm={search}
                 onSearchChange={setSearch}
-                onAddClick={() => setIsAddingMode(true)}
+                onAddClick={() => {setIsAddingMode(true); setSelectedProduct(null);}}
             />
-            <InventoryTable data={data} columns={columns} />
+            <InventoryTable 
+                data={data} 
+                columns={columns}
+                selectedProduct={selectedProduct} // Pass selected product to the table
+                type={type} // Pass the type to the table
+                onCloseEdit={() => setSelectedProduct(null)}
+            />
             {isAddingMode && (
                 <AddProductPanel
                     type={type}

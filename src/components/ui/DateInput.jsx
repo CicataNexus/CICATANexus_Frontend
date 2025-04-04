@@ -67,7 +67,7 @@ export default function DateInput({
             value={value}
             onChange={handleInputChange}
             placeholder={placeholder}
-            className={`w-full h-8 px-3 py-1 truncate rounded-md border border-input border-gray-500 placeholder:text-xs placeholder:font-montserrat placeholder:text-placeholder-text text-sm font-montserrat shadow-xs focus-visible:border-input-focus focus:bg-input-background focus-visible:ring-0 outline-none ${className}`}
+            className={`w-full h-8 px-3 py-1 mt-1 truncate rounded-md border border-input border-gray-500 placeholder:text-xs placeholder:font-montserrat placeholder:text-placeholder-text text-sm font-montserrat shadow-xs focus-visible:border-input-focus focus:bg-input-background focus-visible:ring-0 outline-none ${className}`}
         />
     );
 }
