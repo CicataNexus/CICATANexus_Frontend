@@ -1,7 +1,8 @@
 import ProductStatusBadge from "../../../components/ui/ProductStatusBadge";
+import { Icon } from "@iconify/react";
 
-export const EquipmentColumns = [
-    { header: "No. de inventario", accessorKey: "inventoryNumber" },
+export const EquipmentColumns = (handleEdit, selectedProduct) => [
+    { header: "No. Inventario", accessorKey: "inventoryNumber" },
     { header: "Nombre", accessorKey: "equipmentName" },
     { header: "Marca", accessorKey: "equipmentBrand" },
     { header: "Modelo", accessorKey: "equipmentModel" },
@@ -10,5 +11,27 @@ export const EquipmentColumns = [
         header: "Estado",
         accessorKey: "status",
         cell: ({ getValue }) => <ProductStatusBadge status={getValue()} />,
+    },
+    {
+        header: "",
+        id: "actions",
+        cell: ({ row }) => {
+            const isSelected =
+                selectedProduct?.inventoryNumber ===
+                row.original.inventoryNumber;
+            return (
+                <button
+                    onClick={() => handleEdit(row.original)}
+                    className={`text-black p-1 cursor-pointer transition-transform duration-200 ease-in-out ${
+                        isSelected
+                            ? "text-popup-background scale-115"
+                            : "hover:text-popup-background hover:scale-115"
+                    }`}
+                    title="Editar producto"
+                >
+                    <Icon icon="mdi:edit-circle-outline" className="text-2xl" />
+                </button>
+            );
+        },
     },
 ];

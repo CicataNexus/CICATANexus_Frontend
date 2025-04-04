@@ -5,7 +5,11 @@ import FileInput from "@/components/ui/FileInput";
 import DateInput from "@/components/ui/DateInput";
 import { cn } from "@/lib/utils";
 
-export default function PanelAgregarReactivo({ onClose }) {
+export default function AddReagentPanel({
+    onClose,
+    initialData = {},
+    isEditing = false,
+}) {
     const [formData, setFormData] = useState({
         reagentCode: "",
         reagentName: "",
@@ -46,6 +50,7 @@ export default function PanelAgregarReactivo({ onClose }) {
         location: "",
         reagentSticker: "",
         observations: "",
+        ...initialData,
     });
 
     const handleChange = (e) => {
@@ -120,356 +125,423 @@ export default function PanelAgregarReactivo({ onClose }) {
     };
 
     return (
-        <div className="flex flex-col gap-4 text-sm text-black font-montserrat">
-            <div className="grid grid-cols-5 divide-x divide-primary-blue">
-                {/* Column 1 Información general */}
-                <div className="space-y-2 p-4 mt-2">
-                    <h3 className="font-poppins font-bold text-base text-center mb-2">
-                        Información general
-                    </h3>
-                    {[
-                        ["reagentCode", "Código", "Ingrese el código"],
-                        ["reagentName", "Nombre", "Ingrese el nombre"],
-                        [
-                            "reagentPresentation",
-                            "Presentación",
-                            "Ingrese la presentación",
-                        ],
-                        [
-                            "reagentWeightVolume",
-                            "Peso/Volumen",
-                            "Ingrese el peso o volumen",
-                        ],
-                        ["reagentBrand", "Marca", "Ingrese la marca"],
-                        ["reagentCatalog", "Catálogo", "Ingrese el catálogo"],
-                        [
-                            "reagentSupplier",
-                            "Proveedor",
-                            "Ingrese el proveedor",
-                        ],
-                    ].map(([name, label, placeholder]) => (
-                        <div key={name}>
-                            <h4 className="font-montserrat font-semibold">
+        <>
+            <div className="flex flex-col gap-4 text-sm text-black font-montserrat bg-white rounded-xl">
+                {/* Columns Grid */}
+                <div className="grid grid-cols-5 divide-x divide-primary-blue">
+                    {/* Column 1 Información general */}
+                    <fieldset className="space-y-2 p-4">
+                        <h2 className="font-poppins font-bold text-base text-center mt-2 mb-2">
+                            Información general
+                        </h2>
+                        {[
+                            ["reagentCode", "Código", "Ingrese el código"],
+                            ["reagentName", "Nombre", "Ingrese el nombre"],
+                            [
+                                "reagentPresentation",
+                                "Presentación",
+                                "Ingrese la presentación",
+                            ],
+                            [
+                                "reagentWeightVolume",
+                                "Peso/Volumen",
+                                "Ingrese el peso o volumen",
+                            ],
+                            ["reagentBrand", "Marca", "Ingrese la marca"],
+                            [
+                                "reagentCatalog",
+                                "Catálogo",
+                                "Ingrese el catálogo",
+                            ],
+                            [
+                                "reagentSupplier",
+                                "Proveedor",
+                                "Ingrese el proveedor",
+                            ],
+                        ].map(([name, label, placeholder]) => (
+                            <label
+                                key={name}
+                                className="flex flex-col font-montserrat font-semibold"
+                            >
                                 {label}
-                            </h4>
-                            <Input
-                                name={name}
-                                placeholder={placeholder}
+                                <Input
+                                    name={name}
+                                    value={formData[name]}
+                                    onChange={handleChange}
+                                    placeholder={placeholder}
+                                    className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                                />
+                            </label>
+                        ))}
+                        <label className="flex flex-col font-montserrat font-semibold">
+                            Imagen
+                            <FileInput
+                                name="reagentImage"
+                                value={formData.reagentImage}
                                 onChange={handleChange}
-                                className="mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
+                                className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
                             />
-                        </div>
-                    ))}
-                    <h4 className="font-montserrat font-semibold">Imagen</h4>
-                    <FileInput name="reagentImage" onChange={handleChange} />
-                </div>
+                        </label>
+                    </fieldset>
 
-                {/* Column 2 Trazabilidad */}
-                <div className="space-y-2 p-4 mt-2">
-                    <h3 className="font-poppins font-bold text-base text-center mb-2">
-                        Trazabilidad
-                    </h3>
-                    <h4 className="font-montserrat font-semibold">Lote</h4>
-                    <Input
-                        name="reagentLot"
-                        value={formData.reagentLot}
-                        onChange={handleChange}
-                        placeholder="Ingrese el lote"
-                        className="-mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
-                    />
-                    <h4 className="font-montserrat font-semibold">
-                        Fecha de llegada
-                    </h4>
-                    <DateInput
-                        name="dateOfReception"
-                        value={formData.dateOfReception}
-                        onChange={handleChange}
-                        placeholder="Ingrese la fecha de llegada dd-mm-aaaa"
-                        className="-mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
-                    />
-                    <h4 className="font-montserrat font-semibold">
-                        Temperatura de recepción
-                    </h4>
-                    <Input
-                        name="receivingTemperature"
-                        value={formData.receivingTemperature}
-                        onChange={handleChange}
-                        placeholder="Ingrese la temperatura"
-                        className="-mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
-                    />
-                    {[
-                        [
-                            "dateOpened",
-                            "Fecha de apertura",
-                            "Ingrese la fecha de apertura",
-                        ],
-                        [
-                            "dateFinished",
-                            "Fecha de término",
-                            "Ingrese la fecha de término",
-                        ],
-                        [
-                            "expirationDate",
-                            "Fecha de caducidad",
-                            "Ingrese la fecha de caducidad",
-                        ],
-                    ].map(([name, label, placeholder]) => (
-                        <div key={name}>
-                            <h4 className="font-montserrat font-semibold">
-                                {label}
-                            </h4>
+                    {/* Column 2 Trazabilidad */}
+                    <fieldset className="space-y-2 p-4">
+                        <h2 className="font-poppins font-bold text-base text-center mt-2 mb-2">
+                            Trazabilidad
+                        </h2>
+                        <label className="flex flex-col font-montserrat font-semibold">
+                            Lote
+                            <Input
+                                name="reagentLot"
+                                value={formData.reagentLot}
+                                onChange={handleChange}
+                                placeholder="Ingrese el lote"
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                            />
+                        </label>
+                        <label className="flex flex-col font-montserrat font-semibold">
+                            Fecha de llegada
                             <DateInput
-                                name={name}
-                                value={formData[name]}
+                                type="date"
+                                name="dateOfReception"
+                                value={formData.dateOfReception}
                                 onChange={handleChange}
-                                placeholder={placeholder}
-                                className="mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
+                                placeholder="Ingrese la fecha de llegada dd-mm-aaaa"
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                             />
-                        </div>
-                    ))}
-                    {[
-                        [
-                            "invoiceNumber",
-                            "Número de factura",
-                            "Ingrese el número de factura",
-                        ],
-                        [
-                            "vinculatedStrategicProject",
-                            "Proyecto estratégico vinculado",
-                            "Ingrese el proyecto vinculado",
-                        ],
-                        [
-                            "barcode",
-                            "Escanear código de barras",
-                            "Haga clic y escanee",
-                        ],
-                    ].map(([name, label, placeholder]) => (
-                        <div key={name}>
-                            <h4 className="font-montserrat font-semibold">
-                                {label}
-                            </h4>
+                        </label>
+                        <label className="flex flex-col font-montserrat font-semibold">
+                            Temperatura de recepción
                             <Input
-                                name={name}
-                                value={formData[name]}
-                                placeholder={placeholder}
+                                name="receivingTemperature"
+                                value={formData.receivingTemperature}
                                 onChange={handleChange}
-                                className="mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
+                                placeholder="Ingrese la temperatura"
+                                className="-mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
                             />
-                        </div>
-                    ))}
-                </div>
+                        </label>
+                        {[
+                            [
+                                "dateOpened",
+                                "Fecha de apertura",
+                                "Ingrese la fecha de apertura",
+                            ],
+                            [
+                                "dateFinished",
+                                "Fecha de término",
+                                "Ingrese la fecha de término",
+                            ],
+                            [
+                                "expirationDate",
+                                "Fecha de caducidad",
+                                "Ingrese la fecha de caducidad",
+                            ],
+                        ].map(([name, label, placeholder]) => (
+                            <label
+                                key={name}
+                                className="flex flex-col font-montserrat font-semibold"
+                            >
+                                {label}
+                                <DateInput
+                                    name={name}
+                                    value={formData[name]}
+                                    onChange={handleChange}
+                                    placeholder={placeholder}
+                                    className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                                />
+                            </label>
+                        ))}
+                        {[
+                            [
+                                "invoiceNumber",
+                                "Número de factura",
+                                "Ingrese el número de factura",
+                            ],
+                            [
+                                "vinculatedStrategicProject",
+                                "Proyecto estratégico vinculado",
+                                "Ingrese el proyecto vinculado",
+                            ],
+                            [
+                                "barcode",
+                                "Escanear código de barras",
+                                "Haga clic y escanee",
+                            ],
+                        ].map(([name, label, placeholder]) => (
+                            <label
+                                key={name}
+                                className="flex flex-col font-montserrat font-semibold"
+                            >
+                                {label}
+                                <Input
+                                    name={name}
+                                    value={formData[name]}
+                                    placeholder={placeholder}
+                                    onChange={handleChange}
+                                    className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                                />
+                            </label>
+                        ))}
+                    </fieldset>
 
-                {/* Column 3 Clasificación NFPA */}
-                <div className="space-y-2 p-4 mt-2">
-                    <h3 className="font-poppins font-bold text-base text-center mb-2">
-                        Clasificación NFPA
-                    </h3>
-                    {[
-                        ["nfpaName", "Nombre NFPA", "Ingrese el nombre NFPA"],
-                        [
-                            "storageClass",
-                            "Clase de almacenamiento",
-                            "Ingrese la clase (TRGS 510)",
-                        ],
-                        ["casNumber", "Número CAS", "Ingrese el número CAS"],
-                    ].map(([name, label, placeholder]) => (
-                        <div key={name}>
-                            <h4 className="font-montserrat font-semibold">
+                    {/* Column 3 Clasificación NFPA */}
+                    <fieldset className="space-y-2 p-4">
+                        <h2 className="font-poppins font-bold text-base text-center mt-2 mb-2">
+                            Clasificación NFPA
+                        </h2>
+                        {[
+                            [
+                                "nfpaName",
+                                "Nombre NFPA",
+                                "Ingrese el nombre NFPA",
+                            ],
+                            [
+                                "storageClass",
+                                "Clase de almacenamiento",
+                                "Ingrese la clase (TRGS 510)",
+                            ],
+                            [
+                                "casNumber",
+                                "Número CAS",
+                                "Ingrese el número CAS",
+                            ],
+                        ].map(([name, label, placeholder]) => (
+                            <label
+                                key={name}
+                                className="flex flex-col font-montserrat font-semibold"
+                            >
                                 {label}
-                            </h4>
-                            <Input
-                                name={name}
-                                placeholder={placeholder}
-                                onChange={handleChange}
-                                className="mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
-                            />
-                        </div>
-                    ))}
-                    <div className="flex items-center gap-2">
-                        <input
-                            type="checkbox"
-                            name="safetyDataSheet"
-                            checked={formData.safetyDataSheet}
-                            onChange={handleChange}
-                            className="h-4 w-4"
-                        />
-                        <label className="font-montserrat font-semibold">
+                                <Input
+                                    name={name}
+                                    value={formData[name]}
+                                    placeholder={placeholder}
+                                    onChange={handleChange}
+                                    className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                                />
+                            </label>
+                        ))}
+                        <label className="flex items-center font-montserrat font-semibold gap-2">
                             Hoja de seguridad
+                            <input
+                                type="checkbox"
+                                name="safetyDataSheet"
+                                checked={formData.safetyDataSheet}
+                                onChange={handleChange}
+                                className="h-4 w-4"
+                            />
                         </label>
-                    </div>
+                        <label className="flex flex-col font-montserrat font-semibold">
+                            Enlace de hoja
+                            <Input
+                                name="sdsLink"
+                                value={formData.sdsLink}
+                                placeholder="Ingrese el enlace"
+                                onChange={handleChange}
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                            />
+                        </label>
+                        <label className="flex items-center font-montserrat font-semibold gap-2">
+                            Verificado
+                            <input
+                                type="checkbox"
+                                name="verified"
+                                checked={formData.verified}
+                                onChange={handleChange}
+                                className="h-4 w-4"
+                            />
+                        </label>
+                        <label className="font-montserrat font-semibold">
+                            Pictograma
+                            <FileInput
+                                name="pictogramImage"
+                                value={formData.pictogramImage}
+                                onChange={handleChange}
+                                className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
+                            />
+                        </label>
+                    </fieldset>
 
-                    <h4 className="font-montserrat font-semibold">
-                        Enlace de hoja
-                    </h4>
-                    <Input
-                        name="sdsLink"
-                        placeholder="Ingrese el enlace"
-                        onChange={handleChange}
-                        className="-mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
-                    />
-
-                    <div className="flex items-center gap-2">
-                        <input
-                            type="checkbox"
-                            name="verified"
-                            checked={formData.verified}
+                    {/* Column 4 Seguridad y riesgos */}
+                    <fieldset className="space-y-2 p-4">
+                        <h2 className="font-poppins font-bold text-base text-center mt-2 mb-2">
+                            Seguridad y riesgos
+                        </h2>
+                        {[
+                            ["explosive", "Explosivo", "Ingrese el riesgo"],
+                            [
+                                "oxidizing",
+                                "Comburente/Oxidante",
+                                "Ingrese el riesgo",
+                            ],
+                            ["flammable", "Inflamable", "Ingrese el riesgo"],
+                            ["corrosive", "Corrosivo", "Ingrese el riesgo"],
+                            ["toxic", "Tóxico", "Ingrese el riesgo"],
+                            [
+                                "mutagenicOrCarcinogenic",
+                                "Mutagénico cancerígeno",
+                                "Ingrese el riesgo",
+                            ],
+                            [
+                                "irritation",
+                                "Irritación cutánea",
+                                "Ingrese el riesgo",
+                            ],
+                            [
+                                "compressedGases",
+                                "Gases comprimidos",
+                                "Ingrese el riesgo",
+                            ],
+                        ].map(([name, label, placeholder]) => (
+                            <label
+                                key={name}
+                                className="flex flex-col font-montserrat font-semibold"
+                            >
+                                {label}
+                                <Input
+                                    name={name}
+                                    value={formData[name]}
+                                    placeholder={placeholder}
+                                    onChange={handleChange}
+                                    className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                                />
+                            </label>
+                        ))}
+                        <label className="flex flex-col font-montserrat font-semibold text-health-field">
+                            Salud
+                            <Input
+                                name="healthHazard"
+                                value={formData.healthHazard}
+                                placeholder="Ingrese el riesgo"
+                                onChange={handleChange}
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                            />
+                        </label>
+                        <label className="flex flex-col font-montserrat font-semibold text-flammable-field">
+                            Flamable
+                            <Input
+                                name="flammability"
+                                value={formData.flammability}
+                                placeholder="Ingrese el riesgo"
+                                onChange={handleChange}
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                            />
+                        </label>
+                        <label className="flex flex-col font-montserrat font-semibold text-reactivity-field">
+                            Reactividad
+                        </label>
+                        <Input
+                            name="reactivity"
+                            value={formData.reactivity}
+                            placeholder="Ingrese el riesgo"
                             onChange={handleChange}
-                            className="h-4 w-4"
+                            className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                         />
                         <label className="font-montserrat font-semibold">
-                            Verificado
-                        </label>
-                    </div>
-
-                    <h4 className="font-montserrat font-semibold">
-                        Pictograma
-                    </h4>
-                    <FileInput name="pictogramImage" onChange={handleChange} />
-                </div>
-
-                {/* Column 4 Seguridad y riesgos */}
-                <div className="space-y-2 p-4 mt-2">
-                    <h3 className="font-poppins font-bold text-base text-center mb-2">
-                        Seguridad y riesgos
-                    </h3>
-                    {[
-                        ["explosive", "Explosivo", "Ingrese el riesgo"],
-                        [
-                            "oxidizing",
-                            "Comburente/Oxidante",
-                            "Ingrese el riesgo",
-                        ],
-                        ["flammable", "Inflamable", "Ingrese el riesgo"],
-                        ["corrosive", "Corrosivo", "Ingrese el riesgo"],
-                        ["toxic", "Tóxico", "Ingrese el riesgo"],
-                        [
-                            "mutagenicOrCarcinogenic",
-                            "Mutagénico cancerígeno",
-                            "Ingrese el riesgo",
-                        ],
-                        [
-                            "irritation",
-                            "Irritación cutánea",
-                            "Ingrese el riesgo",
-                        ],
-                        [
-                            "compressedGases",
-                            "Gases comprimidos",
-                            "Ingrese el riesgo",
-                        ],
-                    ].map(([name, label, placeholder]) => (
-                        <div key={name}>
-                            <h4 className="font-montserrat font-semibold">
-                                {label}
-                            </h4>
+                            Contacto
                             <Input
-                                name={name}
-                                placeholder={placeholder}
+                                name="contact"
+                                value={formData.contact}
+                                placeholder="Ingrese el riesgo"
                                 onChange={handleChange}
-                                className="mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                             />
-                        </div>
-                    ))}
+                        </label>
+                    </fieldset>
 
-                    <h4 className="font-montserrat font-semibold text-health-field">
-                        Salud
-                    </h4>
-                    <Input
-                        name="healthHazard"
-                        placeholder="Ingrese el riesgo"
-                        onChange={handleChange}
-                        className="-mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
-                    />
-
-                    <h4 className="font-montserrat font-semibold text-flammable-field">
-                        Flamable
-                    </h4>
-                    <Input
-                        name="flammability"
-                        placeholder="Ingrese el riesgo"
-                        onChange={handleChange}
-                        className="-mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
-                    />
-
-                    <h4 className="font-montserrat font-semibold text-reactivity-field">
-                        Reactividad
-                    </h4>
-                    <Input
-                        name="reactivity"
-                        placeholder="Ingrese el riesgo"
-                        onChange={handleChange}
-                        className="-mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
-                    />
-
-                    <h4 className="font-montserrat font-semibold">Contacto</h4>
-                    <Input
-                        name="contact"
-                        placeholder="Ingrese el riesgo"
-                        onChange={handleChange}
-                        className="-mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
-                    />
-                </div>
-
-                {/* Column 5 Estado y uso */}
-                <div className="space-y-2 p-4 mt-2">
-                    <h3 className="font-poppins font-bold text-base text-center mb-2">
-                        Estado y uso
-                    </h3>
-
-                    <h4 className="font-montserrat font-semibold">Ubicación</h4>
-                    <Input
-                        name="location"
-                        placeholder="Ingrese la ubicación"
-                        onChange={handleChange}
-                        className="-mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
-                    />
-
-                    <h4 className="font-montserrat font-semibold">Sticker</h4>
-                    <select
-                        name="reagentSticker"
-                        onChange={handleChange}
-                        className={cn(
-                            "w-full h-8 rounded-md border border-gray-500 px-2 font-montserrat text-xs -mt-1",
-                            formData.reagentSticker === ""
-                                ? "text-placeholder-text"
-                                : "text-black"
-                        )}
-                    >
-                        <option value="">Seleccione el color</option>
-                        <option value="Verde">Verde</option>
-                        <option value="Rojo">Rojo</option>
-                        <option value="Azul">Azul</option>
-                        <option value="Amarillo">Amarillo</option>
-                    </select>
-
-                    <h4 className="font-montserrat font-semibold">
-                        Observaciones
-                    </h4>
-                    <textarea
-                        name="observations"
-                        value={formData.observations}
-                        onChange={handleChange}
-                        placeholder="Ingrese observaciones sobre el reactivo"
-                        className="w-full h-24 rounded-md border border-gray-500 p-2 -mt-1 placeholder:text-xs placeholder:font-montserrat"
-                    />
+                    {/* Column 5 Estado y uso */}
+                    <fieldset className="space-y-2 p-4">
+                        <h2 className="font-poppins font-bold text-base text-center mt-2 mb-2">
+                            Estado y uso
+                        </h2>
+                        <label className="flex flex-col font-montserrat font-semibold">
+                            Ubicación
+                            <Input
+                                name="location"
+                                value={formData.location}
+                                placeholder="Ingrese la ubicación"
+                                onChange={handleChange}
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                            />
+                        </label>
+                        <label className="font-montserrat font-semibold">
+                            Sticker
+                            <select
+                                name="reagentSticker"
+                                onChange={handleChange}
+                                className={cn(
+                                    "w-full h-8 mt-1 rounded-md border border-gray-500 px-2 font-montserrat font-normal text-xs",
+                                    formData.reagentSticker === ""
+                                        ? "text-placeholder-text"
+                                        : "text-black"
+                                )}
+                            >
+                                <option value="">Seleccione el color</option>
+                                <option value="Verde">Verde</option>
+                                <option value="Rojo">Rojo</option>
+                                <option value="Azul">Azul</option>
+                                <option value="Amarillo">Amarillo</option>
+                            </select>
+                        </label>
+                        <lable className="font-montserrat font-semibold">
+                            Observaciones
+                            <textarea
+                                name="observations"
+                                value={formData.observations}
+                                onChange={handleChange}
+                                placeholder="Ingrese observaciones sobre el reactivo"
+                                className="w-full h-24 rounded-md border border-gray-500 p-2 mt-1 placeholder:text-xs placeholder:font-montserrat font-normal"
+                            />
+                        </lable>
+                    </fieldset>
                 </div>
             </div>
 
             {/* Buttons */}
-            <div className="flex justify-center gap-4 pt-4 mb-4">
-                <Button
-                    onClick={onClose}
-                    className="w-40 bg-reject-btn hover:bg-reject-btn-hover text-white font-poppins font-semibold text-lg"
-                >
-                    Cancelar
-                </Button>
-                <Button
-                    onClick={handleSubmit}
-                    className="w-40 bg-sidebar hover:bg-dim-blue-background text-white font-poppins font-semibold text-lg"
-                >
-                    Agregar
-                </Button>
-            </div>
-        </div>
+            {isEditing ? (
+                <div className="flex justify-between pt-4 mb-4">
+                    <div className="flex ml-4">
+                        <Button
+                            className="bg-delete-btn hover:bg-delete-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-xl transition inline-flex items-center cursor-pointer"
+                            onClick={() => console.log("Eliminar producto")}
+                        >
+                            <Icon
+                                icon="ix:trashcan-filled"
+                                className="mr-2 text-xl"
+                            />
+                            Eliminar producto
+                        </Button>
+                    </div>
+                    <div className="flex gap-4 mr-4">
+                        <Button
+                            onClick={onClose}
+                            className="w-40 bg-reject-btn hover:bg-reject-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-xl transition inline-flex items-center cursor-pointer"
+                        >
+                            Cancelar
+                        </Button>
+                        <Button
+                            onClick={() => console.log("Aplicar cambios")}
+                            className="w-40 bg-approve-btn hover:bg-approve-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-xl transition inline-flex items-center cursor-pointer"
+                        >
+                            Aplicar cambios
+                        </Button>
+                    </div>
+                </div>
+            ) : (
+                <div className="flex justify-center gap-4 pt-4 mb-4">
+                    <Button
+                        onClick={onClose}
+                        className="w-40 bg-reject-btn hover:bg-reject-btn-hover text-white font-poppins font-semibold text-lg"
+                    >
+                        Cancelar
+                    </Button>
+                    <Button
+                        onClick={handleSubmit}
+                        className="w-40 bg-sidebar hover:bg-dim-blue-background text-white font-poppins font-semibold text-lg"
+                    >
+                        Agregar
+                    </Button>
+                </div>
+            )}
+        </>
     );
 }
