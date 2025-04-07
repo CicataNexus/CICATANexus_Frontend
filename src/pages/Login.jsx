@@ -16,18 +16,16 @@ function Login() {
             navigate("/dashboard");
             return;
         }
-
-        // Validar que los campos no estén vacíos
         if (!matricula && !password) {
-            setError("Por favor ingresa tu clave de usuario y contraseña");
+            setError("Por favor, ingrese su clave de usuario y contraseña");
             return;
         }
         else if (!matricula) {
-            setError("Por favor ingresa tu clave de usuario");
+            setError("Por favor, ingrese su clave de usuario");
             return;
         }
         else if (!password) {
-            setError("Por favor ingresa tu contraseña");
+            setError("Por favor, ingrese su contraseña");
             return;
         }
 
@@ -48,7 +46,7 @@ function Login() {
                 navigate("/dashboard");
             }
             else {
-                setError(data.error);
+                setError("Datos incorrectos, intente nuevamente");
             }
         } catch (error) {
             setError(data.error);
@@ -111,7 +109,7 @@ function Login() {
                                     placeholder="Ingrese su contraseña"
                                 />
                                 {/* Mensaje de error */}
-                                {error && <span className="font-montserrat text-red-500 text-sm mt-1">{error}</span>}
+                                {error && <span className="font-montserrat text-red-500 text-sm mt-1 text-center">{error}</span>}
                             </div>
                             <button
                                 className="rounded-md p-2 min-w-[30vw] max-w-[40vw] items-center justify-center bg-primary-green text-white text-lg font-bold font-poppins transition-all duration-200 hover:bg-login-btn-hover hover:scale-102 active:scale-95"
