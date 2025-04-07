@@ -1,15 +1,19 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { Icon } from "@iconify/react";
+import { cn } from "@/lib/utils";
+import ModalConfirmation from "@/components/ModalConfirmation";
 import FileInput from "@/components/ui/FileInput";
 import DateInput from "@/components/ui/DateInput";
-import { Icon } from "@iconify/react";
 
 export default function AddEquipmentPanel({
     onClose,
     initialData = {},
     isEditing = false,
 }) {
+    const [modalConfirming, setModalConfirming] = useState(true);
+    const [showConfirmation, setShowConfirmation] = useState(false);
     const [formData, setFormData] = useState({
         inventoryNumber: "",
         equipmentName: "",
@@ -23,6 +27,7 @@ export default function AddEquipmentPanel({
         SICPatRegistered: "",
         vinculatedStrategicProject: "",
         barcode: "",
+        reservationType: "",
         location: "",
         observations: "",
         ...initialData,
@@ -39,21 +44,21 @@ export default function AddEquipmentPanel({
 
     const handleSubmit = async () => {
         const payload = {
-            inventoryNumber: formData.inventoryNumber,
-            equipmentName: formData.equipmentName,
-            equipmentBrand: formData.equipmentBrand,
-            equipmentModel: formData.equipmentModel,
-            equipmentSerialNumber: formData.equipmentSerialNumber,
-            equipmentSupplier: formData.equipmentSupplier,
-            equipmentImage: formData.equipmentImage,
-            invoiceNumber: formData.invoiceNumber,
-            dateOfReception: formData.dateOfReception,
-            SICPatRegistered: formData.SICPatRegistered,
-            vinculatedStrategicProject: formData.vinculatedStrategicProject,
-            barcode: formData.barcode,
-            location: formData.location,
-            observations: formData.observations,
-            occupiedTime: formData.occupiedTime,
+            inventoryNumber: String(formData.inventoryNumber),
+            equipmentName: String(formData.equipmentName),
+            equipmentBrand: String(formData.equipmentBrand),
+            equipmentModel: String(formData.equipmentModel),
+            equipmentSerialNumber: String(formData.equipmentSerialNumber),
+            equipmentSupplier: String(formData.equipmentSupplier),
+            equipmentImage: String(formData.equipmentImage),
+            invoiceNumber: String(formData.invoiceNumber),
+            dateOfReception: Date(formData.dateOfReception),
+            SICPatRegistered: String(formData.SICPatRegistered),
+            vinculatedStrategicProject: String(formData.vinculatedStrategicProject),
+            barcode: String(formData.barcode),
+            reservationType: String(formData.reservationType),
+            location: String(formData.location),
+            observations: String(formData.observations),
         };
 
         try {
@@ -66,15 +71,48 @@ export default function AddEquipmentPanel({
             });
 
             if (!response.ok) {
+                const errorData = await response.json();
+                console.error("Error:", errorData);
                 throw new Error("Error al agregar el equipo");
             }
+            // If product was added successfully, set confirmation
+            setModalConfirming(false);
+            setShowConfirmation(true);
         } catch (error) {
             console.error("Error:", error);
         }
     };
 
+    const handleDelete = async () => {
+        try {
+            const response = await fetch(
+                `http://localhost:3000/v1/equipment/${formData._id}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Error al eliminar el equipo");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+    
     return (
         <>
+            {showConfirmation && (
+                <ModalConfirmation
+                    onClose={onClose}
+                    onDelete={handleDelete}
+                    isConfirming={modalConfirming}
+                />
+            )}
+
             <div className="flex flex-col gap-4 text-sm text-black font-montserrat bg-white rounded-xl">
                 {/* Columns Grid */}
                 <div className="grid grid-cols-3 divide-x divide-primary-blue">
@@ -169,11 +207,6 @@ export default function AddEquipmentPanel({
                                 "Proyecto estratégico vinculado",
                                 "Ingrese el proyecto vinculado",
                             ],
-                            [
-                                "barcode",
-                                "Escanear código de barras",
-                                "Haga clic y escanee",
-                            ],
                         ].map(([name, label, placeholder]) => (
                             <label
                                 key={name}
@@ -189,6 +222,18 @@ export default function AddEquipmentPanel({
                                 />
                             </label>
                         ))}
+                        <label className="flex flex-col font-montserrat font-semibold">
+                        Escanear código de barras
+                            <Input
+                                type="number"
+                                name="barcode"
+                                value={formData.barcode}
+                                onChange={handleChange}
+                                placeholder="Haga clic y escanee"
+                                min="0"
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                            />
+                        </label>
                     </fieldset>
 
                     {/* Column 3 - Estado y uso */}
@@ -196,6 +241,24 @@ export default function AddEquipmentPanel({
                         <h2 className="font-poppins font-bold text-base text-center mt-2 mb-2">
                             Estado y uso
                         </h2>
+                        <label className="font-montserrat font-semibold">
+                            Duración de la reserva
+                            <select
+                                name="reservationType"
+                                onChange={handleChange}
+                                className={cn(
+                                    "w-full h-8 mt-1 rounded-md border border-gray-500 px-2 font-montserrat font-normal text-xs",
+                                    formData.reservationType === ""
+                                        ? "text-placeholder-text"
+                                        : "text-black"
+                                )}
+                            >
+                                <option value="">Seleccione la duración de uso</option>
+                                <option value="N">Corta</option>
+                                <option value="H">Media</option>
+                                <option value="D">Larga</option>
+                            </select>
+                        </label>
                         <label className="flex flex-col font-montserrat font-semibold">
                             Ubicación
                             <Input
@@ -224,16 +287,19 @@ export default function AddEquipmentPanel({
             {isEditing ? (
                 <div className="flex justify-between pt-4 mb-4">
                     <div className="flex ml-4">
-                        <Button
-                            className="bg-delete-btn hover:bg-delete-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-xl transition inline-flex items-center cursor-pointer"
-                            onClick={() => console.log("Eliminar producto")}
-                        >
+                    <Button
+                        className="bg-delete-btn hover:bg-delete-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-xl transition inline-flex items-center cursor-pointer"
+                        onClick={() => {
+                            setModalConfirming(true);
+                            setShowConfirmation(true);
+                        }}
+                    >
                             <Icon
                                 icon="ix:trashcan-filled"
                                 className="mr-2 text-xl"
                             />
-                            Eliminar producto
-                        </Button>
+                        Eliminar producto
+                    </Button>
                     </div>
                     <div className="flex gap-4 mr-4">
                         <Button

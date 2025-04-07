@@ -16,7 +16,6 @@ function Login() {
             navigate("/dashboard");
             return;
         }
-
         if (!matricula && !password) {
             setError("Por favor, ingrese su clave de usuario y contraseña");
             return;
