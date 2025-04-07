@@ -1,10 +1,18 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Icon } from "@iconify/react";
+import { cn } from "@/lib/utils";
+import ModalConfirmation from "@/components/ModalConfirmation";
 import FileInput from "@/components/ui/FileInput";
 import DateInput from "@/components/ui/DateInput";
 
-export default function PanelAgregarMaterial({ onClose }) {
+export default function PanelAgregarMaterial({
+    onClose,
+    initialData,
+    isEditing = false,
+}) {
+    const [showConfirmation, setShowConfirmation] = useState(false);
     const [formData, setFormData] = useState({
         materialCategory: "",
         materialDescription: "",
@@ -33,7 +41,8 @@ export default function PanelAgregarMaterial({ onClose }) {
         location: "",
         observations: "",
         obsForUsers: "",
-        verified: false,
+        verified: "",
+        ...initialData,
     });
 
     const handleChange = (e) => {

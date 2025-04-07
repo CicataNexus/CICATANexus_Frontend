@@ -27,7 +27,7 @@ export default function InventoryTable({
         getCoreRowModel: getCoreRowModel(),
     });
 
-    const panelComponent = panelMap[type];
+    const PanelComponent = panelMap[type];
 
     const getProductId = (product) => {
         if (type === "equipos") return product.inventoryNumber;
@@ -80,11 +80,13 @@ export default function InventoryTable({
                                 getProductId(row.original) && (
                                 <tr>
                                     <td colSpan={columns.length}>
-                                        <AddEquipmentPanel
+                                        {PanelComponent && (
+                                        <PanelComponent
                                             initialData={selectedProduct}
                                             onClose={onCloseEdit}
                                             isEditing={true}
-                                        ></AddEquipmentPanel>
+                                        />
+                                        )}
                                     </td>
                                 </tr>
                             )}

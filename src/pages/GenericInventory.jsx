@@ -28,7 +28,7 @@ const apiEndpoints = {
     // For the API endpoints
     equipos: "http://localhost:3000/v1/equipment",
     reactivos: "http://localhost:3000/v1/reagent",
-    materiales: "",
+    materiales: "http://localhost:3000/v1/materials",
 };
 
 export default function GenericInventory() {

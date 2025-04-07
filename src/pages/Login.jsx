@@ -17,6 +17,20 @@ function Login() {
             return;
         }
 
+        // Validar que los campos no estén vacíos
+        if (!matricula && !password) {
+            setError("Por favor ingresa tu clave de usuario y contraseña");
+            return;
+        }
+        else if (!matricula) {
+            setError("Por favor ingresa tu clave de usuario");
+            return;
+        }
+        else if (!password) {
+            setError("Por favor ingresa tu contraseña");
+            return;
+        }
+
         // Validar credenciales con el back
         try {
             const response = await fetch("http://localhost:3000/v1/auth/login", {

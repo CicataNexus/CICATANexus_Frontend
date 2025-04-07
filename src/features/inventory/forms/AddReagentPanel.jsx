@@ -1,15 +1,18 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Icon } from "@iconify/react";
+import { cn } from "@/lib/utils";
+import ModalConfirmation from "@/components/ModalConfirmation";
 import FileInput from "@/components/ui/FileInput";
 import DateInput from "@/components/ui/DateInput";
-import { cn } from "@/lib/utils";
 
 export default function AddReagentPanel({
     onClose,
     initialData = {},
     isEditing = false,
 }) {
+    const [showConfirmation, setShowConfirmation] = useState(false);
     const [formData, setFormData] = useState({
         reagentCode: "",
         reagentName: "",
@@ -31,9 +34,9 @@ export default function AddReagentPanel({
         nfpaName: "",
         storageClass: "",
         casNumber: "",
-        safetyDataSheet: false,
+        safetyDataSheet: "",
         sdsLink: "",
-        verified: false,
+        verified: "",
         pictogramImage: null,
         explosive: "",
         oxidizing: "",
@@ -66,45 +69,45 @@ export default function AddReagentPanel({
 
     const handleSubmit = async () => {
         const payload = {
-            reagentCode: formData.reagentCode,
-            reagentName: formData.reagentName,
-            reagentPresentation: formData.reagentPresentation,
-            reagentWeightVolume: formData.reagentWeightVolume,
-            reagentBrand: formData.reagentBrand,
-            reagentCatalog: formData.reagentCatalog,
-            reagentSupplier: formData.reagentSupplier,
-            reagentImage: formData.reagentImage,
-            reagentLot: formData.reagentLot,
-            dateOfReception: formData.dateOfReception,
-            receivingTemperature: formData.receivingTemperature,
-            dateOpened: formData.dateOpened,
-            dateFinished: formData.dateFinished,
-            expirationDate: formData.expirationDate,
-            invoiceNumber: formData.invoiceNumber,
-            vinculatedStrategicProject: formData.vinculatedStrategicProject,
-            barcode: formData.barcode,
-            nfpaName: formData.nfpaName,
-            storageClass: formData.storageClass,
-            casNumber: formData.casNumber,
-            safetyDataSheet: formData.safetyDataSheet,
-            sdsLink: formData.sdsLink,
-            verified: formData.verified,
-            pictogramImage: formData.pictogramImage,
-            explosive: formData.explosive,
-            oxidizing: formData.oxidizing,
-            flammable: formData.flammable,
-            corrosive: formData.corrosive,
-            toxic: formData.toxic,
-            mutagenicOrCarcinogenic: formData.mutagenicOrCarcinogenic,
-            irritation: formData.irritation,
-            compressedGases: formData.compressedGases,
-            healthHazard: formData.healthHazard,
-            flammability: formData.flammability,
-            reactivity: formData.reactivity,
-            contact: formData.contact,
-            location: formData.location,
-            reagentSticker: formData.reagentSticker,
-            observations: formData.observations,
+            reagentCode: String(formData.reagentCode),
+            reagentName: String(formData.reagentName),
+            reagentPresentation: String(formData.reagentPresentation),
+            reagentWeightVolume: String(formData.reagentWeightVolume),
+            reagentBrand: String(formData.reagentBrand),
+            reagentCatalog: String(formData.reagentCatalog),
+            reagentSupplier: String(formData.reagentSupplier),
+            reagentImage: String(formData.reagentImage),
+            reagentLot: String(formData.reagentLot),
+            dateOfReception: String(formData.dateOfReception),
+            receivingTemperature: String(formData.receivingTemperature),
+            dateOpened: String(formData.dateOpened),
+            dateFinished: String(formData.dateFinished),
+            expirationDate: String(formData.expirationDate),
+            invoiceNumber: String(formData.invoiceNumber),
+            vinculatedStrategicProject: String(formData.vinculatedStrategicProject),
+            barcode: parseInt(formData.barcode, 10),
+            nfpaName: String(formData.nfpaName),
+            storageClass: String(formData.storageClass),
+            casNumber: String(formData.casNumber),
+            safetyDataSheet: Boolean(formData.safetyDataSheet),
+            sdsLink: String(formData.sdsLink),
+            verified: Boolean(formData.verified),
+            pictogramImage: String(formData.pictogramImage),
+            explosive: parseInt(formData.explosive, 10),
+            oxidizing: parseInt(formData.oxidizing, 10),
+            flammable: parseInt(formData.flammable, 10),
+            corrosive: parseInt(formData.corrosive, 10),
+            toxic: parseInt(formData.toxic, 10),
+            mutagenicOrCarcinogenic: parseInt(formData.mutagenicOrCarcinogenic, 10),
+            irritation: parseInt(formData.irritation, 10),
+            compressedGases: parseInt(formData.compressedGases, 10),
+            healthHazard: parseInt(formData.healthHazard, 10),
+            flammability: parseInt(formData.flammability, 10),
+            reactivity: parseInt(formData.reactivity, 10),
+            contact: parseInt(formData.contact, 10),
+            location: String(formData.location),
+            reagentSticker: parseInt(formData.reagentSticker, 10),
+            observations: String(formData.observations),
         };
 
         try {
@@ -117,6 +120,8 @@ export default function AddReagentPanel({
             });
 
             if (!response.ok) {
+                const errorData = await response.json();
+                console.error("Error:", errorData);
                 throw new Error("Error al agregar el reactivo");
             }
         } catch (error) {
@@ -124,8 +129,36 @@ export default function AddReagentPanel({
         }
     };
 
+    const handleDelete = async () => {
+        try {
+            const response = await fetch(
+                `http://localhost:3000/v1/reagent/${formData._id}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Error al eliminar el reactivo");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+
     return (
         <>
+            {showConfirmation && (
+                <ModalConfirmation
+                    onClose={onClose}
+                    onDelete={handleDelete}
+                    isConfirming={true}
+                />
+            )}
+
             <div className="flex flex-col gap-4 text-sm text-black font-montserrat bg-white rounded-xl">
                 {/* Columns Grid */}
                 <div className="grid grid-cols-5 divide-x divide-primary-blue">
@@ -217,7 +250,7 @@ export default function AddReagentPanel({
                                 value={formData.receivingTemperature}
                                 onChange={handleChange}
                                 placeholder="Ingrese la temperatura"
-                                className="-mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                             />
                         </label>
                         {[
@@ -262,11 +295,6 @@ export default function AddReagentPanel({
                                 "Proyecto estratégico vinculado",
                                 "Ingrese el proyecto vinculado",
                             ],
-                            [
-                                "barcode",
-                                "Escanear código de barras",
-                                "Haga clic y escanee",
-                            ],
                         ].map(([name, label, placeholder]) => (
                             <label
                                 key={name}
@@ -282,6 +310,18 @@ export default function AddReagentPanel({
                                 />
                             </label>
                         ))}
+                        <label className="flex flex-col font-montserrat font-semibold">
+                        Escanear código de barras
+                            <Input
+                                type="number"
+                                name="barcode"
+                                value={formData.barcode}
+                                onChange={handleChange}
+                                placeholder="Haga clic y escanee"
+                                min="0"
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                            />
+                        </label>
                     </fieldset>
 
                     {/* Column 3 Clasificación NFPA */}
@@ -366,52 +406,110 @@ export default function AddReagentPanel({
                         <h2 className="font-poppins font-bold text-base text-center mt-2 mb-2">
                             Seguridad y riesgos
                         </h2>
-                        {[
-                            ["explosive", "Explosivo", "Ingrese el riesgo"],
-                            [
-                                "oxidizing",
-                                "Comburente/Oxidante",
-                                "Ingrese el riesgo",
-                            ],
-                            ["flammable", "Inflamable", "Ingrese el riesgo"],
-                            ["corrosive", "Corrosivo", "Ingrese el riesgo"],
-                            ["toxic", "Tóxico", "Ingrese el riesgo"],
-                            [
-                                "mutagenicOrCarcinogenic",
-                                "Mutagénico cancerígeno",
-                                "Ingrese el riesgo",
-                            ],
-                            [
-                                "irritation",
-                                "Irritación cutánea",
-                                "Ingrese el riesgo",
-                            ],
-                            [
-                                "compressedGases",
-                                "Gases comprimidos",
-                                "Ingrese el riesgo",
-                            ],
-                        ].map(([name, label, placeholder]) => (
-                            <label
-                                key={name}
-                                className="flex flex-col font-montserrat font-semibold"
-                            >
-                                {label}
-                                <Input
-                                    name={name}
-                                    value={formData[name]}
-                                    placeholder={placeholder}
-                                    onChange={handleChange}
-                                    className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
-                                />
+                        <label className="flex flex-col font-montserrat font-semibold">
+                            Explosivo
+                            <Input
+                                type="number"
+                                name="explosive"
+                                value={formData.explosive}
+                                onChange={handleChange}
+                                placeholder="Ingrese el riesgo"
+                                min="0"
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                            />
                             </label>
-                        ))}
+                            <label className="flex flex-col font-montserrat font-semibold">
+                            Comburente/Oxidante
+                            <Input
+                                type="number"
+                                name="oxidizing"
+                                value={formData.oxidizing}
+                                onChange={handleChange}
+                                placeholder="Ingrese el riesgo"
+                                min="0"
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                            />
+                            </label>
+                            <label className="flex flex-col font-montserrat font-semibold">
+                            Inflamable
+                            <Input
+                                type="number"
+                                name="flammable"
+                                value={formData.flammable}
+                                onChange={handleChange}
+                                placeholder="Ingrese el riesgo"
+                                min="0"
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                            />
+                            </label>
+                            <label className="flex flex-col font-montserrat font-semibold">
+                            Corrosivo
+                            <Input
+                                type="number"
+                                name="corrosive"
+                                value={formData.corrosive}
+                                onChange={handleChange}
+                                placeholder="Ingrese el riesgo"
+                                min="0"
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                            />
+                            </label>
+                            <label className="flex flex-col font-montserrat font-semibold">
+                            Tóxico
+                            <Input
+                                type="number"
+                                name="toxic"
+                                value={formData.toxic}
+                                onChange={handleChange}
+                                placeholder="Ingrese el riesgo"
+                                min="0"
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                            />
+                            </label>
+                            <label className="flex flex-col font-montserrat font-semibold">
+                            Mutagénico cancerígeno
+                            <Input
+                                type="number"
+                                name="mutagenicOrCarcinogenic"
+                                value={formData.mutagenicOrCarcinogenic}
+                                onChange={handleChange}
+                                placeholder="Ingrese el riesgo"
+                                min="0"
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                            />
+                            </label>
+                            <label className="flex flex-col font-montserrat font-semibold">
+                            Irritación cutánea
+                            <Input
+                                type="number"
+                                name="irritation"
+                                value={formData.irritation}
+                                onChange={handleChange}
+                                placeholder="Ingrese el riesgo"
+                                min="0"
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                            />
+                            </label>
+                            <label className="flex flex-col font-montserrat font-semibold">
+                            Gases comprimidos
+                            <Input
+                                type="number"
+                                name="compressedGases"
+                                value={formData.compressedGases}
+                                onChange={handleChange}
+                                placeholder="Ingrese el riesgo"
+                                min="0"
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                            />
+                            </label>
                         <label className="flex flex-col font-montserrat font-semibold text-health-field">
                             Salud
                             <Input
+                                type="number"
                                 name="healthHazard"
                                 value={formData.healthHazard}
                                 placeholder="Ingrese el riesgo"
+                                min="0"
                                 onChange={handleChange}
                                 className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                             />
@@ -419,9 +517,11 @@ export default function AddReagentPanel({
                         <label className="flex flex-col font-montserrat font-semibold text-flammable-field">
                             Flamable
                             <Input
+                                type="number"
                                 name="flammability"
                                 value={formData.flammability}
                                 placeholder="Ingrese el riesgo"
+                                min="0"
                                 onChange={handleChange}
                                 className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                             />
@@ -430,18 +530,22 @@ export default function AddReagentPanel({
                             Reactividad
                         </label>
                         <Input
+                            type="number"
                             name="reactivity"
                             value={formData.reactivity}
                             placeholder="Ingrese el riesgo"
+                            min="0"
                             onChange={handleChange}
                             className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                         />
                         <label className="font-montserrat font-semibold">
                             Contacto
                             <Input
+                                type="number"
                                 name="contact"
                                 value={formData.contact}
                                 placeholder="Ingrese el riesgo"
+                                min="0"
                                 onChange={handleChange}
                                 className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                             />
@@ -476,10 +580,10 @@ export default function AddReagentPanel({
                                 )}
                             >
                                 <option value="">Seleccione el color</option>
-                                <option value="Verde">Verde</option>
-                                <option value="Rojo">Rojo</option>
-                                <option value="Azul">Azul</option>
-                                <option value="Amarillo">Amarillo</option>
+                                <option value="3">Verde</option>
+                                <option value="2">Azul</option>
+                                <option value="1">Amarillo</option>
+                                <option value="4">Rojo</option>
                             </select>
                         </label>
                         <lable className="font-montserrat font-semibold">
@@ -502,7 +606,7 @@ export default function AddReagentPanel({
                     <div className="flex ml-4">
                         <Button
                             className="bg-delete-btn hover:bg-delete-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-xl transition inline-flex items-center cursor-pointer"
-                            onClick={() => console.log("Eliminar producto")}
+                            onClick={() => setShowConfirmation(true)}
                         >
                             <Icon
                                 icon="ix:trashcan-filled"
