@@ -1,14 +1,14 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import TableToolbar from "../components/ui/TableToolbar";
-import InventoryTable from "../features/inventory/InventoryTable";
-import { EquipmentColumns } from "../features/inventory/columns/EquipmentColumns.jsx";
-import { MaterialColumns } from "../features/inventory/columns/MaterialColumns.jsx";
-import { ReagentColumns } from "../features/inventory/columns/ReagentColumns.jsx";
-import AddEquipmentPanel from "../features/inventory/forms/AddEquipmentPanel";
-import AddMaterialPanel from "../features/inventory/forms/AddMaterialPanel";
-import AddReagentPanel from "../features/inventory/forms/AddReagentPanel";
-import AddProductPanel from "../features/inventory/AddProductPanel";
+import InventoryTable from "../features/inventory-mgmt/InventoryTable";
+import { EquipmentColumns } from "../features/inventory-mgmt/columns/EquipmentColumns.jsx";
+import { MaterialColumns } from "../features/inventory-mgmt/columns/MaterialColumns.jsx";
+import { ReagentColumns } from "../features/inventory-mgmt/columns/ReagentColumns.jsx";
+import AddEquipmentPanel from "../features/inventory-mgmt/forms/AddEquipmentPanel";
+import AddMaterialPanel from "../features/inventory-mgmt/forms/AddMaterialPanel";
+import AddReagentPanel from "../features/inventory-mgmt/forms/AddReagentPanel";
+import AddProductPanel from "../features/inventory-mgmt/AddProductPanel";
 
 const columnsMap = {
     // For the table columns
