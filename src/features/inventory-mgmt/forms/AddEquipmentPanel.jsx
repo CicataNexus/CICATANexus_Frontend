@@ -52,7 +52,7 @@ export default function AddEquipmentPanel({
             equipmentSupplier: String(formData.equipmentSupplier),
             equipmentImage: String(formData.equipmentImage),
             invoiceNumber: String(formData.invoiceNumber),
-            dateOfReception: Date(formData.dateOfReception),
+            dateOfReception: new Date(formData.dateOfReception).toISOString(),
             SICPatRegistered: String(formData.SICPatRegistered),
             vinculatedStrategicProject: String(formData.vinculatedStrategicProject),
             barcode: String(formData.barcode),
@@ -115,7 +115,7 @@ export default function AddEquipmentPanel({
 
             <div className="flex flex-col gap-4 text-sm text-black font-montserrat bg-white rounded-xl">
                 {/* Columns Grid */}
-                <div className="grid grid-cols-3 divide-x divide-primary-blue">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 divide-x divide-primary-blue">
                     {/* Column 1 - Información general */}
                     <fieldset className="space-y-2 p-4">
                         <h2 className="font-poppins font-bold text-base text-center mt-2 mb-2">
@@ -159,7 +159,7 @@ export default function AddEquipmentPanel({
                                 />
                             </label>
                         ))}
-                        <label className="font-montserrat font-semibold">
+                        <label className="flex flex-col font-montserrat font-semibold">
                             Imagen
                             <FileInput
                                 name="equipmentImage"
@@ -188,11 +188,9 @@ export default function AddEquipmentPanel({
                         <label className="flex flex-col font-montserrat font-semibold">
                             Fecha de llegada
                             <DateInput
-                                type="date"
                                 name="dateOfReception"
                                 value={formData.dateOfReception}
                                 onChange={handleChange}
-                                placeholder="Ingrese la fecha de llegada dd-mm-aaaa"
                                 className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                             />
                         </label>
@@ -241,7 +239,7 @@ export default function AddEquipmentPanel({
                         <h2 className="font-poppins font-bold text-base text-center mt-2 mb-2">
                             Estado y uso
                         </h2>
-                        <label className="font-montserrat font-semibold">
+                        <label className="flex flex-col font-montserrat font-semibold">
                             Duración de la reserva
                             <select
                                 name="reservationType"
