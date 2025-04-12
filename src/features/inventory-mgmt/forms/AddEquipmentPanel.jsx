@@ -257,12 +257,12 @@ export default function AddEquipmentPanel({
                             [
                                 "vinculatedStrategicProject",
                                 "Proyecto estratégico vinculado",
-                                "Haga clic y escanee",
+                                "Ingrese el proyecto vinculado",
                             ],
                             [
                                 "barcode",
                                 "Escanear código de barras",
-                                "Ingrese el proyecto vinculado",
+                                "Haga clic y escanee",
                             ],
                         ].map(([name, label, placeholder]) => (
                             <label

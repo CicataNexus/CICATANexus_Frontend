@@ -34,6 +34,9 @@ export default function AddReagentPanel({
         "nfpaName",
         "storageClass",
         "casNumber",
+        "safetyDataSheet",
+        "sdsLink",
+        "verified",
         "explosive",
         "oxidizing",
         "flammable",
@@ -96,7 +99,13 @@ export default function AddReagentPanel({
     const handleChange = (e) => {
         const { name, value, type, checked, files } = e.target;
         if (type === "checkbox") {
-            setFormData((prev) => ({ ...prev, [name]: checked }));
+            const checked = e.target.checked;
+            setFormData((prev) => ({
+                ...prev,
+                [name]: checked,
+                // If unchecked, set the field to an empty string
+                ...(name === "safetyDataSheet" && !checked ? { sdsLink: "" } : {}),
+            }));
         } else if (type === "file") {
             setFormData((prev) => ({ ...prev, [name]: files[0] }));
         } else {
@@ -467,26 +476,34 @@ export default function AddReagentPanel({
                                 type="checkbox"
                                 name="safetyDataSheet"
                                 checked={formData.safetyDataSheet}
+                                required
                                 onChange={handleChange}
                                 className="h-4 w-4"
                             />
                         </label>
-                        <label className="flex flex-col font-montserrat font-semibold">
-                            Enlace de hoja
-                            <Input
-                                name="sdsLink"
-                                value={formData.sdsLink}
-                                placeholder="Ingrese el enlace"
-                                onChange={handleChange}
-                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
-                            />
-                        </label>
+                        {formData.safetyDataSheet && (
+                            <label className="flex flex-col font-montserrat font-semibold">
+                                Enlace de hoja
+                                <Input
+                                    name="sdsLink"
+                                    type="url"
+                                    value={formData.sdsLink}
+                                    placeholder="Ingrese el enlace"
+                                    required
+                                    showError={errors.sdsLink}
+                                    errorMessage={"Este campo es obligatorio"}
+                                    onChange={handleChange}
+                                    className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                                />
+                            </label>
+                        )}
                         <label className="flex items-center font-montserrat font-semibold gap-2">
                             Verificado
                             <input
                                 type="checkbox"
                                 name="verified"
                                 checked={formData.verified}
+                                required
                                 onChange={handleChange}
                                 className="h-4 w-4"
                             />
