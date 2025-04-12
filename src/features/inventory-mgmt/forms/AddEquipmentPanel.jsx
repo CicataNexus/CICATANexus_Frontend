@@ -14,6 +14,20 @@ export default function AddEquipmentPanel({
 }) {
     const [modalConfirming, setModalConfirming] = useState(true);
     const [showConfirmation, setShowConfirmation] = useState(false);
+    const [errors, setErrors] = useState({});
+    const requiredFields = [
+        "equipmentName",
+        "equipmentBrand",
+        "equipmentModel",
+        "equipmentSerialNumber",
+        "equipmentSupplier",
+        //"equipmentImage", Uncomment when implementation is ready in backend
+        "vinculatedStrategicProject",
+        "barcode",
+        // "reservationType", Uncomment when implementation is ready in backend
+        "location",
+    ];
+
     const [formData, setFormData] = useState({
         inventoryNumber: "",
         equipmentName: "",
@@ -39,10 +53,32 @@ export default function AddEquipmentPanel({
             setFormData((prev) => ({ ...prev, [name]: files[0] }));
         } else {
             setFormData((prev) => ({ ...prev, [name]: value }));
+
+            setErrors((prevErrors) => ({
+                // Delete the error for the field being changed
+                ...prevErrors,
+                [name]: false,
+            }));
         }
     };
 
+    const validateForm = () => {
+        const newErrors = {};
+
+        requiredFields.forEach((field) => {
+            if (!formData[field]) {
+                newErrors[field] = true; // Field is empty
+            }
+        });
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0; // True if no errors
+    };
+
     const handleSubmit = async () => {
+        if (!validateForm()) {
+            return; // Stop submission if validation fails
+        }
         const payload = {
             inventoryNumber: String(formData.inventoryNumber),
             equipmentName: String(formData.equipmentName),
@@ -54,7 +90,9 @@ export default function AddEquipmentPanel({
             invoiceNumber: String(formData.invoiceNumber),
             dateOfReception: new Date(formData.dateOfReception).toISOString(),
             SICPatRegistered: String(formData.SICPatRegistered),
-            vinculatedStrategicProject: String(formData.vinculatedStrategicProject),
+            vinculatedStrategicProject: String(
+                formData.vinculatedStrategicProject
+            ),
             barcode: String(formData.barcode),
             reservationType: String(formData.reservationType),
             location: String(formData.location),
@@ -101,8 +139,8 @@ export default function AddEquipmentPanel({
         } catch (error) {
             console.error("Error:", error);
         }
-    }
-    
+    };
+
     return (
         <>
             {showConfirmation && (
@@ -121,12 +159,17 @@ export default function AddEquipmentPanel({
                         <h2 className="font-poppins font-bold text-base text-center mt-2 mb-2">
                             Información general
                         </h2>
+                        <label className="flex flex-col font-montserrat font-semibold">
+                            Número de inventario
+                            <Input
+                                name="inventoryNumber"
+                                value={formData.inventoryNumber}
+                                onChange={handleChange}
+                                placeholder="Ingrese el número de inventario"
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                            />
+                        </label>
                         {[
-                            [
-                                "inventoryNumber",
-                                "Número de inventario",
-                                "Ingrese el número de inventario",
-                            ],
                             [
                                 "equipmentName",
                                 "Nombre del equipo",
@@ -149,12 +192,18 @@ export default function AddEquipmentPanel({
                                 key={name}
                                 className="flex flex-col font-montserrat font-semibold"
                             >
-                                {label}
+                                <span>
+                                    {label}{" "}
+                                    <span className="text-red-500">*</span>
+                                </span>
                                 <Input
                                     name={name}
                                     value={formData[name]}
                                     onChange={handleChange}
                                     placeholder={placeholder}
+                                    required
+                                    showError={errors[name]}
+                                    errorMessage={"Este campo es obligatorio"}
                                     className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                                 />
                             </label>
@@ -194,44 +243,48 @@ export default function AddEquipmentPanel({
                                 className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                             />
                         </label>
+                        <label className="flex flex-col font-montserrat font-semibold">
+                            Registro en SICPat
+                            <Input
+                                name="SICPatRegistered"
+                                value={formData.SICPatRegistered}
+                                onChange={handleChange}
+                                placeholder="Ingrese el registro"
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                            />
+                        </label>
                         {[
-                            [
-                                "SICPatRegistered",
-                                "Registro en SICPat",
-                                "Ingrese el registro",
-                            ],
                             [
                                 "vinculatedStrategicProject",
                                 "Proyecto estratégico vinculado",
                                 "Ingrese el proyecto vinculado",
+                            ],
+                            [
+                                "barcode",
+                                "Escanear código de barras",
+                                "Haga clic y escanee",
                             ],
                         ].map(([name, label, placeholder]) => (
                             <label
                                 key={name}
                                 className="flex flex-col font-montserrat font-semibold"
                             >
-                                {label}
+                                <span>
+                                    {label}{" "}
+                                    <span className="text-red-500">*</span>
+                                </span>
                                 <Input
                                     name={name}
                                     value={formData[name]}
                                     onChange={handleChange}
                                     placeholder={placeholder}
+                                    required
+                                    showError={errors[name]}
+                                    errorMessage={"Este campo es obligatorio"}
                                     className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                                 />
                             </label>
                         ))}
-                        <label className="flex flex-col font-montserrat font-semibold">
-                        Escanear código de barras
-                            <Input
-                                type="number"
-                                name="barcode"
-                                value={formData.barcode}
-                                onChange={handleChange}
-                                placeholder="Haga clic y escanee"
-                                min="0"
-                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
-                            />
-                        </label>
                     </fieldset>
 
                     {/* Column 3 - Estado y uso */}
@@ -251,31 +304,40 @@ export default function AddEquipmentPanel({
                                         : "text-black"
                                 )}
                             >
-                                <option value="">Seleccione la duración de uso</option>
+                                <option value="">
+                                    Seleccione la duración de uso
+                                </option>
                                 <option value="N">Corta</option>
                                 <option value="H">Media</option>
                                 <option value="D">Larga</option>
                             </select>
                         </label>
                         <label className="flex flex-col font-montserrat font-semibold">
-                            Ubicación
+                            <span>
+                                Ubicación{" "}
+                                <span className="text-red-500">*</span>
+                            </span>
                             <Input
+                                type="text"
                                 name="location"
                                 value={formData.location}
                                 onChange={handleChange}
                                 placeholder="Ingrese la ubicación"
+                                required
+                                showError={errors.location}
+                                errorMessage={"Este campo es obligatorio"}
                                 className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                             />
                         </label>
                         <label className="flex flex-col font-montserrat font-semibold">
                             Observaciones
                             <textarea
-                            name="observations"
-                            value={formData.observations}
-                            onChange={handleChange}
-                            placeholder="Ingrese observaciones sobre el equipo"
-                            className="mt-1 w-full h-24 rounded-md border border-gray-500 p-2 placeholder:text-xs placeholder:font-montserrat font-normal"
-                        />
+                                name="observations"
+                                value={formData.observations}
+                                onChange={handleChange}
+                                placeholder="Ingrese observaciones sobre el equipo"
+                                className="mt-1 w-full h-24 rounded-md border border-gray-500 p-2 placeholder:text-xs placeholder:font-montserrat font-normal"
+                            />
                         </label>
                     </fieldset>
                 </div>
@@ -285,19 +347,19 @@ export default function AddEquipmentPanel({
             {isEditing ? (
                 <div className="flex justify-between pt-4 mb-4">
                     <div className="flex ml-4">
-                    <Button
-                        className="bg-delete-btn hover:bg-delete-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-xl transition inline-flex items-center cursor-pointer"
-                        onClick={() => {
-                            setModalConfirming(true);
-                            setShowConfirmation(true);
-                        }}
-                    >
+                        <Button
+                            className="bg-delete-btn hover:bg-delete-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-xl transition inline-flex items-center cursor-pointer"
+                            onClick={() => {
+                                setModalConfirming(true);
+                                setShowConfirmation(true);
+                            }}
+                        >
                             <Icon
                                 icon="ix:trashcan-filled"
                                 className="mr-2 text-xl"
                             />
-                        Eliminar producto
-                    </Button>
+                            Eliminar producto
+                        </Button>
                     </div>
                     <div className="flex gap-4 mr-4">
                         <Button

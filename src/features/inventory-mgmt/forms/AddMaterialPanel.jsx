@@ -14,6 +14,31 @@ export default function AddMaterialPanel({
 }) {
     const [modalConfirming, setModalConfirming] = useState(true);
     const [showConfirmation, setShowConfirmation] = useState(false);
+    const [errors, setErrors] = useState({});
+    const requiredFields = [
+        "materialCategory",
+        "materialDescription",
+        "materialBrand",
+        "materialSupplier",
+        "materialCatalog",
+        "materialQuantity",
+        // "materialImage", uncomment when implementation is ready in backend
+        "warehouseUnits",
+        "labUnits",
+        "l1",
+        "l2",
+        "l3",
+        "l4",
+        "l5",
+        "l6",
+        "cf",
+        "tempWarehouseUnits",
+        "materialLot",
+        "barcode",
+        "location",
+        "verified",
+    ];
+
     const [formData, setFormData] = useState({
         materialCategory: "",
         materialDescription: "",
@@ -54,10 +79,31 @@ export default function AddMaterialPanel({
             setFormData((prev) => ({ ...prev, [name]: files[0] }));
         } else {
             setFormData((prev) => ({ ...prev, [name]: value }));
+
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                [name]: false,
+            }));
         }
     };
 
+    const validateForm = () => {
+        const newErrors = {};
+
+        requiredFields.forEach((field) => {
+            if (!formData[field]) {
+                newErrors[field] = true; // Field is empty
+            }
+        });
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0; // True if no errors
+    };
+
     const handleSubmit = async () => {
+        if (!validateForm()) {
+            return; // Stop submission if validation fails
+        }
         const payload = {
             materialCategory: String(formData.materialCategory),
             materialDescription: String(formData.materialDescription),
@@ -159,11 +205,39 @@ export default function AddMaterialPanel({
                                 "Descripción",
                                 "Ingrese la descripción",
                             ],
-                            [
-                                "materialPresentation",
-                                "Presentación",
-                                "Ingrese la presentación",
-                            ],
+                        ].map(([name, label, placeholder]) => (
+                            <label
+                                key={name}
+                                className="flex flex-col font-montserrat font-semibold"
+                            >
+                                <span>
+                                    {label}{" "}
+                                    <span className="text-red-500">*</span>
+                                </span>
+                                <Input
+                                    name={name}
+                                    value={formData[name]}
+                                    onChange={handleChange}
+                                    placeholder={placeholder}
+                                    required
+                                    showError={errors[name]}
+                                    errorMessage={"Este campo es obligatorio"}
+                                    className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                                />
+                            </label>
+                        ))}
+                        <label className="flex flex-col font-montserrat font-semibold">
+                            Presentación
+                            <Input
+                                type="text"
+                                name="materialPresentation"
+                                value={formData.materialPresentation}
+                                onChange={handleChange}
+                                placeholder="Ingrese la presentación"
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                            />
+                        </label>
+                        {[
                             ["materialBrand", "Marca", "Ingrese la marca"],
                             [
                                 "materialSupplier",
@@ -185,7 +259,10 @@ export default function AddMaterialPanel({
                                 key={name}
                                 className="flex flex-col font-montserrat font-semibold"
                             >
-                                {label}
+                                <span>
+                                    {label}{" "}
+                                    <span className="text-red-500">*</span>
+                                </span>
                                 <Input
                                     type={
                                         name === "materialQuantity"
@@ -201,6 +278,9 @@ export default function AddMaterialPanel({
                                     value={formData[name]}
                                     onChange={handleChange}
                                     placeholder={placeholder}
+                                    required
+                                    showError={errors[name]}
+                                    errorMessage={"Este campo es obligatorio"}
                                     className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                                 />
                             </label>
@@ -235,14 +315,18 @@ export default function AddMaterialPanel({
                                 key={name}
                                 className="flex flex-col font-montserrat font-semibold"
                             >
-                                {label}
+                                <span>
+                                    {label}{" "}
+                                    <span className="text-red-500">*</span>
+                                </span>
                                 <Input
-                                    type="number"
-                                    min={0}
                                     name={name}
                                     value={formData[name]}
                                     onChange={handleChange}
                                     placeholder={placeholder}
+                                    required
+                                    showError={errors[name]}
+                                    errorMessage={"Este campo es obligatorio"}
                                     className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                                 />
                             </label>
@@ -252,7 +336,12 @@ export default function AddMaterialPanel({
                                 (label) => (
                                     <label key={label}>
                                         <label className="font-montserrat font-semibold">
-                                            {label}
+                                            <span>
+                                                {label}{" "}
+                                                <span className="text-red-500">
+                                                    *
+                                                </span>
+                                            </span>
                                         </label>
                                         <Input
                                             type="number"
@@ -263,6 +352,13 @@ export default function AddMaterialPanel({
                                             }
                                             onChange={handleChange}
                                             placeholder="Ingrese"
+                                            required
+                                            showError={
+                                                errors[label.toLowerCase()]
+                                            }
+                                            errorMessage={
+                                                "Este campo es obligatorio"
+                                            }
                                             className="mt-1 placeholder:text-xs placeholder:font-montserrat h-8"
                                         />
                                     </label>
@@ -281,7 +377,10 @@ export default function AddMaterialPanel({
                                 key={name}
                                 className="flex flex-col font-montserrat font-semibold"
                             >
-                                {label}
+                                <span>
+                                    {label}{" "}
+                                    <span className="text-red-500">*</span>
+                                </span>
                                 <Input
                                     type="number"
                                     min={0}
@@ -289,6 +388,9 @@ export default function AddMaterialPanel({
                                     value={formData[name]}
                                     onChange={handleChange}
                                     placeholder={placeholder}
+                                    required
+                                    showError={errors[name]}
+                                    errorMessage={"Este campo es obligatorio"}
                                     className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                                 />
                             </label>
@@ -296,12 +398,27 @@ export default function AddMaterialPanel({
                     </fieldset>
 
                     {/* Column 3 - Trazabilidad */}
-                    <fieldset className="space-y-2 p-4 mt-2">
-                        <h2 className="font-poppins font-bold text-base text-center mb-2">
+                    <fieldset className="space-y-2 p-4">
+                        <h2 className="font-poppins font-bold text-base text-center  mt-2 mb-2">
                             Trazabilidad
                         </h2>
+                        <label className="flex flex-col font-montserrat font-semibold">
+                            <span>
+                                Lote <span className="text-red-500">*</span>
+                            </span>
+                            <Input
+                                type="text"
+                                name="materialLot"
+                                value={formData.materialLot}
+                                onChange={handleChange}
+                                placeholder="Ingrese el lote"
+                                required
+                                showError={errors.materialLot}
+                                errorMessage={"Este campo es obligatorio"}
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                            />
+                        </label>
                         {[
-                            ["materialLot", "Lote", "Ingrese el lote"],
                             [
                                 "invoiceNumber",
                                 "Número de factura",
@@ -347,31 +464,41 @@ export default function AddMaterialPanel({
                             )
                         )}
                         <label className="flex flex-col font-montserrat font-semibold">
-                            Escanear código de barras
+                            <span>
+                                Escanear código de barras{" "}
+                                <span className="text-red-500">*</span>
+                            </span>
                             <Input
-                                type="number"
+                                type="text"
                                 name="barcode"
                                 value={formData.barcode}
                                 onChange={handleChange}
                                 placeholder="Haga clic y escanee"
-                                min="0"
+                                required
+                                showError={errors.barcode}
+                                errorMessage={"Este campo es obligatorio"}
                                 className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                             />
                         </label>
                     </fieldset>
 
                     {/* Column 4 - Estado y verificación */}
-                    <fieldset className="space-y-2 p-4 mt-2">
-                        <h2 className="font-poppins font-bold text-base text-center mb-2">
+                    <fieldset className="space-y-2 p-4">
+                        <h2 className="font-poppins font-bold text-base text-center mt-2 mb-2">
                             Estado y verificación
                         </h2>
                         <label className="flex flex-col font-montserrat font-semibold">
-                            Ubicación
+                            <span>
+                                Ubicación{" "}<span className="text-red-500">*</span>
+                            </span>
                             <Input
                                 name="location"
                                 value={formData.location}
                                 onChange={handleChange}
                                 placeholder="Ingrese la ubicación"
+                                required
+                                showError={errors.location}
+                                errorMessage={"Este campo es obligatorio"}
                                 className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                             />
                         </label>
@@ -402,6 +529,7 @@ export default function AddMaterialPanel({
                                 name="verified"
                                 checked={formData.verified}
                                 onChange={handleChange}
+                                required
                                 className="h-4 w-4"
                             />
                         </label>
