@@ -1,14 +1,12 @@
-import ProductStatusBadge from "../../../components/ui/ProductStatusBadge";
+import ProductStatusBadge from "../../../../components/ui/ProductStatusBadge";
 import { Icon } from "@iconify/react";
 
-export const MaterialColumns = (handleEdit, selectedProduct) => [
-    // { header: "Código", accessorKey: "materialCode" }, might leave it out due to security reasons
-    { header: "Descripción", accessorKey: "materialDescription" },
-    { header: "Catálogo", accessorKey: "materialCatalog" },
-    { header: "Marca", accessorKey: "materialBrand" },
-    { header: "Caducidad", accessorKey: "expirationDate" },
+export const EquipmentColumns = (handleEdit, selectedProduct) => [
+    { header: "No. Inventario", accessorKey: "inventoryNumber" },
+    { header: "Nombre", accessorKey: "equipmentName" },
+    { header: "Marca", accessorKey: "equipmentBrand" },
+    { header: "Modelo", accessorKey: "equipmentModel" },
     { header: "Ubicación", accessorKey: "location" },
-    { header: "Cantidad", accessorKey: "materialQuantity" },
     {
         header: "Estado",
         accessorKey: "status",
@@ -19,8 +17,8 @@ export const MaterialColumns = (handleEdit, selectedProduct) => [
         id: "actions",
         cell: ({ row }) => {
             const isSelected =
-                selectedProduct?.materialDescription ===
-                row.original.materialDescription;
+                selectedProduct?.inventoryNumber ===
+                row.original.inventoryNumber;
             return (
                 <button
                     onClick={() => handleEdit(row.original)}
