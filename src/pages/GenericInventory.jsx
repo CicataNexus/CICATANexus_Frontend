@@ -1,14 +1,14 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import TableToolbar from "../components/ui/TableToolbar";
-import InventoryTable from "../features/inventory-mgmt/InventoryTable";
-import { EquipmentColumns } from "../features/inventory-mgmt/columns/EquipmentColumns.jsx";
-import { MaterialColumns } from "../features/inventory-mgmt/columns/MaterialColumns.jsx";
-import { ReagentColumns } from "../features/inventory-mgmt/columns/ReagentColumns.jsx";
-import AddEquipmentPanel from "../features/inventory-mgmt/forms/AddEquipmentPanel";
-import AddMaterialPanel from "../features/inventory-mgmt/forms/AddMaterialPanel";
-import AddReagentPanel from "../features/inventory-mgmt/forms/AddReagentPanel";
-import AddProductPanel from "../features/inventory-mgmt/AddProductPanel";
+import InventoryTable from "../features/admin/inventory-mgmt/InventoryTable";
+import { EquipmentColumns } from "../features/admin/inventory-mgmt/columns/EquipmentColumns.jsx";
+import { MaterialColumns } from "../features/admin/inventory-mgmt/columns/MaterialColumns.jsx";
+import { ReagentColumns } from "../features/admin/inventory-mgmt/columns/ReagentColumns.jsx";
+import AddEquipmentPanel from "../features/admin/inventory-mgmt/forms/AddEquipmentPanel";
+import AddMaterialPanel from "../features/admin/inventory-mgmt/forms/AddMaterialPanel";
+import AddReagentPanel from "../features/admin/inventory-mgmt/forms/AddReagentPanel";
+import AddProductPanel from "../features/admin/inventory-mgmt/AddProductPanel";
 
 const columnsMap = {
   // For the table columns
@@ -38,11 +38,29 @@ export default function GenericInventory() {
   const [error, setError] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isAddingMode, setIsAddingMode] = useState(false);
+  const getProductId = (product, type) => {
+    // Function to get the product ID based on the type
+    if (!product) return null;
+    if (type === "equipos") return product.inventoryNumber;
+    if (type === "reactivos") return product.reagentCode;
+    if (type === "materiales") return product.materialDescription;
+    return null;
+  };
 
   const handleEdit = (product) => {
-    setSelectedProduct(product);
-    setIsAddingMode(false);
+    // If the product is already selected, deselect it
+    if (
+      selectedProduct &&
+      getProductId(selectedProduct, type) === getProductId(product, type)
+    ) {
+      setSelectedProduct(null); // Deselect the product
+    } else {
+      // Otherwise, select the product
+      setSelectedProduct(product);
+      setIsAddingMode(false); // Close the add panel if it's open
+    }
   };
+
   const columns =
     typeof columnsMap[type] === "function"
       ? columnsMap[type](handleEdit, selectedProduct)
@@ -67,7 +85,9 @@ export default function GenericInventory() {
 
   if (!columns || !data) {
     return (
-      <p className="p-4 text-red-600">Tipo de inventario no válido: {type}</p>
+      <p className="p-4 text-red-600 font-poppins">
+        Tipo de inventario no válido: {type}
+      </p>
     );
   }
 

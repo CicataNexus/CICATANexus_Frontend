@@ -2,11 +2,11 @@ export default function ProductStatusBadge({ status }) {
     const statusMap = {
         inUse: {
             label: "En uso",
-            class: "bg-in-progress-status text-black",
+            class: "bg-in-progress-status text-in-progress-status-text text-black",
         },
         available: {
             label: "Disponible",
-            class: "bg-approved-status text-black",
+            class: "bg-approved-status text-approved-status-text text-black",
         },
     };
 

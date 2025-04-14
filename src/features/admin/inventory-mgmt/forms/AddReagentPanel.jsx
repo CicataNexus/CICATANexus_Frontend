@@ -6,13 +6,53 @@ import { cn } from "@/lib/utils";
 import ModalConfirmation from "@/components/ModalConfirmation";
 import FileInput from "@/components/ui/FileInput";
 import DateInput from "@/components/ui/DateInput";
+import SelectInput from "@/components/ui/SelectInput";
 
 export default function AddReagentPanel({
     onClose,
     initialData = {},
     isEditing = false,
 }) {
+    const [modalConfirming, setModalConfirming] = useState(true);
     const [showConfirmation, setShowConfirmation] = useState(false);
+    const [errors, setErrors] = useState({});
+    const requiredFields = [
+        "reagentCode",
+        "reagentName",
+        "reagentPresentation",
+        "reagentWeightVolume",
+        "reagentBrand",
+        "reagentCatalog",
+        "reagentSupplier",
+        // "reagentImage", Uncomment when implementation is ready in backend
+        "reagentLot",
+        "dateOfReception",
+        "receivingTemperature",
+        // "dateOpened", check data type
+        "expirationDate",
+        "barcode",
+        "nfpaName",
+        "storageClass",
+        "casNumber",
+        "safetyDataSheet",
+        "sdsLink",
+        "verified",
+        "explosive",
+        "oxidizing",
+        "flammable",
+        "corrosive",
+        "toxic",
+        "mutagenicOrCarcinogenic",
+        "irritation",
+        "compressedGases",
+        "healthHazard",
+        "flammability",
+        "reactivity",
+        "contact",
+        "location",
+        "reagentSticker",
+    ];
+
     const [formData, setFormData] = useState({
         reagentCode: "",
         reagentName: "",
@@ -59,15 +99,42 @@ export default function AddReagentPanel({
     const handleChange = (e) => {
         const { name, value, type, checked, files } = e.target;
         if (type === "checkbox") {
-            setFormData((prev) => ({ ...prev, [name]: checked }));
+            const checked = e.target.checked;
+            setFormData((prev) => ({
+                ...prev,
+                [name]: checked,
+                // If unchecked, set the field to an empty string
+                ...(name === "safetyDataSheet" && !checked ? { sdsLink: "" } : {}),
+            }));
         } else if (type === "file") {
             setFormData((prev) => ({ ...prev, [name]: files[0] }));
         } else {
             setFormData((prev) => ({ ...prev, [name]: value }));
+
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                [name]: false,
+            }));
         }
     };
 
+    const validateForm = () => {
+        const newErrors = {};
+
+        requiredFields.forEach((field) => {
+            if (!formData[field]) {
+                newErrors[field] = true; // Field is empty
+            }
+        });
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0; // True if no errors
+    };
+
     const handleSubmit = async () => {
+        if (!validateForm()) {
+            return; // Stop submission if validation fails
+        }
         const payload = {
             reagentCode: String(formData.reagentCode),
             reagentName: String(formData.reagentName),
@@ -78,14 +145,16 @@ export default function AddReagentPanel({
             reagentSupplier: String(formData.reagentSupplier),
             reagentImage: String(formData.reagentImage),
             reagentLot: String(formData.reagentLot),
-            dateOfReception: String(formData.dateOfReception),
+            dateOfReception: new Date(formData.dateOfReception).toISOString(),
             receivingTemperature: String(formData.receivingTemperature),
-            dateOpened: String(formData.dateOpened),
-            dateFinished: String(formData.dateFinished),
-            expirationDate: String(formData.expirationDate),
+            dateOpened: new Date(formData.dateOpened).toISOString(),
+            dateFinished: new Date(formData.dateFinished).toISOString(),
+            expirationDate: new Date(formData.expirationDate).toISOString(),
             invoiceNumber: String(formData.invoiceNumber),
-            vinculatedStrategicProject: String(formData.vinculatedStrategicProject),
-            barcode: parseInt(formData.barcode, 10),
+            vinculatedStrategicProject: String(
+                formData.vinculatedStrategicProject
+            ),
+            barcode: parseInt(formData.barcode, 10), // should be String
             nfpaName: String(formData.nfpaName),
             storageClass: String(formData.storageClass),
             casNumber: String(formData.casNumber),
@@ -98,7 +167,10 @@ export default function AddReagentPanel({
             flammable: parseInt(formData.flammable, 10),
             corrosive: parseInt(formData.corrosive, 10),
             toxic: parseInt(formData.toxic, 10),
-            mutagenicOrCarcinogenic: parseInt(formData.mutagenicOrCarcinogenic, 10),
+            mutagenicOrCarcinogenic: parseInt(
+                formData.mutagenicOrCarcinogenic,
+                10
+            ),
             irritation: parseInt(formData.irritation, 10),
             compressedGases: parseInt(formData.compressedGases, 10),
             healthHazard: parseInt(formData.healthHazard, 10),
@@ -124,6 +196,9 @@ export default function AddReagentPanel({
                 console.error("Error:", errorData);
                 throw new Error("Error al agregar el reactivo");
             }
+            // If product was added successfully, set confirmation
+            setModalConfirming(false);
+            setShowConfirmation(true);
         } catch (error) {
             console.error("Error:", error);
         }
@@ -147,7 +222,7 @@ export default function AddReagentPanel({
         } catch (error) {
             console.error("Error:", error);
         }
-    }
+    };
 
     return (
         <>
@@ -155,13 +230,13 @@ export default function AddReagentPanel({
                 <ModalConfirmation
                     onClose={onClose}
                     onDelete={handleDelete}
-                    isConfirming={true}
+                    isConfirming={modalConfirming}
                 />
             )}
 
             <div className="flex flex-col gap-4 text-sm text-black font-montserrat bg-white rounded-xl">
                 {/* Columns Grid */}
-                <div className="grid grid-cols-5 divide-x divide-primary-blue">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 divide-x divide-primary-blue">
                     {/* Column 1 Información general */}
                     <fieldset className="space-y-2 p-4">
                         <h2 className="font-poppins font-bold text-base text-center mt-2 mb-2">
@@ -196,12 +271,18 @@ export default function AddReagentPanel({
                                 key={name}
                                 className="flex flex-col font-montserrat font-semibold"
                             >
-                                {label}
+                                <span>
+                                    {label}{" "}
+                                    <span className="text-red-500">*</span>
+                                </span>
                                 <Input
                                     name={name}
                                     value={formData[name]}
                                     onChange={handleChange}
                                     placeholder={placeholder}
+                                    required
+                                    showError={errors[name]}
+                                    errorMessage={"Este campo es obligatorio"}
                                     className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                                 />
                             </label>
@@ -223,19 +304,24 @@ export default function AddReagentPanel({
                             Trazabilidad
                         </h2>
                         <label className="flex flex-col font-montserrat font-semibold">
-                            Lote
+                            <span>
+                                Lote <span className="text-red-500">*</span>
+                            </span>
                             <Input
+                                type="text"
                                 name="reagentLot"
                                 value={formData.reagentLot}
                                 onChange={handleChange}
                                 placeholder="Ingrese el lote"
+                                required
+                                showError={errors.reagentLot}
+                                errorMessage={"Este campo es obligatorio"}
                                 className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                             />
                         </label>
                         <label className="flex flex-col font-montserrat font-semibold">
                             Fecha de llegada
                             <DateInput
-                                type="date"
                                 name="dateOfReception"
                                 value={formData.dateOfReception}
                                 onChange={handleChange}
@@ -244,46 +330,58 @@ export default function AddReagentPanel({
                             />
                         </label>
                         <label className="flex flex-col font-montserrat font-semibold">
-                            Temperatura de recepción
+                            <span>
+                                Temperatura de recepción
+                                <span className="text-red-500">*</span>
+                            </span>
                             <Input
+                                type="text"
                                 name="receivingTemperature"
                                 value={formData.receivingTemperature}
                                 onChange={handleChange}
                                 placeholder="Ingrese la temperatura"
+                                required
+                                showError={errors.receivingTemperature}
+                                errorMessage={"Este campo es obligatorio"}
                                 className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                             />
                         </label>
-                        {[
-                            [
-                                "dateOpened",
-                                "Fecha de apertura",
-                                "Ingrese la fecha de apertura",
-                            ],
-                            [
-                                "dateFinished",
-                                "Fecha de término",
-                                "Ingrese la fecha de término",
-                            ],
-                            [
-                                "expirationDate",
-                                "Fecha de caducidad",
-                                "Ingrese la fecha de caducidad",
-                            ],
-                        ].map(([name, label, placeholder]) => (
-                            <label
-                                key={name}
-                                className="flex flex-col font-montserrat font-semibold"
-                            >
-                                {label}
-                                <DateInput
-                                    name={name}
-                                    value={formData[name]}
-                                    onChange={handleChange}
-                                    placeholder={placeholder}
-                                    className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
-                                />
-                            </label>
-                        ))}
+                        <label className="flex flex-col font-montserrat font-semibold">
+                            Fecha de apertura
+                            <DateInput
+                                name="dateOpened"
+                                value={formData.dateOpened}
+                                onChange={handleChange}
+                                placeholder="Ingrese la fecha de apertura"
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                            />
+                        </label>
+                        <label className="flex flex-col font-montserrat font-semibold">
+                            Fecha de término
+                            <DateInput
+                                name="dateFinished"
+                                value={formData.dateFinished}
+                                onChange={handleChange}
+                                placeholder="Ingrese la fecha de término"
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                            />
+                        </label>
+                        <label className="flex flex-col font-montserrat font-semibold">
+                            <span>
+                                Fecha de caducidad{" "}
+                                <span className="text-red-500">*</span>
+                            </span>
+                            <DateInput
+                                name="expirationDate"
+                                value={formData.expirationDate}
+                                onChange={handleChange}
+                                required
+                                showError={errors.expirationDate}
+                                errorMessage={"Este campo es obligatorio"}
+                                placeholder="Ingrese la fecha de caducidad"
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                            />
+                        </label>
                         {[
                             [
                                 "invoiceNumber",
@@ -311,12 +409,18 @@ export default function AddReagentPanel({
                             </label>
                         ))}
                         <label className="flex flex-col font-montserrat font-semibold">
-                        Escanear código de barras
+                            <span>
+                                Escanear código de barras
+                                <span className="text-red-500">*</span>
+                            </span>
                             <Input
-                                type="number"
+                                type="text"
                                 name="barcode"
                                 value={formData.barcode}
                                 onChange={handleChange}
+                                required
+                                showError={errors.barcode}
+                                errorMessage={"Este campo es obligatorio"}
                                 placeholder="Haga clic y escanee"
                                 min="0"
                                 className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
@@ -350,12 +454,18 @@ export default function AddReagentPanel({
                                 key={name}
                                 className="flex flex-col font-montserrat font-semibold"
                             >
-                                {label}
+                                <span>
+                                    {label}{" "}
+                                    <span className="text-red-500">*</span>
+                                </span>
                                 <Input
                                     name={name}
                                     value={formData[name]}
-                                    placeholder={placeholder}
                                     onChange={handleChange}
+                                    placeholder={placeholder}
+                                    required
+                                    showError={errors[name]}
+                                    errorMessage={"Este campo es obligatorio"}
                                     className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                                 />
                             </label>
@@ -366,26 +476,34 @@ export default function AddReagentPanel({
                                 type="checkbox"
                                 name="safetyDataSheet"
                                 checked={formData.safetyDataSheet}
+                                required
                                 onChange={handleChange}
                                 className="h-4 w-4"
                             />
                         </label>
-                        <label className="flex flex-col font-montserrat font-semibold">
-                            Enlace de hoja
-                            <Input
-                                name="sdsLink"
-                                value={formData.sdsLink}
-                                placeholder="Ingrese el enlace"
-                                onChange={handleChange}
-                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
-                            />
-                        </label>
+                        {formData.safetyDataSheet && (
+                            <label className="flex flex-col font-montserrat font-semibold">
+                                Enlace de hoja
+                                <Input
+                                    name="sdsLink"
+                                    type="url"
+                                    value={formData.sdsLink}
+                                    placeholder="Ingrese el enlace"
+                                    required
+                                    showError={errors.sdsLink}
+                                    errorMessage={"Este campo es obligatorio"}
+                                    onChange={handleChange}
+                                    className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                                />
+                            </label>
+                        )}
                         <label className="flex items-center font-montserrat font-semibold gap-2">
                             Verificado
                             <input
                                 type="checkbox"
                                 name="verified"
                                 checked={formData.verified}
+                                required
                                 onChange={handleChange}
                                 className="h-4 w-4"
                             />
@@ -406,145 +524,118 @@ export default function AddReagentPanel({
                         <h2 className="font-poppins font-bold text-base text-center mt-2 mb-2">
                             Seguridad y riesgos
                         </h2>
-                        <label className="flex flex-col font-montserrat font-semibold">
-                            Explosivo
-                            <Input
-                                type="number"
-                                name="explosive"
-                                value={formData.explosive}
-                                onChange={handleChange}
-                                placeholder="Ingrese el riesgo"
-                                min="0"
-                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
-                            />
+                        {[
+                            ["explosive", "Explosivo", "Ingrese el riesgo"],
+                            [
+                                "oxidizing",
+                                "Comburente/Oxidante",
+                                "Ingrese el riesgo",
+                            ],
+                            ["flammable", "Inflamable", "Ingrese el riesgo"],
+                            ["corrosive", "Corrosivo", "Ingrese el riesgo"],
+                            ["toxic", "Tóxico", "Ingrese el riesgo"],
+                            [
+                                "mutagenicOrCarcinogenic",
+                                "Mutagénico cancerígeno",
+                                "Ingrese el riesgo",
+                            ],
+                            [
+                                "irritation",
+                                "Irritación cutánea",
+                                "Ingrese el riesgo",
+                            ],
+                            [
+                                "compressedGases",
+                                "Gases comprimidos",
+                                "Ingrese el riesgo",
+                            ],
+                        ].map(([name, label, placeholder]) => (
+                            <label
+                                key={name}
+                                className="flex flex-col font-montserrat font-semibold"
+                            >
+                                <span>
+                                    {label}{" "}
+                                    <span className="text-red-500">*</span>
+                                </span>
+                                <Input
+                                    name={name}
+                                    type="number"
+                                    min="0"
+                                    value={formData[name]}
+                                    onChange={handleChange}
+                                    placeholder={placeholder}
+                                    required
+                                    showError={errors[name]}
+                                    errorMessage={"Este campo es obligatorio"}
+                                    className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                                />
                             </label>
-                            <label className="flex flex-col font-montserrat font-semibold">
-                            Comburente/Oxidante
-                            <Input
-                                type="number"
-                                name="oxidizing"
-                                value={formData.oxidizing}
-                                onChange={handleChange}
-                                placeholder="Ingrese el riesgo"
-                                min="0"
-                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
-                            />
-                            </label>
-                            <label className="flex flex-col font-montserrat font-semibold">
-                            Inflamable
-                            <Input
-                                type="number"
-                                name="flammable"
-                                value={formData.flammable}
-                                onChange={handleChange}
-                                placeholder="Ingrese el riesgo"
-                                min="0"
-                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
-                            />
-                            </label>
-                            <label className="flex flex-col font-montserrat font-semibold">
-                            Corrosivo
-                            <Input
-                                type="number"
-                                name="corrosive"
-                                value={formData.corrosive}
-                                onChange={handleChange}
-                                placeholder="Ingrese el riesgo"
-                                min="0"
-                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
-                            />
-                            </label>
-                            <label className="flex flex-col font-montserrat font-semibold">
-                            Tóxico
-                            <Input
-                                type="number"
-                                name="toxic"
-                                value={formData.toxic}
-                                onChange={handleChange}
-                                placeholder="Ingrese el riesgo"
-                                min="0"
-                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
-                            />
-                            </label>
-                            <label className="flex flex-col font-montserrat font-semibold">
-                            Mutagénico cancerígeno
-                            <Input
-                                type="number"
-                                name="mutagenicOrCarcinogenic"
-                                value={formData.mutagenicOrCarcinogenic}
-                                onChange={handleChange}
-                                placeholder="Ingrese el riesgo"
-                                min="0"
-                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
-                            />
-                            </label>
-                            <label className="flex flex-col font-montserrat font-semibold">
-                            Irritación cutánea
-                            <Input
-                                type="number"
-                                name="irritation"
-                                value={formData.irritation}
-                                onChange={handleChange}
-                                placeholder="Ingrese el riesgo"
-                                min="0"
-                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
-                            />
-                            </label>
-                            <label className="flex flex-col font-montserrat font-semibold">
-                            Gases comprimidos
-                            <Input
-                                type="number"
-                                name="compressedGases"
-                                value={formData.compressedGases}
-                                onChange={handleChange}
-                                placeholder="Ingrese el riesgo"
-                                min="0"
-                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
-                            />
-                            </label>
-                        <label className="flex flex-col font-montserrat font-semibold text-health-field">
-                            Salud
+                        ))}
+                        <label className="flex flex-col font-montserrat font-semibold ">
+                            <span className="text-health-field">
+                                Salud <span className="text-red-500">*</span>
+                            </span>
                             <Input
                                 type="number"
                                 name="healthHazard"
                                 value={formData.healthHazard}
                                 placeholder="Ingrese el riesgo"
+                                required
+                                showError={errors.healthHazard}
+                                errorMessage={"Este campo es obligatorio"}
                                 min="0"
                                 onChange={handleChange}
                                 className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                             />
                         </label>
-                        <label className="flex flex-col font-montserrat font-semibold text-flammable-field">
-                            Flamable
+                        <label className="flex flex-col font-montserrat font-semibold">
+                            <span className="text-flammable-field">
+                                Flamable <span className="text-red-500">*</span>
+                            </span>
                             <Input
                                 type="number"
                                 name="flammability"
                                 value={formData.flammability}
                                 placeholder="Ingrese el riesgo"
+                                required
+                                showError={errors.flammability}
+                                errorMessage={"Este campo es obligatorio"}
                                 min="0"
                                 onChange={handleChange}
                                 className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                             />
                         </label>
-                        <label className="flex flex-col font-montserrat font-semibold text-reactivity-field">
-                            Reactividad
+                        <label className="flex flex-col font-montserrat font-semibold">
+                            <span className="text-reactivity-field">
+                                Reactividad{" "}
+                                <span className="text-red-500">*</span>
+                            </span>
+                            <Input
+                                type="number"
+                                name="reactivity"
+                                value={formData.reactivity}
+                                placeholder="Ingrese el riesgo"
+                                required
+                                showError={errors.reactivity}
+                                errorMessage={"Este campo es obligatorio"}
+                                min="0"
+                                onChange={handleChange}
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                            />
                         </label>
-                        <Input
-                            type="number"
-                            name="reactivity"
-                            value={formData.reactivity}
-                            placeholder="Ingrese el riesgo"
-                            min="0"
-                            onChange={handleChange}
-                            className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
-                        />
                         <label className="font-montserrat font-semibold">
-                            Contacto
+                            <span>
+                                Contacto <span className="text-red-500">*</span>
+                            </span>
                             <Input
                                 type="number"
                                 name="contact"
                                 value={formData.contact}
                                 placeholder="Ingrese el riesgo"
+                                required
+                                showError={errors.reactivity}
+                                errorMessage={"Este campo es obligatorio"}
                                 min="0"
                                 onChange={handleChange}
                                 className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
@@ -558,35 +649,41 @@ export default function AddReagentPanel({
                             Estado y uso
                         </h2>
                         <label className="flex flex-col font-montserrat font-semibold">
-                            Ubicación
+                            <span>
+                                Ubicación{" "}
+                                <span className="text-red-500">*</span>
+                            </span>
                             <Input
+                                type="text"
                                 name="location"
                                 value={formData.location}
                                 placeholder="Ingrese la ubicación"
+                                required
+                                showError={errors.location}
+                                errorMessage={"Este campo es obligatorio"}
                                 onChange={handleChange}
                                 className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                             />
                         </label>
-                        <label className="font-montserrat font-semibold">
-                            Sticker
-                            <select
+                        <label className="flex flex-col font-montserrat font-semibold">
+                            <span>
+                                Sticker <span className="text-red-500">*</span>
+                            </span>
+                            <SelectInput
                                 name="reagentSticker"
                                 onChange={handleChange}
-                                className={cn(
-                                    "w-full h-8 mt-1 rounded-md border border-gray-500 px-2 font-montserrat font-normal text-xs",
-                                    formData.reagentSticker === ""
-                                        ? "text-placeholder-text"
-                                        : "text-black"
-                                )}
-                            >
-                                <option value="">Seleccione el color</option>
-                                <option value="3">Verde</option>
-                                <option value="2">Azul</option>
-                                <option value="1">Amarillo</option>
-                                <option value="4">Rojo</option>
-                            </select>
+                                placeholder="Seleccione el color"
+                                options={[
+                                    { label: "Verde", value: "3" },
+                                    { label: "Azul", value: "2" },
+                                    { label: "Amarillo", value: "1" },
+                                    { label: "Rojo", value: "4" },
+                                ]}
+                                showError={errors.reagentSticker}
+                                errorMessage="Este campo es obligatorio"
+                            />
                         </label>
-                        <lable className="font-montserrat font-semibold">
+                        <label className="font-montserrat font-semibold">
                             Observaciones
                             <textarea
                                 name="observations"
@@ -595,7 +692,7 @@ export default function AddReagentPanel({
                                 placeholder="Ingrese observaciones sobre el reactivo"
                                 className="w-full h-24 rounded-md border border-gray-500 p-2 mt-1 placeholder:text-xs placeholder:font-montserrat font-normal"
                             />
-                        </lable>
+                        </label>
                     </fieldset>
                 </div>
             </div>
@@ -618,13 +715,13 @@ export default function AddReagentPanel({
                     <div className="flex gap-4 mr-4">
                         <Button
                             onClick={onClose}
-                            className="w-40 bg-reject-btn hover:bg-reject-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-xl transition inline-flex items-center cursor-pointer"
+                            className="w-40 bg-reject-btn hover:bg-reject-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-xl transition inline-flex items-center"
                         >
                             Cancelar
                         </Button>
                         <Button
                             onClick={() => console.log("Aplicar cambios")}
-                            className="w-40 bg-approve-btn hover:bg-approve-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-xl transition inline-flex items-center cursor-pointer"
+                            className="w-40 bg-approve-btn hover:bg-approve-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-xl transition inline-flex items-center"
                         >
                             Aplicar cambios
                         </Button>

@@ -57,7 +57,7 @@ export default function AddProductPanel({ type, onClose, selectedProduct }) {
 
     return (
         <div className="fixed inset-0 bg-gray backdrop-blur-xs flex items-center justify-center z-50">
-            <div ref={panelRef} className="bg-white max-h-[90vh] overflow-y-auto rounded-xl shadow-lg w-[95%] max-w-6xl animate-fade-in">
+            <div ref={panelRef} className="bg-white max-h-[90vh] overflow-y-auto overflow-x-auto rounded-xl shadow-lg sm:w-[100%] w-full sm:max-w-3xl md:max-w-4xl lg:max-w-5xl xl:max-w-6xl animate-fade-in">
                 {formRender()}
             </div>
         </div>

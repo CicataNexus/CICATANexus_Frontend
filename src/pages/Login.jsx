@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Icon } from "@iconify/react";
 
 function Login() {
     const navigate = useNavigate();
     const [matricula, setMatricula] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
 
     const handleLogin = async () => {
@@ -19,39 +21,39 @@ function Login() {
         if (!matricula && !password) {
             setError("Por favor, ingrese su clave de usuario y contraseña");
             return;
-        }
-        else if (!matricula) {
+        } else if (!matricula) {
             setError("Por favor, ingrese su clave de usuario");
             return;
-        }
-        else if (!password) {
+        } else if (!password) {
             setError("Por favor, ingrese su contraseña");
             return;
         }
 
         // Validar credenciales con el back
         try {
-            const response = await fetch("http://localhost:3000/v1/auth/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ matricula, password })
-            });
-    
+            const response = await fetch(
+                "http://localhost:3000/v1/auth/login",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ matricula, password }),
+                }
+            );
+
             const data = await response.json();
-    
+
             if (response.ok) {
                 localStorage.setItem("token", data.token);
                 navigate("/dashboard");
-            }
-            else {
+            } else {
                 setError("Datos incorrectos, intente nuevamente");
             }
         } catch (error) {
             setError(data.error);
         }
-    };      
+    };
 
     return (
         <>
@@ -91,28 +93,59 @@ function Login() {
                                 <input
                                     type="text"
                                     value={matricula}
-                                    onChange={ (e) => setMatricula(e.target.value) }
+                                    onChange={(e) =>
+                                        setMatricula(e.target.value)
+                                    }
                                     className="rounded-md p-1 border-2 border-gray-200 outline-none focus:border-input-focus focus:bg-input-background placeholder:text-sm placeholder:text-placeholder-text"
                                     placeholder="Ingrese su clave de usuario"
                                 ></input>
                             </div>
                             <div className="flex flex-col min-w-[30vw] max-w-[40vw] text-1xl text-left gap-1 font-montserrat">
-                                <span className="font-semibold">Contraseña</span>
-                                <input
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => {
-                                        setPassword(e.target.value);
-                                        setError(""); // Limpiar error si el usuario empieza a escribir
-                                    }}
-                                    className="rounded-md p-1 border-2 border-gray-200 outline-none focus:border-input-focus focus:bg-input-background placeholder:text-sm placeholder:text-placeholder-text"
-                                    placeholder="Ingrese su contraseña"
-                                />
+                                <span className="font-semibold">
+                                    Contraseña
+                                </span>
+                                <div className="relative">
+                                    <input
+                                        type={
+                                            showPassword ? "text" : "password"
+                                        }
+                                        value={password}
+                                        onChange={(e) => {
+                                            setPassword(e.target.value);
+                                            setError("");
+                                        }}
+                                        className="w-full rounded-md p-1 pr-10 border-2 border-gray-200 outline-none focus:border-input-focus focus:bg-input-background placeholder:text-sm placeholder:text-placeholder-text"
+                                        placeholder="Ingrese su contraseña"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setShowPassword(!showPassword)
+                                        }
+                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-black focus:outline-none cursor-pointer"
+                                    >
+                                        <Icon
+                                            icon={
+                                                showPassword
+                                                    ? "mdi:eye-off-outline"
+                                                    : "mdi:eye-outline"
+                                            }
+                                            className="text-lg"
+                                        />
+                                        <span className="sr-only">
+                                            Mostrar u ocultar contraseña
+                                        </span>
+                                    </button>
+                                </div>
                                 {/* Mensaje de error */}
-                                {error && <span className="font-montserrat text-red-500 text-sm mt-1 text-center">{error}</span>}
+                                {error && (
+                                    <span className="font-montserrat font-semibold text-red-500 text-sm mt-1 text-center">
+                                        {error}
+                                    </span>
+                                )}
                             </div>
                             <button
-                                className="rounded-md p-2 min-w-[30vw] max-w-[40vw] items-center justify-center bg-primary-green text-white text-lg font-bold font-poppins transition-all duration-200 hover:bg-login-btn-hover hover:scale-102 active:scale-95"
+                                className="rounded-sm p-2 min-w-[30vw] max-w-[40vw] items-center justify-center bg-primary-green text-white text-lg font-bold font-poppins transition-all duration-200 hover:bg-login-btn-hover hover:scale-102 active:scale-95 cursor-pointer"
                                 onClick={handleLogin}
                             >
                                 Ingresar
