@@ -90,7 +90,7 @@ export default function GenericInventory() {
     }
 
     return (
-        <div className="p-4 -mt-1 w-full max-w-full overflow-x-hidden">
+        <main className="p-4 -mt-1 w-full max-w-full overflow-x-hidden">
             <h2 className="text-poppins text-2xl font-bold mb-2">
                 Inventario de {type}
             </h2>
@@ -117,6 +117,6 @@ export default function GenericInventory() {
                     onClose={() => setIsAddingMode(false)}
                 />
             )}
-        </div>
+        </main>
     );
 }
