@@ -11,6 +11,7 @@ export default function MyRequestsTable({
     columns,
     selectedRequest,
     onCloseDetails,
+    onCancelRequest,
 }) {
     const table = useReactTable({
         data,
@@ -27,7 +28,7 @@ export default function MyRequestsTable({
                             {headerGroup.headers.map((header) => (
                                 <th
                                     key={header.id}
-                                    className="p-5 text-center font-semibold break-words whitespace-normal min-w-[100px] max-w-[180px]"
+                                    className="py-5 text-center font-semibold break-words whitespace-normal min-w-[100px] max-w-[180px]"
                                 >
                                     {flexRender(
                                         header.column.columnDef.header,
@@ -64,6 +65,7 @@ export default function MyRequestsTable({
                                         <MyRequestDetailsPanel
                                             request={selectedRequest}
                                             onClose={onCloseDetails}
+                                            onCancel={() => onCancelRequest(selectedRequest)}
                                             />
                                     </td>
                                 </tr>

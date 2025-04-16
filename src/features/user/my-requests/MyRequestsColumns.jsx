@@ -1,20 +1,43 @@
-import MyRequestStatusBadge from "@/components/ui/MyRequestStatusBage";
+import MyRequestStatusBadge from "@/components/ui/MyRequestStatusBadge";
 import { Icon } from "@iconify/react";
+import { mapRequestStatusForUser } from "@/utils/mapRequestStatus";
 
 export const MyRequestsColumns = (handleToggleDetails, selectedRequest) => [
-    { header: "Tipo", accessorKey: "type"},
-    { header: "Fecha", accessorKey: "date"},
     {
-        header: "Estatus",
-        accessorKey: "status",
-        cell: ({ getValue }) => <MyRequestStatusBadge status={getValue()} />,
+        header: "Tipo",
+        accessorKey: "typeOfRequest",
+        cell: ({ getValue }) => {
+            const value = getValue();
+            if (value === "EQ") return "Equipo";
+            if (value === "R&M") return "Reactivo o Material";
+            if (value === "TA") return "Asistencia técnica";
+            return "Desconocido";
+        },
+    },
+    {
+        header: "Fecha",
+        accessorFn: (row) => row.requestDate?.startingDate,
+        cell: ({ getValue }) => {
+            const value = getValue();
+            return value
+                ? new Date(value).toLocaleDateString("es-MX")
+                : "-";
+        }
+    },    
+    {
+        header: "Estado",
+        accessorKey: "requestStatus",
+        cell: ({ getValue }) => {
+            const rawStatus = getValue();
+            const mappedStatus = mapRequestStatusForUser(rawStatus);
+            return <MyRequestStatusBadge status={mappedStatus} />;
+        },
     },
     {
         header: "",
         id: "actions",
         cell: ({ row }) => {
-            const isSelected =
-                selectedRequest?.id === row.original.id;
+            const isSelected = selectedRequest?.id === row.original.id;
             return (
                 <button
                     onClick={() => handleToggleDetails(row.original)}
@@ -25,9 +48,12 @@ export const MyRequestsColumns = (handleToggleDetails, selectedRequest) => [
                     }`}
                     title="Ver detalles"
                 >
-                    <Icon icon="material-symbols:info-outline-rounded" className="text-2xl" />
+                    <Icon
+                        icon="material-symbols:info-outline-rounded"
+                        className="text-2xl"
+                    />
                 </button>
             );
         },
     },
-]
+];

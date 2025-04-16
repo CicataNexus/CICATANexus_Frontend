@@ -12,11 +12,15 @@ export default function MyRequestStatusBadge({ status }) {
             label: "Rechazada",
             class: "bg-rejected-status text-rejected-status-text font-montserrat font-bold",
         },
+        cancelled: {
+            label: "Cancelada",
+            class: "bg-gray-300 text-gray-700 font-montserrat font-bold",
+        }
     };
 
     const { label, class: styleClass } = statusMap[status] || {
         label: "Desconocido",
-        class: "bg-gray-300 text-black",
+        class: "bg-gray-300 text-black font-montserrat font-bold",
     };
 
     return (
