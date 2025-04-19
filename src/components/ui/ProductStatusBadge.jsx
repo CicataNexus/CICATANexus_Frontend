@@ -2,17 +2,17 @@ export default function ProductStatusBadge({ status }) {
     const statusMap = {
         inUse: {
             label: "En uso",
-            class: "bg-in-progress-status text-in-progress-status-text text-black",
+            class: "bg-in-progress-status text-in-progress-status-text font-montserrat font-bold",
         },
         available: {
             label: "Disponible",
-            class: "bg-approved-status text-approved-status-text text-black",
+            class: "bg-approved-status text-approved-status-text font-montserrat font-bold",
         },
     };
 
     const { label, class: styleClass } = statusMap[status] || {
         label: "Desconocido",
-        class: "bg-gray-300 text-black",
+        class: "bg-gray-300 text-black font-montserrat font-bold",
     };
 
     return (
