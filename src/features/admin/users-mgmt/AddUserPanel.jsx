@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
-import ModalConfirmation from "@/components/ModalConfirmation";
+import ModalProductConfirmation from "@/components/ModalProductConfirmation";
 
 export default function AddUserPanel({
   onClose,
@@ -83,7 +83,7 @@ export default function AddUserPanel({
   return (
     <>
       {showConfirmation && (
-        <ModalConfirmation
+        <ModalProductConfirmation
           onClose={onClose}
           onDelete={handleDelete}
           isConfirming={modalConfirming}
