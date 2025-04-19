@@ -11,77 +11,79 @@ import AddReagentPanel from "../features/admin/inventory-mgmt/forms/AddReagentPa
 import AddProductPanel from "../features/admin/inventory-mgmt/AddProductPanel";
 
 const columnsMap = {
-    // For the table columns
-    equipos: EquipmentColumns,
-    materiales: MaterialColumns,
-    reactivos: ReagentColumns,
+  // For the table columns
+  equipos: EquipmentColumns,
+  materiales: MaterialColumns,
+  reactivos: ReagentColumns,
 };
 
 const addPanelMap = {
-    // For the add product panel
-    equipos: AddEquipmentPanel,
-    materiales: AddMaterialPanel,
-    reactivos: AddReagentPanel,
+  // For the add product panel
+  equipos: AddEquipmentPanel,
+  materiales: AddMaterialPanel,
+  reactivos: AddReagentPanel,
 };
 
 const apiEndpoints = {
-    // For the API endpoints
-    equipos: "http://localhost:3000/v1/equipment",
-    reactivos: "http://localhost:3000/v1/reagent",
-    materiales: "http://localhost:3000/v1/materials",
+  // For the API endpoints
+  equipos: "http://localhost:3000/v1/equipment",
+  reactivos: "http://localhost:3000/v1/reagent",
+  materiales: "http://localhost:3000/v1/materials",
 };
 
 export default function GenericInventory() {
-    const { type } = useParams();
-    const [search, setSearch] = useState("");
-    const [data, setData] = useState(null);
-    const [error, setError] = useState(null);
-    const [selectedProduct, setSelectedProduct] = useState(null);
-    const [isAddingMode, setIsAddingMode] = useState(false);
-    const getProductId = (product, type) => { // Function to get the product ID based on the type
-        if (!product) return null;
-        if (type === "equipos") return product.inventoryNumber;
-        if (type === "reactivos") return product.reagentCode;
-        if (type === "materiales") return product.materialDescription;
-        return null;
-    }
+  const { type } = useParams();
+  const [search, setSearch] = useState("");
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isAddingMode, setIsAddingMode] = useState(false);
+  const getProductId = (product, type) => {
+    // Function to get the product ID based on the type
+    if (!product) return null;
+    if (type === "equipos") return product.inventoryNumber;
+    if (type === "reactivos") return product.reagentCode;
+    if (type === "materiales") return product.materialDescription;
+    return null;
+  };
 
-    const handleEdit = (product) => {
-        // If the product is already selected, deselect it
-        if (
-            selectedProduct &&
-            getProductId(selectedProduct, type) === getProductId(product, type)
-        ){
-            setSelectedProduct(null); // Deselect the product
-        } else { // Otherwise, select the product
-            setSelectedProduct(product);
-            setIsAddingMode(false); // Close the add panel if it's open
+  const handleEdit = (product) => {
+    // If the product is already selected, deselect it
+    if (
+      selectedProduct &&
+      getProductId(selectedProduct, type) === getProductId(product, type)
+    ) {
+      setSelectedProduct(null); // Deselect the product
+    } else {
+      // Otherwise, select the product
+      setSelectedProduct(product);
+      setIsAddingMode(false); // Close the add panel if it's open
+    }
+  };
+
+  const columns =
+    typeof columnsMap[type] === "function"
+      ? columnsMap[type](handleEdit, selectedProduct)
+      : null; // Get the columns based on the type and pass the handleEdit function
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(apiEndpoints[type]);
+        if (!response.ok) {
+          throw new Error("Error fetching data");
         }
+        const result = await response.json();
+        setData(result);
+      } catch (err) {
+        setError(err);
+      }
     };
 
-    const columns =
-        typeof columnsMap[type] === "function"
-            ? columnsMap[type](handleEdit, selectedProduct)
-            : null; // Get the columns based on the type and pass the handleEdit function
+    fetchData();
+  }, [type]);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch(apiEndpoints[type]);
-                if (!response.ok) {
-                    throw new Error("Error fetching data");
-                }
-                const result = await response.json();
-                setData(result);
-            } catch (err) {
-                setError(err);
-            }
-        };
-
-        fetchData();
-    }, [type]);
-
-    if (!columns || !data) {
+  if (!columns || !data) {
         return (
             <p className="p-4 text-red-600 font-poppins">
                 Tipo de inventario no válido: {type}
