@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { FaRegListAlt } from "react-icons/fa";
-import { MdLogout } from "react-icons/md";
 import { MdFormatListBulletedAdd } from "react-icons/md";
 import { useLocation, useNavigate } from "react-router-dom";
+import { Logout } from "@/components/LogoutFooter";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -55,8 +55,7 @@ const Header = () => {
         </div>
 
         <div className="flex items-center m-4">
-          <MdLogout size={25} />
-          <p className="ml-1">Cerrar Sesión</p>
+          <Logout />
         </div>
       </div>
     </div>

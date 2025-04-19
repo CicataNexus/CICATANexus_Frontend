@@ -9,7 +9,7 @@ import DateInput from "@/components/ui/DateInput";
 
 export default function AddMaterialPanel({
     onClose,
-    initialData,
+    initialData = {},
     isEditing = false,
 }) {
     const [modalConfirming, setModalConfirming] = useState(true);
@@ -36,7 +36,6 @@ export default function AddMaterialPanel({
         "materialLot",
         "barcode",
         "location",
-        "verified",
     ];
 
     const [formData, setFormData] = useState({
@@ -125,10 +124,14 @@ export default function AddMaterialPanel({
             tempWarehouseUnits: Number(formData.tempWarehouseUnits),
             materialLot: Number(formData.materialLot), // should be String
             invoiceNumber: String(formData.invoiceNumber),
-            dateOfReception: new Date(formData.dateOfReception).toISOString(),
-            expirationDate: new Date(formData.expirationDate).toISOString(),
+            dateOfReception: formData.dateOfReception
+                ? new Date(formData.dateOfReception).toISOString()
+                : null,
+            expirationDate: formData.expirationDate
+                ? new Date(formData.expirationDate).toISOString()
+                : null,
             receivingTemperature: String(formData.receivingTemperature),
-            barcode: Number(formData.barcode), // should be String
+            barcode: String(formData.barcode), // should be String
             location: String(formData.location),
             observations: String(formData.observations),
             obsForUsers: String(formData.obsForUsers),
@@ -167,8 +170,6 @@ export default function AddMaterialPanel({
             );
 
             if (!response.ok) {
-                const errorData = await response.json();
-                console.error("Error:", errorData);
                 throw new Error("Error al eliminar el material");
             }
         } catch (error) {
@@ -320,6 +321,7 @@ export default function AddMaterialPanel({
                                     <span className="text-red-500">*</span>
                                 </span>
                                 <Input
+                                    type="number"
                                     name={name}
                                     value={formData[name]}
                                     onChange={handleChange}
@@ -407,7 +409,7 @@ export default function AddMaterialPanel({
                                 Lote <span className="text-red-500">*</span>
                             </span>
                             <Input
-                                type="text"
+                                type="number"
                                 name="materialLot"
                                 value={formData.materialLot}
                                 onChange={handleChange}
@@ -509,7 +511,7 @@ export default function AddMaterialPanel({
                                 value={formData.observations}
                                 onChange={handleChange}
                                 placeholder="Ingrese las observaciones"
-                                className="w-full h-20 rounded-md border border-gray-500 p-2 mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal placeholder:text-placeholder-text"
+                                className="w-full h-20 rounded-md border border-gray-500 p-2 mt-1 font-normal placeholder:text-xs placeholder:font-montserrat placeholder:font-normal placeholder:text-placeholder-text"
                             />
                         </label>
                         <label className="flex flex-col font-montserrat font-semibold">
@@ -519,7 +521,7 @@ export default function AddMaterialPanel({
                                 value={formData.obsForUsers}
                                 onChange={handleChange}
                                 placeholder="Ingrese las observaciones para los usuarios"
-                                className="w-full h-20 rounded-md border border-gray-500 p-2 mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal placeholder:text-placeholder-text"
+                                className="w-full h-20 rounded-md border border-gray-500 p-2 mt-1 font-normal placeholder:text-xs placeholder:font-montserrat placeholder:font-normal placeholder:text-placeholder-text"
                             />
                         </label>
                         <label className="flex items-center font-montserrat font-semibold gap-2">
@@ -529,7 +531,6 @@ export default function AddMaterialPanel({
                                 name="verified"
                                 checked={formData.verified}
                                 onChange={handleChange}
-                                required
                                 className="h-4 w-4"
                             />
                         </label>

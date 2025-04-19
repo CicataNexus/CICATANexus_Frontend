@@ -26,17 +26,14 @@ export default function AddReagentPanel({
         "reagentSupplier",
         // "reagentImage", Uncomment when implementation is ready in backend
         "reagentLot",
-        "dateOfReception",
         "receivingTemperature",
         // "dateOpened", check data type
         "expirationDate",
+        "vinculatedStrategicProject",
         "barcode",
         "nfpaName",
         "storageClass",
         "casNumber",
-        "safetyDataSheet",
-        "sdsLink",
-        "verified",
         "explosive",
         "oxidizing",
         "flammable",
@@ -145,16 +142,24 @@ export default function AddReagentPanel({
             reagentSupplier: String(formData.reagentSupplier),
             reagentImage: String(formData.reagentImage),
             reagentLot: String(formData.reagentLot),
-            dateOfReception: new Date(formData.dateOfReception).toISOString(),
+            dateOfReception: formData.dateOfReception
+                ? new Date(formData.dateOfReception).toISOString()
+                : null,
             receivingTemperature: String(formData.receivingTemperature),
-            dateOpened: new Date(formData.dateOpened).toISOString(),
-            dateFinished: new Date(formData.dateFinished).toISOString(),
-            expirationDate: new Date(formData.expirationDate).toISOString(),
+            dateOpened: formData.dateOpened
+                ? new Date(formData.dateOpened).toISOString()
+                : null,
+            dateFinished: formData.dateFinished
+                ? new Date(formData.dateFinished).toISOString()
+                : null,
+            expirationDate: formData.expirationDate
+                ? new Date(formData.expirationDate).toISOString()
+                : null,
             invoiceNumber: String(formData.invoiceNumber),
             vinculatedStrategicProject: String(
                 formData.vinculatedStrategicProject
             ),
-            barcode: parseInt(formData.barcode, 10), // should be String
+            barcode: String(formData.barcode),
             nfpaName: String(formData.nfpaName),
             storageClass: String(formData.storageClass),
             casNumber: String(formData.casNumber),
@@ -382,32 +387,34 @@ export default function AddReagentPanel({
                                 className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                             />
                         </label>
-                        {[
-                            [
-                                "invoiceNumber",
-                                "Número de factura",
-                                "Ingrese el número de factura",
-                            ],
-                            [
-                                "vinculatedStrategicProject",
-                                "Proyecto estratégico vinculado",
-                                "Ingrese el proyecto vinculado",
-                            ],
-                        ].map(([name, label, placeholder]) => (
-                            <label
-                                key={name}
-                                className="flex flex-col font-montserrat font-semibold"
-                            >
-                                {label}
-                                <Input
-                                    name={name}
-                                    value={formData[name]}
-                                    placeholder={placeholder}
-                                    onChange={handleChange}
-                                    className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
-                                />
-                            </label>
-                        ))}
+                        <label className="flex flex-col font-montserrat font-semibold">
+                            Número de factura
+                            <Input
+                                type="text"
+                                name="invoiceNumber"
+                                value={formData.invoiceNumber}
+                                onChange={handleChange}
+                                placeholder="Ingrese el número de factura"
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                            />
+                        </label>
+                        <label className="flex flex-col font-montserrat font-semibold">
+                            <span>
+                                Proyecto estratégico vinculado{" "}
+                                <span className="text-red-500">*</span>
+                            </span>
+                            <Input
+                                type="text"
+                                name="vinculatedStrategicProject"
+                                value={formData.vinculatedStrategicProject}
+                                onChange={handleChange}
+                                placeholder="Ingrese el proyecto"
+                                required
+                                showError={errors.vinculatedStrategicProject}
+                                errorMessage={"Este campo es obligatorio"}
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                            />
+                        </label>
                         <label className="flex flex-col font-montserrat font-semibold">
                             <span>
                                 Escanear código de barras
@@ -476,7 +483,6 @@ export default function AddReagentPanel({
                                 type="checkbox"
                                 name="safetyDataSheet"
                                 checked={formData.safetyDataSheet}
-                                required
                                 onChange={handleChange}
                                 className="h-4 w-4"
                             />
@@ -489,9 +495,6 @@ export default function AddReagentPanel({
                                     type="url"
                                     value={formData.sdsLink}
                                     placeholder="Ingrese el enlace"
-                                    required
-                                    showError={errors.sdsLink}
-                                    errorMessage={"Este campo es obligatorio"}
                                     onChange={handleChange}
                                     className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                                 />
@@ -503,7 +506,6 @@ export default function AddReagentPanel({
                                 type="checkbox"
                                 name="verified"
                                 checked={formData.verified}
-                                required
                                 onChange={handleChange}
                                 className="h-4 w-4"
                             />
@@ -634,7 +636,7 @@ export default function AddReagentPanel({
                                 value={formData.contact}
                                 placeholder="Ingrese el riesgo"
                                 required
-                                showError={errors.reactivity}
+                                showError={errors.contact}
                                 errorMessage={"Este campo es obligatorio"}
                                 min="0"
                                 onChange={handleChange}

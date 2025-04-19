@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
 
@@ -12,12 +13,20 @@ function Login() {
     const handleLogin = async () => {
         setError("");
 
-        // Usuario temporal para no prender la api
+        // Usuarios temporales para no prender la api
         if (matricula === "ana" && password === "123") {
-            localStorage.setItem("token", "simulatedToken");
+            const token = import.meta.env.VITE_ADMIN_TOKEN;
+            localStorage.setItem("token", token);
             navigate("/dashboard");
             return;
         }
+        if (matricula === "juan" && password === "123") {
+            const token = import.meta.env.VITE_USER_TOKEN;
+            localStorage.setItem("token", token);
+            navigate("/request/equipment");
+            return;
+        }
+
         if (!matricula && !password) {
             setError("Por favor, ingrese su clave de usuario y contraseña");
             return;
@@ -45,8 +54,27 @@ function Login() {
             const data = await response.json();
 
             if (response.ok) {
-                localStorage.setItem("token", data.token);
-                navigate("/dashboard");
+                const token = data.token;
+                localStorage.setItem("token", token);
+
+                const decoded = jwtDecode(token);
+                const role = decoded.role;
+
+                // Dependiendo del rol, se envía al usuario a su ruts
+                switch (role) {
+                    case "Administrator":
+                        navigate("/dashboard");
+                        break;
+                    case "Tech":
+                        navigate("/dashboard");
+                        break;
+                    case "user":
+                        navigate("/request/equipment");
+                        break;
+                    default:
+                        setError("Usuario con rol no reconocido");
+                        break;
+                }
             } else {
                 setError("Datos incorrectos, intente nuevamente");
             }

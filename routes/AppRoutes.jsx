@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import ProtectedRoutes from "./ProtectedRoutes";
 import Layout from "../src/components/Layout";
 import Login from "../src/pages/Login";
 import Dashboard from "../src/pages/Dashboard";
@@ -12,27 +13,33 @@ import RequestMaterial from "@/components/requestsComponents/RequestMaterial";
 import RequestSupport from "@/components/requestsComponents/RequestSupport";
 
 export default function AppRoutes() {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Login />} />
+    return (
+        <Router>
+            <Routes>
+            	<Route path="/" element={<Login />} />
 
-        {/* Routes with Layout (Header and Footer) */}
-        <Route element={<Layout />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/gestion/solicitudes" element={<Solicitudes />} />
-          <Route path="/inventario/:type" element={<InventarioGenerico />} />
-          <Route path="/gestion/usuarios" element={<Usuarios />} />
-        </Route>
+                {/* Routes for Administrators */}
+                <Route element={<ProtectedRoutes allowedRoles={["Administrator"]} />}>
+                    <Route element={<Layout />}>
+                        <Route path="/dashboard" element={<Dashboard />} />
+                        <Route path="/gestion/solicitudes" element={<Solicitudes />} />
+                        <Route path="/inventario/:type" element={<InventarioGenerico />} />
+                        <Route path="/gestion/usuarios" element={<Usuarios />} />
+                    </Route>
+                </Route>
 
-        {/*Rutas para requests*/}
-        <Route path="/request" element={<RequestsLayout />}>
-          <Route index path="equipment" element={<RequestEquipment />} />
-          <Route path="materials" element={<RequestMaterial />} />
-          <Route path="support" element={<RequestSupport />} />
-        </Route>
-        <Route path="/myRequests" element={<MyRequests />} />
-      </Routes>
-    </Router>
-  );
+                {/* Routes for Tech */}
+
+                {/* Routes for Users */}
+                <Route element={<ProtectedRoutes allowedRoles={["user"]} />}>
+                    <Route path="/request" element={<RequestsLayout />}>
+                        <Route index path="equipment" element={<RequestEquipment />} />
+                        <Route path="materials" element={<RequestMaterial />} />
+                        <Route path="support" element={<RequestSupport />} />
+                    </Route>
+                    <Route path="/myRequests" element={<MyRequests />} />
+                </Route>
+            </Routes>
+        </Router>
+    );
 }
