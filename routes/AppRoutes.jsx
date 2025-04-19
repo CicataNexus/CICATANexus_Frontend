@@ -7,7 +7,7 @@ import Solicitudes from "../src/pages/RequestsManagement";
 import InventarioGenerico from "../src/pages/GenericInventory";
 import Usuarios from "../src/pages/UsersManagement";
 import RequestsLayout from "@/components/requestsComponents/RequestsLayout";
-import MyRequests from "@/components/requestsComponents/MyRequests";
+import MyRequests from "@/pages/MyRequests";
 import RequestEquipment from "@/components/requestsComponents/RequestEquipment";
 import RequestMaterial from "@/components/requestsComponents/RequestMaterial";
 import RequestSupport from "@/components/requestsComponents/RequestSupport";

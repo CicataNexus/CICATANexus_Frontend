@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
-import ModalConfirmation from "@/components/ModalConfirmation";
+import ModalProductConfirmation from "@/components/ModalProductConfirmation";
 import FileInput from "@/components/ui/FileInput";
 import DateInput from "@/components/ui/DateInput";
 
@@ -146,7 +146,7 @@ export default function AddEquipmentPanel({
     return (
         <>
             {showConfirmation && (
-                <ModalConfirmation
+                <ModalProductConfirmation
                     onClose={onClose}
                     onDelete={handleDelete}
                     isConfirming={modalConfirming}
@@ -362,7 +362,7 @@ export default function AddEquipmentPanel({
                 <div className="flex justify-between pt-4 mb-4">
                     <div className="flex ml-4">
                         <Button
-                            className="bg-delete-btn hover:bg-delete-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-xl transition inline-flex items-center cursor-pointer"
+                            className="bg-delete-btn hover:bg-delete-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-md transition inline-flex items-center cursor-pointer"
                             onClick={() => {
                                 setModalConfirming(true);
                                 setShowConfirmation(true);
@@ -378,13 +378,13 @@ export default function AddEquipmentPanel({
                     <div className="flex gap-4 mr-4">
                         <Button
                             onClick={onClose}
-                            className="w-40 bg-reject-btn hover:bg-reject-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-xl transition inline-flex items-center cursor-pointer"
+                            className="w-40 bg-reject-btn hover:bg-reject-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-md transition inline-flex items-center cursor-pointer"
                         >
                             Cancelar
                         </Button>
                         <Button
                             onClick={() => console.log("Aplicar cambios")}
-                            className="w-40 bg-approve-btn hover:bg-approve-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-xl transition inline-flex items-center cursor-pointer"
+                            className="w-40 bg-approve-btn hover:bg-approve-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-md transition inline-flex items-center cursor-pointer"
                         >
                             Aplicar cambios
                         </Button>

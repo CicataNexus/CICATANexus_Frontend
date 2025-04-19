@@ -43,13 +43,13 @@ const Header = () => {
             <div className="flex">
               {" "}
               <FaRegListAlt size={25} />
-              <p className="ml-2">Mis Solicitudes</p>
+              <p className="ml-2 font-poppins font-bold">Mis Solicitudes</p>
             </div>
           ) : (
             <div className="flex">
               {" "}
               <MdFormatListBulletedAdd size={25} />
-              <p className="ml-2">Nueva Solicitud</p>
+              <p className="ml-2 font-poppins font-bold">Nueva Solicitud</p>
             </div>
           )}
         </div>
