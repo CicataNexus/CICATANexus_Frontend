@@ -1,4 +1,4 @@
-import ProductStatusBadge from "../../../../components/ui/ProductStatusBadge";
+import ProductStatusBadge from "@/components/ui/ProductStatusBadge";
 import { Icon } from "@iconify/react";
 
 export const MaterialColumns = (handleEdit, selectedProduct) => [

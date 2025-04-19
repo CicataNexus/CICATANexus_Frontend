@@ -84,41 +84,41 @@ export default function GenericInventory() {
   }, [type]);
 
   if (!columns || !data) {
-    return (
-      <p className="p-4 text-red-600 font-poppins">
-        Tipo de inventario no válido: {type}
-      </p>
-    );
-  }
+        return (
+            <p className="p-4 text-red-600 font-poppins">
+                Tipo de inventario no válido: {type}
+            </p>
+        );
+    }
 
-  return (
-    <div className="p-4 -mt-1 w-full max-w-full overflow-x-hidden">
-      <h2 className="text-poppins text-2xl font-bold mb-2">
-        Inventario de {type}
-      </h2>
-      <h3 className="text-montserrat text-base font-regular mb-4">
-        Gestione el inventario: agregue, edite o elimine {type}, y visualice sus
-        detalles.
-      </h3>
-      <TableToolbar
-        type={type}
-        searchTerm={search}
-        onSearchChange={setSearch}
-        onAddClick={() => {
-          setIsAddingMode(true);
-          setSelectedProduct(null);
-        }}
-      />
-      <InventoryTable
-        data={data}
-        columns={columns}
-        selectedProduct={selectedProduct} // Pass selected product to the table
-        type={type} // Pass the type to the table
-        onCloseEdit={() => setSelectedProduct(null)}
-      />
-      {isAddingMode && (
-        <AddProductPanel type={type} onClose={() => setIsAddingMode(false)} />
-      )}
-    </div>
-  );
+    return (
+        <main className="p-4 -mt-1 w-full max-w-full overflow-x-hidden">
+            <h2 className="text-poppins text-2xl font-bold mb-2">
+                Inventario de {type}
+            </h2>
+            <h3 className="text-montserrat text-base font-regular mb-4">
+                Gestione el inventario: agregue, edite o elimine {type}, y
+                visualice sus detalles.
+            </h3>
+            <TableToolbar
+                type={type}
+                searchTerm={search}
+                onSearchChange={setSearch}
+                onAddClick={() => {setIsAddingMode(true); setSelectedProduct(null);}}
+            />
+            <InventoryTable 
+                data={data} 
+                columns={columns}
+                selectedProduct={selectedProduct} // Pass selected product to the table
+                type={type} // Pass the type to the table
+                onCloseEdit={() => setSelectedProduct(null)}
+            />
+            {isAddingMode && (
+                <AddProductPanel
+                    type={type}
+                    onClose={() => setIsAddingMode(false)}
+                />
+            )}
+        </main>
+    );
 }
