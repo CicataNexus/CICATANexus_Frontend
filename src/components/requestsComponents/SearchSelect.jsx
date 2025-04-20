@@ -68,7 +68,7 @@ const SearchSelect = ({
       {isOpen && (
         <div className="overflow-scroll mt-2 w-full max-h-56 grid grid-cols-2 gap-2">
           {filteredOptions.length === 0 ? (
-            <div className="p-2 text-center text-gray-500">No icons found</div>
+            <div className="p-2 text-gray-500">not found</div>
           ) : (
             filteredOptions.map((option, index) => {
               return (
@@ -77,7 +77,10 @@ const SearchSelect = ({
                   className="p-2 border border-primary-blue flex flex-col items-center rounded-lg cursor-pointer bg-white"
                   onClick={() => handleSelect(option)}
                 >
-                  <img src={option.image} alt="" className="w-2/3 h-32" />
+                  {option.image && (
+                    <img src={option.image} alt="" className="w-2/3 h-32" />
+                  )}
+
                   <div className="w-full">
                     <p className="text-md">{option.name}</p>
                     <p className="text-sm">Marca: {option.brand}</p>

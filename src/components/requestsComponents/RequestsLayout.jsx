@@ -5,10 +5,12 @@ import Header from "./Header";
 
 const RequestsLayout = () => {
   return (
-    <main className="flex flex-col h-screen">
+    <main className="flex flex-col min-h-screen">
       <Header />
       <Navbar />
-      <Outlet />
+      <div className="flex-1 flex flex-col">
+        <Outlet />
+      </div>
       <Footer />
     </main>
   );

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DatePicker from "./DatePicker";
 import SearchSelect from "./SearchSelect";
 import TimePicker from "./TimePicker";
@@ -16,38 +16,40 @@ const areas = [
   "Bioterio",
 ];
 
-const options = [
-  {
-    image:
-      "https://image.jimcdn.com/app/cms/image/transf/none/path/s259e26659b6a74ac/image/i5dddb68f0dd85230/version/1693519124/image.jpg",
-    name: "Product 1",
-    brand: "Brand A",
-    location: "Laboratorio 1",
-  },
-  {
-    image:
-      "https://intekgroup.com.co/wp-content/uploads/2020/12/microscopio-vertical-ne900-01.jpg",
-    name: "Product 2",
-    brand: "Brand B",
-    location: "Laboratorio 2s",
-  },
-];
-
 const RequestEquipment = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [dateRange, setDateRange] = useState({
     startDate: "",
     endDate: "",
+    reservedDays: 0,
   });
-
+  const [timeRange, setTimeRange] = useState({
+    startTime: "",
+    endTime: "",
+    reservedHours: 0,
+    reservedMinutes: 0,
+  });
   const [message, setMessage] = useState(false);
-  const [startHour, setStartHour] = useState("");
-  const [startMinute, setStartMinute] = useState("");
-  const [endHour, setEndHour] = useState("");
-  const [endMinute, setEndMinute] = useState("");
-
   const [selectedAreas, setSelectedAreas] = useState([]);
   const [observations, setObservations] = useState("");
+  const [equipments, setEquipments] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/v1/equipment");
+        if (!response.ok) {
+          throw new Error("Error fetching data");
+        }
+        const result = await response.json();
+        setEquipments(result);
+      } catch (err) {
+        setError(err);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleSelectedItemsChange = (newSelectedItems) => {
     setSelectedItems(newSelectedItems);
@@ -67,15 +69,15 @@ const RequestEquipment = () => {
     setObservations(event.target.value);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const isValid =
       dateRange.startDate &&
       dateRange.endDate &&
+      dateRange.reservedDays &&
       selectedItems.length > 0 &&
-      startHour &&
-      startMinute &&
-      endHour &&
-      endMinute &&
+      timeRange.startTime &&
+      timeRange.endTime &&
+      (timeRange.reservedHours > 0 || timeRange.reservedMinutes > 0) &&
       selectedAreas.length > 0;
 
     if (!isValid) {
@@ -83,15 +85,55 @@ const RequestEquipment = () => {
       return;
     }
 
-    setMessage(true);
-    setSelectedItems([]);
-    setDateRange({ startDate: "", endDate: "" });
-    setStartHour("");
-    setStartMinute("");
-    setEndHour("");
-    setEndMinute("");
-    setSelectedAreas([]);
-    setObservations("");
+    const formattedRequest = {
+      typeOfRequest: "EQ",
+      occupiedMaterial: selectedItems.map((item) => ({
+        barcode: item.barcode,
+      })),
+      workArea: selectedAreas,
+      requestDate: {
+        startingDate: new Date(dateRange.startDate).toISOString(),
+        finishingDate: new Date(dateRange.endDate).toISOString(),
+        startingTime: timeRange.startTime,
+        finishingTime: timeRange.endTime,
+        reservedDays: dateRange.reservedDays,
+        reservedHours: timeRange.reservedHours,
+        reservedMinutes: timeRange.reservedMinutes,
+      },
+      registrationNumber: "CUM-U-042", // placeholder
+      observations: observations,
+    };
+
+    console.log(formattedRequest);
+
+    try {
+      const response = await fetch("http://localhost:3000/v1/request", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formattedRequest),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al enviar la solicitud");
+      }
+
+      setMessage(true);
+      setSelectedItems([]);
+      setDateRange({ startDate: "", endDate: "", reservedDays: 0 });
+      setTimeRange({
+        startTime: "",
+        endTime: "",
+        reservedHours: 0,
+        reservedMinutes: 0,
+      });
+      setSelectedAreas([]);
+      setObservations("");
+    } catch (error) {
+      alert("Ocurrió un error al enviar la solicitud. Intente de nuevo.");
+      console.error(error);
+    }
   };
 
   const handleCloseMessage = () => {
@@ -99,7 +141,7 @@ const RequestEquipment = () => {
   };
 
   return (
-    <div className="relative w-full h-full items-center bg-neutral-100 flex justify-center py-4">
+    <div className="relative w-full flex-1 flex items-center bg-neutral-100 justify-center py-4">
       <div className="w-2/3 h-fit bg-white px-14 py-8 flex flex-col rounded-md shadow-md">
         <div className="text-xl mb-2 text-center">
           Ingrese los datos correspondientes
@@ -112,15 +154,21 @@ const RequestEquipment = () => {
                 startDate={dateRange.startDate}
                 endDate={dateRange.endDate}
                 onChange={setDateRange}
+                mode="range"
               />
             </div>
             <div className="p-2 flex flex-col">
               <p className="mb-2">Equipo(s) que utilizará *</p>
               <SearchSelect
-                options={options}
-                placeholder="Buscar con el nombre..."
+                options={equipments.map((eq) => ({
+                  barcode: eq.barcode,
+                  name: eq.equipmentName,
+                  brand: eq.equipmentBrand,
+                  location: eq.location,
+                }))}
                 selectedItems={selectedItems}
                 onSelectedItemsChange={handleSelectedItemsChange}
+                placeholder="Buscar con el nombre..."
               />
             </div>
             <div className="p-2 flex flex-col">
@@ -129,19 +177,17 @@ const RequestEquipment = () => {
                 <div className="">
                   <div className=" bg-white flex select-none">Desde</div>
                   <TimePicker
-                    hour={startHour}
-                    setHour={setStartHour}
-                    minute={startMinute}
-                    setMinute={setStartMinute}
+                    timeRange={timeRange}
+                    setTimeRange={setTimeRange}
+                    type="start"
                   />
                 </div>
                 <div className="">
                   <div className=" bg-white flex select-none">Hasta</div>
                   <TimePicker
-                    hour={endHour}
-                    setHour={setEndHour}
-                    minute={endMinute}
-                    setMinute={setEndMinute}
+                    timeRange={timeRange}
+                    setTimeRange={setTimeRange}
+                    type="end"
                   />
                 </div>
               </div>

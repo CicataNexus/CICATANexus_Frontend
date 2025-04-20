@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const DateRangePicker = ({ startDate, endDate, onChange }) => {
+const DateRangePicker = ({ startDate, endDate, onChange, mode }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selecting, setSelecting] = useState("start");
   const [hoverDate, setHoverDate] = useState(null);
@@ -68,23 +68,41 @@ const DateRangePicker = ({ startDate, endDate, onChange }) => {
   const handleDateSelect = (selectedDate) => {
     const newDateRange = { ...dateRange };
 
-    if (selecting === "start" || !dateRange.start) {
+    if (mode === "single") {
       newDateRange.start = selectedDate;
-      newDateRange.end = null;
-      setSelecting("end");
-    } else {
-      if (selectedDate < dateRange.start) {
-        newDateRange.end = newDateRange.start;
-        newDateRange.start = selectedDate;
-      } else {
-        newDateRange.end = selectedDate;
-      }
-      setSelecting("start");
-
+      newDateRange.end = selectedDate;
       onChange({
-        startDate: newDateRange.start.toISOString(),
-        endDate: newDateRange.end.toISOString(),
+        startDate: selectedDate.toISOString(),
+        endDate: selectedDate.toISOString(),
+        reservedDays: 1,
       });
+    } else {
+      if (selecting === "start" || !dateRange.start) {
+        newDateRange.start = selectedDate;
+        newDateRange.end = null;
+        setSelecting("end");
+      } else {
+        if (selectedDate < dateRange.start) {
+          newDateRange.end = newDateRange.start;
+          newDateRange.start = selectedDate;
+        } else {
+          newDateRange.end = selectedDate;
+        }
+        setSelecting("start");
+
+        const reservedDays =
+          Math.ceil(
+            (newDateRange.end.setHours(0, 0, 0, 0) -
+              newDateRange.start.setHours(0, 0, 0, 0)) /
+              (1000 * 60 * 60 * 24)
+          ) + 1;
+
+        onChange({
+          startDate: newDateRange.start.toISOString(),
+          endDate: newDateRange.end.toISOString(),
+          reservedDays,
+        });
+      }
     }
 
     setDateRange(newDateRange);
