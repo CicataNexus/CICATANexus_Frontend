@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react";
-import { cn } from "@/lib/utils";
 import ModalProductConfirmation from "@/components/ModalProductConfirmation";
 import FileInput from "@/components/ui/FileInput";
 import DateInput from "@/components/ui/DateInput";
@@ -39,6 +38,7 @@ export default function AddMaterialPanel({
     ];
 
     const [formData, setFormData] = useState({
+        _id: initialData._id || "",
         materialCategory: "",
         materialDescription: "",
         materialPresentation: "",
@@ -160,10 +160,74 @@ export default function AddMaterialPanel({
         }
     };
 
+    const handleEdit = async () => {
+        if (!validateForm()) {
+            return;
+        }
+
+        const payload = {
+            materialCategory: String(formData.materialCategory),
+            materialDescription: String(formData.materialDescription),
+            materialPresentation: String(formData.materialPresentation),
+            materialBrand: String(formData.materialBrand),
+            materialSupplier: String(formData.materialSupplier),
+            materialCatalog: String(formData.materialCatalog),
+            materialQuantity: Number(formData.materialQuantity),
+            materialImage: String(formData.materialImage),
+            warehouseUnits: Number(formData.warehouseUnits),
+            labUnits: Number(formData.labUnits),
+            l1: Number(formData.l1),
+            l2: Number(formData.l2),
+            l3: Number(formData.l3),
+            l4: Number(formData.l4),
+            l5: Number(formData.l5),
+            l6: Number(formData.l6),
+            cf: Number(formData.cf),
+            tempWarehouseUnits: Number(formData.tempWarehouseUnits),
+            materialLot: Number(formData.materialLot),
+            invoiceNumber: String(formData.invoiceNumber),
+            dateOfReception: formData.dateOfReception
+                ? new Date(formData.dateOfReception).toISOString()
+                : null,
+            expirationDate: formData.expirationDate
+                ? new Date(formData.expirationDate).toISOString()
+                : null,
+            receivingTemperature: String(formData.receivingTemperature),
+            barcode: String(formData.barcode),
+            location: String(formData.location),
+            observations: String(formData.observations),
+            obsForUsers: String(formData.obsForUsers),
+            verified: Boolean(formData.verified),
+        };
+        
+        try {
+            const response = await fetch(
+                `http://localhost:3000/v1/materials/${formData.id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(payload),
+                }
+            );
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error("Error:", errorData);
+                throw new Error("Error al editar el material");
+            }
+            else {
+                alert("Material editado correctamente");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
+
     const handleDelete = async () => {
         try {
             const response = await fetch(
-                `http://localhost:3000/v1/materials/${formData._id}`,
+                `http://localhost:3000/v1/materials/${formData.id}`,
                 {
                     method: "DELETE",
                 }
@@ -180,7 +244,7 @@ export default function AddMaterialPanel({
     return (
         <>
             {showConfirmation && (
-                <ModalConfirmation
+                <ModalProductConfirmation
                     onClose={onClose}
                     onDelete={handleDelete}
                     isConfirming={modalConfirming}
@@ -563,7 +627,7 @@ export default function AddMaterialPanel({
                             Cancelar
                         </Button>
                         <Button
-                            onClick={() => console.log("Aplicar cambios")}
+                            onClick={() => handleEdit()}
                             className="w-40 bg-approve-btn hover:bg-approve-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-xl transition inline-flex items-center cursor-pointer"
                         >
                             Aplicar cambios

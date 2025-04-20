@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import TableToolbar from "../components/ui/TableToolbar";
-import UsersTable from "@/features/users-mgmt/UsersTable";
-import { UsersColumns } from "@/features/users-mgmt/UsersColumns";
-import AddUserModalPanel from "@/features/users-mgmt/AddUserModalPanel";
+import UsersTable from "@/features/admin/users-mgmt/UsersTable";
+import { UsersColumns } from "@/features/admin/users-mgmt/UsersColumns";
+import AddUserModalPanel from "@/features/admin/users-mgmt/AddUserModalPanel";
 
 const data = [
   {
