@@ -66,7 +66,7 @@ const SearchSelect = ({
         <div className="relative w-full" ref={dropdownRef}>
             <Icon
                 icon="material-symbols:search-rounded"
-                className="absolute left-3 top-3 text-black text-xl pointer-events-none"
+                className="absolute left-3 top-2.5 text-black text-xl pointer-events-none"
             />
 
             <input
@@ -80,7 +80,7 @@ const SearchSelect = ({
             {isOpen && (
                 <div className="overflow-scroll mt-2 w-full max-h-56 grid grid-cols-2 gap-2">
                     {filteredOptions.length === 0 ? (
-                        <div className="p-2 text-gray-500">not found</div>
+                        <div className="p-2 text-gray-500 font-montserrat">No se encontró</div>
                     ) : (
                         filteredOptions.map((option, index) => {
                             return (

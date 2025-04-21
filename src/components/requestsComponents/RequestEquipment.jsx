@@ -227,7 +227,7 @@ const RequestEquipment = () => {
                                 {areas.map((option) => {
                                     return (
                                         <li key={option}>
-                                            <label className="flex items-center cursor-pointer">
+                                            <label className="flex items-center cursor-pointer mb-1">
                                                 <div className="relative">
                                                     <input
                                                         type="checkbox"

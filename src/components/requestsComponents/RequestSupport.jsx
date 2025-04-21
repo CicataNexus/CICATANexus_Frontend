@@ -21,7 +21,7 @@ const options = [
     "Acompañamiento de uso de equipos",
     "Capacitación de uso de equipos",
     "Esterilización en autoclave",
-    "Expansion de lineas celulares",
+    "Recepción/resguardo de líneas celulares",
 ];
 
 const RequestSupport = () => {
@@ -149,23 +149,33 @@ const RequestSupport = () => {
                             />
                         </div>
                         <div className="p-2 flex flex-col">
-                            <p className="mb-2 font-montserrat font-semibold">Tipo de Apoyo *</p>
+                            <p className="mb-2 font-montserrat font-semibold">
+                                Tipo de Apoyo *
+                            </p>
                             {options.map((option) => {
                                 return (
                                     <label
-                                        className="flex items-center font-montserrat"
                                         key={option}
+                                        className="flex items-center space-x-2 font-montserrat cursor-pointer mb-1"
                                     >
-                                        <input
-                                            type="radio"
-                                            value={option}
-                                            checked={selectedOption === option}
-                                            onChange={() =>
-                                                handleRadioButtonChange(option)
-                                            }
-                                            className="mr-2 appearance-none border-2 rounded-full checked:bg-primary-blue w-4 h-4 border-primary-blue"
-                                        />
-                                        {option}
+                                        <div className="relative w-4 h-4">
+                                            <input
+                                                type="radio"
+                                                value={option}
+                                                checked={
+                                                    selectedOption === option
+                                                }
+                                                onChange={() =>
+                                                    handleRadioButtonChange(
+                                                        option
+                                                    )
+                                                }
+                                                className="peer sr-only"
+                                            />
+                                            <div className="w-4 h-4 rounded-full border-2 border-primary-blue peer-checked:border-primary-blue peer-checked:bg-primary-blue flex items-center justify-center"></div>
+                                            <div className="absolute w-2 h-2 rounded-fullleft-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 peer-checked:block hidden"></div>
+                                        </div>
+                                        <span>{option}</span>
                                     </label>
                                 );
                             })}
@@ -200,19 +210,25 @@ const RequestSupport = () => {
                     </div>
                     <div className="flex flex-col">
                         <div className="p-2">
-                            <p className="mb-2 font-montserrat font-semibold">Áreas de Trabajo *</p>
+                            <p className="mb-2 font-montserrat font-semibold">
+                                Áreas de Trabajo *
+                            </p>
                             <ul className="font-montserrat">
                                 {areas.map((option) => {
                                     return (
                                         <li key={option}>
-                                            <label className="flex items-center cursor-pointer">
+                                            <label className="flex items-center cursor-pointer mb-1">
                                                 <div className="relative">
                                                     <input
                                                         type="checkbox"
                                                         checked={selectedAreas.includes(
                                                             option
                                                         )}
-                                                        onChange={() => handleAreaChange(option)}
+                                                        onChange={() =>
+                                                            handleAreaChange(
+                                                                option
+                                                            )
+                                                        }
                                                         className="sr-only peer"
                                                     />
                                                     <div className="w-4 h-4 border-2 border-primary-blue rounded-xs peer-checked:bg-primary-blue"></div>
