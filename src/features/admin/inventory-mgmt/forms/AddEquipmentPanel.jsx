@@ -24,7 +24,7 @@ export default function AddEquipmentPanel({
         //"equipmentImage", Uncomment when implementation is ready in backend
         "vinculatedStrategicProject",
         "barcode",
-        // "reservationType", Uncomment when implementation is ready in backend
+        "reservationType",
         "location",
     ];
 
@@ -88,7 +88,9 @@ export default function AddEquipmentPanel({
             equipmentSupplier: String(formData.equipmentSupplier),
             equipmentImage: String(formData.equipmentImage),
             invoiceNumber: String(formData.invoiceNumber),
-            dateOfReception: new Date(formData.dateOfReception).toISOString(),
+            dateOfReception: formData.dateOfReception
+                ? new Date(formData.dateOfReception).toISOString()
+                : null,
             SICPatRegistered: String(formData.SICPatRegistered),
             vinculatedStrategicProject: String(
                 formData.vinculatedStrategicProject
@@ -293,25 +295,37 @@ export default function AddEquipmentPanel({
                             Estado y uso
                         </h2>
                         <label className="flex flex-col font-montserrat font-semibold">
-                            Duración de la reserva
-                            <select
-                                name="reservationType"
-                                onChange={handleChange}
-                                className={cn(
-                                    "w-full h-8 mt-1 rounded-md border border-gray-500 px-2 font-montserrat font-normal text-xs",
-                                    formData.reservationType === ""
-                                        ? "text-placeholder-text"
-                                        : "text-black"
-                                )}
-                            >
+                        <span>
+                            Duración de la reserva <span className="text-red-500">*</span>
+                        </span>
+                        <select
+                            name="reservationType"
+                            value={formData.reservationType}
+                            onChange={handleChange}
+                            required
+                            className={cn(
+                                "w-full h-8 mt-1 rounded-md border px-2 font-montserrat font-normal text-xs",
+                                errors.reservationType
+                                    ? "border-red-500"
+                                    : "border-gray-500",
+                                formData.reservationType === ""
+                                    ? "text-placeholder-text"
+                                    : "text-black"
+                            )}
+                        >
                                 <option value="">
                                     Seleccione la duración de uso
                                 </option>
-                                <option value="N">Corta</option>
-                                <option value="H">Media</option>
-                                <option value="D">Larga</option>
-                            </select>
-                        </label>
+                            <option value="N">Corta</option>
+                            <option value="H">Media</option>
+                            <option value="D">Larga</option>
+                        </select>
+                        {errors.reservationType && (
+                            <span className="text-red-500 text-xs mt-1">
+                                Este campo es obligatorio
+                            </span>
+                        )}
+                    </label>
                         <label className="flex flex-col font-montserrat font-semibold">
                             <span>
                                 Ubicación{" "}
