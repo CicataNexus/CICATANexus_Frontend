@@ -26,9 +26,9 @@ const addPanelMap = {
 
 const apiEndpoints = {
   // For the API endpoints
-  equipos: "http://localhost:3000/v1/equipment",
-  reactivos: "http://localhost:3000/v1/reagent",
-  materiales: "http://localhost:3000/v1/materials",
+  equipos: `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/equipment`,
+  reactivos: `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/reagent`,
+  materiales: `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/materials`,
 };
 
 export default function GenericInventory() {

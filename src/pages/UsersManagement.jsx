@@ -21,7 +21,7 @@ export default function UsersManagement() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/v1/user");
+        const response = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/user`);
         if (!response.ok) {
           throw new Error("Error fetching users data");
         }

@@ -188,7 +188,7 @@ export default function AddReagentPanel({
         };
 
         try {
-            const response = await fetch("http://localhost:3000/v1/reagent", {
+            const response = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/reagent`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -271,7 +271,7 @@ export default function AddReagentPanel({
 
         try {
             const response = await fetch(
-                `http://localhost:3000/v1/reagent/${formData._id}`, {
+                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/reagent/${formData._id}`, {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
@@ -296,7 +296,7 @@ export default function AddReagentPanel({
     const handleDelete = async () => {
         try {
             const response = await fetch(
-                `http://localhost:3000/v1/reagent/${formData._id}`,
+                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/reagent/${formData._id}`,
                 {
                     method: "DELETE",
                     headers: {

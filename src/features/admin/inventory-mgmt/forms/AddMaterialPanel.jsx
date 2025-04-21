@@ -139,7 +139,7 @@ export default function AddMaterialPanel({
         };
 
         try {
-            const response = await fetch("http://localhost:3000/v1/materials", {
+            const response = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/materials`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -202,7 +202,7 @@ export default function AddMaterialPanel({
         
         try {
             const response = await fetch(
-                `http://localhost:3000/v1/materials/${formData.id}`, {
+                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/materials/${formData.id}`, {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
@@ -227,7 +227,7 @@ export default function AddMaterialPanel({
     const handleDelete = async () => {
         try {
             const response = await fetch(
-                `http://localhost:3000/v1/materials/${formData.id}`,
+                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/materials/${formData.id}`,
                 {
                     method: "DELETE",
                 }

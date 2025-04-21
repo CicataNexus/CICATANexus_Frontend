@@ -90,7 +90,7 @@ const RequestSupport = () => {
     };
     console.log(formattedRequest);
     try {
-      const response = await fetch("http://localhost:3000/v1/request", {
+      const response = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/request`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

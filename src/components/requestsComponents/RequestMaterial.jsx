@@ -38,8 +38,8 @@ const RequestMaterial = () => {
     const fetchData = async () => {
       try {
         const [materialsResponse, reagentsResponse] = await Promise.all([
-          fetch("http://localhost:3000/v1/materials"),
-          fetch("http://localhost:3000/v1/reagent"),
+          fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/materials`),
+          fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/reagent`),
         ]);
 
         if (!materialsResponse.ok || !reagentsResponse.ok) {
@@ -105,7 +105,7 @@ const RequestMaterial = () => {
     console.log(formattedRequest);
     try {
       const response = await fetch(
-        "http://localhost:3000/v1/request-material",
+        `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/request-material`,
         {
           method: "POST",
           headers: {

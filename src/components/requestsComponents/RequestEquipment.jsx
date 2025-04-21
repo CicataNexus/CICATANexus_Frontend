@@ -37,7 +37,7 @@ const RequestEquipment = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/v1/equipment");
+        const response = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/equipment`);
         if (!response.ok) {
           throw new Error("Error fetching data");
         }
@@ -107,7 +107,7 @@ const RequestEquipment = () => {
     console.log(formattedRequest);
 
     try {
-      const response = await fetch("http://localhost:3000/v1/request", {
+      const response = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/request`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
