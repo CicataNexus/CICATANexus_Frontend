@@ -1,12 +1,22 @@
 import React, { useEffect } from "react";
 
 const TimePicker = ({ timeRange, setTimeRange, type }) => {
-  const hours = Array.from({ length: 24 }, (_, index) =>
-    String(index).padStart(2, "0")
+  const hours = Array.from({ length: 10 }, (_, index) =>
+    String(index + 8 ).padStart(2, "0")
   );
-  const minutes = Array.from({ length: 60 }, (_, index) =>
-    String(index).padStart(2, "0")
-  );
+
+  // Get current time values for the selected start or end time
+  const currentHour = timeRange[type + "Time"]?.split(":")[0] || "";
+  const currentMinute = timeRange[type + "Time"]?.split(":")[1] || "";
+  
+  const availableMinutes = (() => {
+    const hour = parseInt(currentHour);
+    if (hour === 17) {
+      return ["00"]; // only allow 17:00
+    }
+    return Array.from({ length: 60 }, (_, i) => String(i).padStart(2, "0"));
+  })();
+  
 
   const handleHourChange = (e) => {
     const hour = e.target.value;
@@ -25,10 +35,6 @@ const TimePicker = ({ timeRange, setTimeRange, type }) => {
       }:${minute}`,
     }));
   };
-
-  // Get current time values for the selected start or end time
-  const currentHour = timeRange[type + "Time"]?.split(":")[0] || "";
-  const currentMinute = timeRange[type + "Time"]?.split(":")[1] || "";
 
   // Effect for calculating the reserved time (hours and minutes)
   useEffect(() => {
@@ -68,11 +74,11 @@ const TimePicker = ({ timeRange, setTimeRange, type }) => {
 
   return (
     <div className="flex">
-      <div className="flex flex-col items-center overflow-hidden max-h-32 pr-2">
+      <div className="flex flex-col items-center overflow-hidden max-h-32 pr-2 font-montserrat">
         <select
           value={currentHour}
           onChange={handleHourChange}
-          className="bg-white border border-primary-blue rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2"
+          className="bg-white border border-primary-blue rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue p-2"
         >
           <option value="" disabled>
             HH
@@ -84,16 +90,16 @@ const TimePicker = ({ timeRange, setTimeRange, type }) => {
           ))}
         </select>
       </div>
-      <div className="flex flex-col items-center overflow-hidden max-h-32">
+      <div className="flex flex-col items-center overflow-hidden max-h-32 font-montserrat">
         <select
           value={currentMinute}
           onChange={handleMinuteChange}
-          className="bg-white border border-primary-blue rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2"
+          className="bg-white border border-primary-blue rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue p-2"
         >
           <option value="" disabled>
             MM
           </option>
-          {minutes.map((m) => (
+          {availableMinutes.map((m) => (
             <option key={m} value={m}>
               {m}
             </option>

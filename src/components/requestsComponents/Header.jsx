@@ -31,6 +31,11 @@ const Header = () => {
             <div className="flex">
                 {" "}
                 <img
+                    src="/CicataWhite.png"
+                    alt="Logo CICATA"
+                    className="h-12 w-auto m-4"
+                />
+                <img
                     src="/SepWhite.png"
                     alt="Logo SEP"
                     className="h-12 w-auto m-4"
@@ -39,11 +44,6 @@ const Header = () => {
                     src="/IpnWhite.png"
                     alt="Logo IPN"
                     className="h-14 w-auto m-4"
-                />
-                <img
-                    src="/CicataWhite.png"
-                    alt="Logo CICATA"
-                    className="h-12 w-auto m-4"
                 />
             </div>
             <div className="flex items-center text-white">

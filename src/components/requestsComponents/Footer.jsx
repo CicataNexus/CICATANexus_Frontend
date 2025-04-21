@@ -1,6 +1,6 @@
 const Footer = () => {
   return (
-    <div className="flex h-fit justify-around items-center text-center text-white bg-gradient-to-r from-blue-bg-gradient to-dim-blue-background">
+    <div className="flex h-fit justify-around items-center text-center text-white bg-gradient-to-r from-blue-bg-gradient to-dim-blue-background font-montserrat text-xs">
       <div className="m-4">
         <p>Folio: CuM-LAB-RE-03</p>
         <p>Versión: 03</p>

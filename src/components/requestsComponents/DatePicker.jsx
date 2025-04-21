@@ -139,28 +139,31 @@ const DateRangePicker = ({ startDate, endDate, onChange, mode }) => {
 
   const days = generateCalendarDays(month, year);
 
+  const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+
+
   return (
     <div className="relative">
-      <div className="w-full p-4 bg-white border border-primary-blue rounded-lg z-10">
+      <div className="w-full p-4 bg-white border border-primary-blue rounded-lg z-10 font-montserrat">
         <div className="flex justify-between items-center pb-4">
-          <span className="p-2 text-lg font-semibold">
-            {new Date(year, month).toLocaleString("default", {
-              month: "long",
-            })}{" "}
+          <span className="p-2 text-base font-semibold">
+            {capitalize(new Date(year, month).toLocaleString("es-MX", {
+              month: "long"})
+            )}{" "}
             {year}
           </span>
           <div>
             <button
               type="button"
               onClick={handlePreviousMonth}
-              className="text-gray-600 hover:text-indigo-600 p-2"
+              className="text-gray-600 hover:text-primary-blue p-2"
             >
               &lt;
             </button>
             <button
               type="button"
               onClick={handleNextMonth}
-              className="text-gray-600 hover:text-indigo-600 p-2"
+              className="text-gray-600 hover:text-primary-blue p-2"
             >
               &gt;
             </button>
