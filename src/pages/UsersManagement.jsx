@@ -4,36 +4,9 @@ import UsersTable from "@/features/admin/users-mgmt/UsersTable";
 import { UsersColumns } from "@/features/admin/users-mgmt/UsersColumns";
 import AddUserModalPanel from "@/features/admin/users-mgmt/AddUserModalPanel";
 
-const data = [
-  {
-    name: "María González",
-    registrationNumber: "A01234567",
-    email: "maria.gonzalez@example.com",
-    password: "securePass123",
-    role: "admin",
-    workArea: undefined,
-  },
-  {
-    name: "Luis Hernández",
-    registrationNumber: "A07654321",
-    email: "luis.hernandez@example.com",
-    password: "password456!",
-    role: "technician",
-    workArea: "Biomedicina",
-  },
-  {
-    name: "Ana Torres",
-    registrationNumber: "A09876543",
-    email: "ana.torres@example.com",
-    password: "strongPass789",
-    role: "user",
-    workArea: undefined,
-  },
-];
-
 export default function UsersManagement() {
   const [search, setSearch] = useState("");
-  //const [data, setData] = useState(null);
+  const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [isAddingMode, setIsAddingMode] = useState(false);
@@ -45,22 +18,22 @@ export default function UsersManagement() {
 
   const columns = UsersColumns(handleEdit, selectedUser);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await fetch("http://localhost:3000/v1/users");
-  //       if (!response.ok) {
-  //         throw new Error("Error fetching users data");
-  //       }
-  //       const result = await response.json();
-  //       setData(result);
-  //     } catch (err) {
-  //       setError(err);
-  //     }
-  //   };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/v1/user");
+        if (!response.ok) {
+          throw new Error("Error fetching users data");
+        }
+        const result = await response.json();
+        setData(result);
+      } catch (err) {
+        setError(err);
+      }
+    };
 
-  //   fetchData();
-  // }, []);
+    fetchData();
+  }, []);
 
   if (!data) {
     return <p className="p-4 text-red-600">Cargando datos de usuarios...</p>;

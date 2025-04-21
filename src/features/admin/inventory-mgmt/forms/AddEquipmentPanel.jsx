@@ -177,7 +177,7 @@ export default function AddEquipmentPanel({
     const handleDelete = async () => {
         try {
             const response = await fetch(
-                `http://localhost:3000/v1/equipment/${formData._id}`,
+                `http://localhost:3000/v1/equipment/barcode/${formData.barcode}`,
                 {
                     method: "DELETE",
                     headers: {

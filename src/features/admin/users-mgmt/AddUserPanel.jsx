@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@iconify/react";
-import { cn } from "@/lib/utils";
-import ModalProductConfirmation from "@/components/ModalProductConfirmation";
+import ModalUserConfirmation from "@/components/ModalUserConfirmation";
+import SelectInput from "@/components/ui/SelectInput";
 
 export default function AddUserPanel({
   onClose,
@@ -32,14 +32,14 @@ export default function AddUserPanel({
   const handleSubmit = async () => {
     const payload = {
       name: String(formData.name),
-      registrationNumber: String(formData.registrationNumber),
+      matricula: String(formData.registrationNumber), // Backend expects "matricula" instead of "registrationNumber"
       email: String(formData.email),
       password: String(formData.password),
       role: String(formData.role),
     };
 
     try {
-      const response = await fetch("http://localhost:3000/v1/users", {
+      const response = await fetch("http://localhost:3000/v1/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -60,10 +60,39 @@ export default function AddUserPanel({
     }
   };
 
+  const handleEdit = async () => {
+    const payload = {
+      name: String(formData.name),
+      matricula: String(formData.registrationNumber), // Backend expects "matricula" instead of "registrationNumber"
+      email: String(formData.email),
+      password: String(formData.password),
+      role: String(formData.role),
+    };
+
+    try {
+      const response = await fetch(
+        `http://localhost:3000/v1/user/${formData.registrationNumber}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Error al editar usuario");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   const handleDelete = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3000/v1/users/${formData._id}`,
+        `http://localhost:3000/v1/user/${formData.registrationNumber}`,
         {
           method: "DELETE",
           headers: {
@@ -83,7 +112,7 @@ export default function AddUserPanel({
   return (
     <>
       {showConfirmation && (
-        <ModalProductConfirmation
+        <ModalUserConfirmation
           onClose={onClose}
           onDelete={handleDelete}
           isConfirming={modalConfirming}
@@ -114,22 +143,17 @@ export default function AddUserPanel({
               </label>
               <label className="font-montserrat font-semibold">
                 Rol
-                <select
+                <SelectInput
                   name="role"
                   onChange={handleChange}
                   value={formData.role}
-                  className={cn(
-                    "w-full h-8 mt-1 rounded-md border border-gray-500 px-2 font-montserrat font-normal placeholder:text-xs",
-                    formData.role === ""
-                      ? "text-placeholder-text"
-                      : "text-black"
-                  )}
-                >
-                  <option value="">Seleccione el tipo de rol</option>
-                  <option value="student">Estudiante</option>
-                  <option value="user">Investigador</option>
-                  <option value="technician">Técnico</option>
-                </select>
+                  placeholder="Seleccione el tipo de rol"
+                  options={[
+                    { value: "user", label: "Usuario" },
+                    { value: "Tech", label: "Técnico" },
+                    { value: "Administrator", label: "Administrador" },
+                  ]}
+                />
               </label>
               <label
                 key={"password"}
@@ -212,7 +236,7 @@ export default function AddUserPanel({
               Cancelar
             </Button>
             <Button
-              onClick={() => console.log("Aplicar cambios")}
+              onClick={() => handleEdit()}
               className="w-40 bg-approve-btn hover:bg-approve-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-xl transition inline-flex items-center cursor-pointer"
             >
               Aplicar cambios
