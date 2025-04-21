@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DatePicker from "./DatePicker";
 import SearchSelect from "./SearchSelect";
 import TimePicker from "./TimePicker";
@@ -16,35 +16,48 @@ const areas = [
   "Bioterio",
 ];
 
-const options = [
-  {
-    image: "https://www.cosmotienda.com/tienda/images/1043.jpg",
-    name: "Product 1",
-    brand: "Brand A",
-    location: "Bioterio",
-  },
-  {
-    image:
-      "https://www.dimarlab.com/wp-content/uploads/2019/10/ALCOHOL-ETILICO-ABSOLUTO-ETANOL-1-LT.png",
-    name: "Product 2",
-    brand: "Brand B",
-    location: "Laboratorio 1",
-  },
-];
-
 const RequestMaterial = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [dateRange, setDateRange] = useState({
     startDate: "",
     endDate: "",
   });
-
+  const [timeRange, setTimeRange] = useState({
+    startTime: "",
+    endTime: "",
+    reservedHours: 0,
+    reservedMinutes: 0,
+  });
   const [message, setMessage] = useState(false);
-  const [startHour, setStartHour] = useState("");
-  const [startMinute, setStartMinute] = useState("");
-
+  const [reagents, setReagents] = useState([]);
   const [selectedAreas, setSelectedAreas] = useState([]);
   const [observations, setObservations] = useState("");
+  const [materials, setMaterials] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [materialsResponse, reagentsResponse] = await Promise.all([
+          fetch("http://localhost:3000/v1/materials"),
+          fetch("http://localhost:3000/v1/reagent"),
+        ]);
+
+        if (!materialsResponse.ok || !reagentsResponse.ok) {
+          throw new Error("Error fetching data");
+        }
+
+        const materialsData = await materialsResponse.json();
+        const reagentsData = await reagentsResponse.json();
+
+        setMaterials(materialsData);
+        setReagents(reagentsData);
+      } catch (err) {
+        setError(err);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleSelectedItemsChange = (newSelectedItems) => {
     setSelectedItems(newSelectedItems);
@@ -64,13 +77,11 @@ const RequestMaterial = () => {
     setObservations(event.target.value);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const isValid =
       dateRange.startDate &&
-      dateRange.endDate &&
       selectedItems.length > 0 &&
-      startHour &&
-      startMinute &&
+      timeRange.startTime &&
       selectedAreas.length > 0;
 
     if (!isValid) {
@@ -78,13 +89,50 @@ const RequestMaterial = () => {
       return;
     }
 
-    setMessage(true);
-    setSelectedItems([]);
-    setDateRange({ startDate: "", endDate: "" });
-    setStartHour("");
-    setStartMinute("");
-    setSelectedAreas([]);
-    setObservations("");
+    const formattedRequest = {
+      typeOfRequest: "R&M",
+      occupiedMaterial: selectedItems.map((item) => ({
+        barcode: item.barcode,
+      })),
+      workArea: selectedAreas[0], // assuming only one area is allowed
+      requestDate: {
+        startingDate: new Date(dateRange.startDate).toISOString(),
+        startingTime: timeRange.startTime,
+      },
+      registrationNumber: "CUM-U-042", // you can make this dynamic later
+      observations: observations,
+    };
+    console.log(formattedRequest);
+    try {
+      const response = await fetch(
+        "http://localhost:3000/v1/request-material",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formattedRequest),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Error al enviar la solicitud.");
+      }
+
+      setMessage(true);
+      setSelectedItems([]);
+      setDateRange({ startDate: "", endDate: "" });
+      setTimeRange({
+        startTime: "",
+        endTime: "",
+        reservedHours: 0,
+        reservedMinutes: 0,
+      });
+      setSelectedAreas([]);
+      setObservations("");
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   const handleCloseMessage = () => {
@@ -92,44 +140,57 @@ const RequestMaterial = () => {
   };
 
   return (
-    <div className="relative w-full h-full items-center bg-neutral-100 flex justify-center py-4">
+    <div className="relative w-full flex-1 flex items-center bg-neutral-100 justify-center py-4">
       <div className="w-2/3 h-fit bg-white px-14 py-8 flex flex-col rounded-md shadow-md">
         <div className="text-xl mb-2 text-center">
           Ingrese los datos correspondientes
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div className="flex flex-col">
-            <div className="p-2">
+            {/* <div className="p-2">
               <p className="mb-2">Fecha en la que se requiere *</p>
               <DatePicker
                 startDate={dateRange.startDate}
                 endDate={dateRange.endDate}
                 onChange={setDateRange}
+                mode="single"
               />
-            </div>
+            </div> */}
             <div className="p-2 flex flex-col">
               <p className="mb-2">Reactivo(s) y/o material(es) que utilizará</p>
               <SearchSelect
-                options={options}
-                placeholder="Buscar con el nombre..."
+                options={[
+                  ...materials.map((eq) => ({
+                    barcode: eq.barcode,
+                    name: eq.materialDescription,
+                    brand: eq.materialBrand,
+                    location: eq.location,
+                  })),
+                  ...reagents.map((eq) => ({
+                    barcode: eq.barcode,
+                    name: eq.reagentName,
+                    brand: eq.reagentBrand,
+                    location: eq.location,
+                  })),
+                ]}
                 selectedItems={selectedItems}
                 onSelectedItemsChange={handleSelectedItemsChange}
+                placeholder="Buscar con el nombre..."
               />
             </div>
-            <div className="p-2 flex flex-col">
+            {/* <div className="p-2 flex flex-col">
               <p className="mb-2">Horario en el que se requiere *</p>
               <div className="flex gap-2">
                 <div className="">
                   <div className=" bg-white flex select-none">Desde</div>
                   <TimePicker
-                    hour={startHour}
-                    setHour={setStartHour}
-                    minute={startMinute}
-                    setMinute={setStartMinute}
+                    timeRange={timeRange}
+                    setTimeRange={setTimeRange}
+                    type="start"
                   />
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
           <div className="flex flex-col">
             <div className="p-2">

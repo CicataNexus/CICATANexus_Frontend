@@ -28,12 +28,13 @@ const RequestSupport = () => {
     startDate: "",
     endDate: "",
   });
-
+  const [timeRange, setTimeRange] = useState({
+    startTime: "",
+    endTime: "",
+    reservedHours: 0,
+    reservedMinutes: 0,
+  });
   const [message, setMessage] = useState(false);
-  const [startHour, setStartHour] = useState("");
-  const [startMinute, setStartMinute] = useState("");
-  const [endHour, setEndHour] = useState("");
-  const [endMinute, setEndMinute] = useState("");
   const [selectedOption, setSelectedOption] = useState("");
   const [selectedAreas, setSelectedAreas] = useState([]);
   const [observations, setObservations] = useState("");
@@ -56,15 +57,14 @@ const RequestSupport = () => {
     setObservations(event.target.value);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const isValid =
       dateRange.startDate &&
       dateRange.endDate &&
       selectedOption &&
-      startHour &&
-      startMinute &&
-      endHour &&
-      endMinute &&
+      timeRange.startTime &&
+      timeRange.endTime &&
+      (timeRange.reservedHours > 0 || timeRange.reservedMinutes > 0) &&
       selectedAreas.length > 0;
 
     if (!isValid) {
@@ -72,15 +72,51 @@ const RequestSupport = () => {
       return;
     }
 
-    setMessage(true);
-    setSelectedAreas([]);
-    setDateRange({ startDate: "", endDate: "" });
-    setStartHour("");
-    setStartMinute("");
-    setEndHour("");
-    setEndMinute("");
-    setObservations("");
-    setSelectedOption("");
+    const formattedRequest = {
+      typeOfRequest: "TA",
+      requestSubtype: selectedOption,
+      workArea: selectedAreas,
+      requestDate: {
+        startingDate: new Date(dateRange.startDate).toISOString(),
+        finishingDate: new Date(dateRange.endDate).toISOString(),
+        startingTime: timeRange.startTime,
+        finishingTime: timeRange.endTime,
+        reservedDays: dateRange.reservedDays,
+        reservedHours: timeRange.reservedHours,
+        reservedMinutes: timeRange.reservedMinutes,
+      },
+      registrationNumber: "CUM-U-042",
+      observations: observations,
+    };
+    console.log(formattedRequest);
+    try {
+      const response = await fetch("http://localhost:3000/v1/request", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formattedRequest),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al enviar la solicitud");
+      }
+
+      setMessage(true);
+      setSelectedAreas([]);
+      setDateRange({ startDate: "", endDate: "" });
+      setTimeRange({
+        startTime: "",
+        endTime: "",
+        reservedHours: 0,
+        reservedMinutes: 0,
+      });
+      setObservations("");
+      setSelectedOption("");
+    } catch (error) {
+      alert("Ocurrió un error al enviar la solicitud. Intente de nuevo.");
+      console.error(error);
+    }
   };
 
   const handleCloseMessage = () => {
@@ -88,7 +124,7 @@ const RequestSupport = () => {
   };
 
   return (
-    <div className="relative w-full h-full items-center bg-neutral-100 flex justify-center py-4">
+    <div className="relative w-full flex-1 flex items-center bg-neutral-100 justify-center py-4">
       <div className="w-2/3 h-fit bg-white px-14 py-8 flex flex-col rounded-md shadow-md">
         <div className="text-xl mb-2 text-center">
           Ingrese los datos correspondientes
@@ -101,6 +137,7 @@ const RequestSupport = () => {
                 startDate={dateRange.startDate}
                 endDate={dateRange.endDate}
                 onChange={setDateRange}
+                mode="range"
               />
             </div>
             <div className="p-2 flex flex-col">
@@ -126,19 +163,17 @@ const RequestSupport = () => {
                 <div className="">
                   <div className=" bg-white flex select-none">Desde</div>
                   <TimePicker
-                    hour={startHour}
-                    setHour={setStartHour}
-                    minute={startMinute}
-                    setMinute={setStartMinute}
+                    timeRange={timeRange}
+                    setTimeRange={setTimeRange}
+                    type="start"
                   />
                 </div>
                 <div className="">
                   <div className=" bg-white flex select-none">Hasta</div>
                   <TimePicker
-                    hour={endHour}
-                    setHour={setEndHour}
-                    minute={endMinute}
-                    setMinute={setEndMinute}
+                    timeRange={timeRange}
+                    setTimeRange={setTimeRange}
+                    type="end"
                   />
                 </div>
               </div>
