@@ -12,9 +12,13 @@ export default function UsersManagement() {
   const [isAddingMode, setIsAddingMode] = useState(false);
 
   const handleEdit = (user) => {
-    setSelectedUser(user);
-    setIsAddingMode(false);
-  };
+    if (selectedUser?.registrationNumber === user.registrationNumber) {
+      setSelectedUser(null);
+    } else {
+      setSelectedUser(user);
+      setIsAddingMode(false);
+    }
+  };  
 
   const columns = UsersColumns(handleEdit, selectedUser);
 
