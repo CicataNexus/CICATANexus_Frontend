@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react";
-import { cn } from "@/lib/utils";
 import ModalProductConfirmation from "@/components/ModalProductConfirmation";
 import FileInput from "@/components/ui/FileInput";
 import DateInput from "@/components/ui/DateInput";
@@ -51,6 +50,7 @@ export default function AddReagentPanel({
     ];
 
     const [formData, setFormData] = useState({
+        _id: initialData._id || "",
         reagentCode: "",
         reagentName: "",
         reagentPresentation: "",
@@ -107,7 +107,7 @@ export default function AddReagentPanel({
             setFormData((prev) => ({ ...prev, [name]: files[0] }));
         } else {
             setFormData((prev) => ({ ...prev, [name]: value }));
-
+    
             setErrors((prevErrors) => ({
                 ...prevErrors,
                 [name]: false,
@@ -209,6 +209,90 @@ export default function AddReagentPanel({
         }
     };
 
+    const handleEdit = async () => {
+        if (!validateForm()) {
+            return;
+        }
+
+        const payload = {
+            reagentCode: String(formData.reagentCode),
+            reagentName: String(formData.reagentName),
+            reagentPresentation: String(formData.reagentPresentation),
+            reagentWeightVolume: String(formData.reagentWeightVolume),
+            reagentBrand: String(formData.reagentBrand),
+            reagentCatalog: String(formData.reagentCatalog),
+            reagentSupplier: String(formData.reagentSupplier),
+            reagentImage: String(formData.reagentImage),
+            reagentLot: String(formData.reagentLot),
+            dateOfReception: formData.dateOfReception
+                ? new Date(formData.dateOfReception).toISOString()
+                : null,
+            receivingTemperature: String(formData.receivingTemperature),
+            dateOpened: formData.dateOpened
+                ? new Date(formData.dateOpened).toISOString()
+                : null,
+            dateFinished: formData.dateFinished
+                ? new Date(formData.dateFinished).toISOString()
+                : null,
+            expirationDate: formData.expirationDate
+                ? new Date(formData.expirationDate).toISOString()
+                : null,
+            invoiceNumber: String(formData.invoiceNumber),
+            vinculatedStrategicProject: String(
+                formData.vinculatedStrategicProject
+            ),
+            barcode: String(formData.barcode),
+            nfpaName: String(formData.nfpaName),
+            storageClass: String(formData.storageClass),
+            casNumber: String(formData.casNumber),
+            safetyDataSheet: Boolean(formData.safetyDataSheet),
+            sdsLink: String(formData.sdsLink),
+            verified: Boolean(formData.verified),
+            pictogramImage: String(formData.pictogramImage),
+            explosive: parseInt(formData.explosive, 10),
+            oxidizing: parseInt(formData.oxidizing, 10),
+            flammable: parseInt(formData.flammable, 10),
+            corrosive: parseInt(formData.corrosive, 10),
+            toxic: parseInt(formData.toxic, 10),
+            mutagenicOrCarcinogenic: parseInt(
+                formData.mutagenicOrCarcinogenic,
+                10
+            ),
+            irritation: parseInt(formData.irritation, 10),
+            compressedGases: parseInt(formData.compressedGases, 10),
+            healthHazard: parseInt(formData.healthHazard, 10),
+            flammability: parseInt(formData.flammability, 10),
+            reactivity: parseInt(formData.reactivity, 10),
+            contact: parseInt(formData.contact, 10),
+            location: String(formData.location),
+            reagentSticker: parseInt(formData.reagentSticker, 10),
+            observations: String(formData.observations),
+        };
+
+        try {
+            const response = await fetch(
+                `http://localhost:3000/v1/reagent/${formData._id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(payload),
+                }
+            );
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error("Error:", errorData);
+                throw new Error("Error al editar el reactivo");
+            }
+            else {
+                alert("Reactivo editado correctamente");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
+
     const handleDelete = async () => {
         try {
             const response = await fetch(
@@ -232,7 +316,7 @@ export default function AddReagentPanel({
     return (
         <>
             {showConfirmation && (
-                <ModalConfirmation
+                <ModalProductConfirmation
                     onClose={onClose}
                     onDelete={handleDelete}
                     isConfirming={modalConfirming}
@@ -673,13 +757,15 @@ export default function AddReagentPanel({
                             </span>
                             <SelectInput
                                 name="reagentSticker"
+                                value={formData.reagentSticker}
                                 onChange={handleChange}
+                                required
                                 placeholder="Seleccione el color"
                                 options={[
-                                    { label: "Verde", value: "3" },
-                                    { label: "Azul", value: "2" },
-                                    { label: "Amarillo", value: "1" },
-                                    { label: "Rojo", value: "4" },
+                                    { label: "Verde", value: 3 },
+                                    { label: "Azul", value: 2 },
+                                    { label: "Amarillo", value: 1 },
+                                    { label: "Rojo", value: 4 },
                                 ]}
                                 showError={errors.reagentSticker}
                                 errorMessage="Este campo es obligatorio"
@@ -722,7 +808,7 @@ export default function AddReagentPanel({
                             Cancelar
                         </Button>
                         <Button
-                            onClick={() => console.log("Aplicar cambios")}
+                            onClick={() => handleEdit()}
                             className="w-40 bg-approve-btn hover:bg-approve-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-xl transition inline-flex items-center"
                         >
                             Aplicar cambios

@@ -2,10 +2,10 @@ import { useState } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@iconify/react";
-import { cn } from "@/lib/utils";
 import ModalProductConfirmation from "@/components/ModalProductConfirmation";
 import FileInput from "@/components/ui/FileInput";
 import DateInput from "@/components/ui/DateInput";
+import SelectInput from "@/components/ui/SelectInput";
 
 export default function AddEquipmentPanel({
     onClose,
@@ -29,6 +29,7 @@ export default function AddEquipmentPanel({
     ];
 
     const [formData, setFormData] = useState({
+        _id: initialData._id || "",
         inventoryNumber: "",
         equipmentName: "",
         equipmentBrand: "",
@@ -118,6 +119,56 @@ export default function AddEquipmentPanel({
             // If product was added successfully, set confirmation
             setModalConfirming(false);
             setShowConfirmation(true);
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
+
+    const handleEdit = async () => {
+        if (!validateForm()) {
+            return;
+        }
+
+        const payload = {
+            equipmentName: String(formData.equipmentName),
+            equipmentBrand: String(formData.equipmentBrand),
+            equipmentModel: String(formData.equipmentModel),
+            equipmentSerialNumber: String(formData.equipmentSerialNumber),
+            equipmentSupplier: String(formData.equipmentSupplier),
+            equipmentImage: String(formData.equipmentImage),
+            invoiceNumber: String(formData.invoiceNumber),
+            dateOfReception: formData.dateOfReception
+                ? new Date(formData.dateOfReception).toISOString()
+                : null,
+            SICPatRegistered: String(formData.SICPatRegistered),
+            vinculatedStrategicProject: String(
+                formData.vinculatedStrategicProject
+            ),
+            barcode: String(formData.barcode),
+            reservationType: String(formData.reservationType),
+            location: String(formData.location),
+            observations: String(formData.observations),
+        };
+
+        try {
+            const response = await fetch(
+                `http://localhost:3000/v1/equipment/${formData.barcode}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(payload),
+                }
+            );
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error("Error:", errorData);
+                throw new Error("Error al editar el equipo");
+            }
+            else {
+                alert("Equipo editado correctamente");
+            }
         } catch (error) {
             console.error("Error:", error);
         }
@@ -295,37 +346,24 @@ export default function AddEquipmentPanel({
                             Estado y uso
                         </h2>
                         <label className="flex flex-col font-montserrat font-semibold">
-                        <span>
-                            Duración de la reserva <span className="text-red-500">*</span>
-                        </span>
-                        <select
-                            name="reservationType"
-                            value={formData.reservationType}
-                            onChange={handleChange}
-                            required
-                            className={cn(
-                                "w-full h-8 mt-1 rounded-md border px-2 font-montserrat font-normal text-xs",
-                                errors.reservationType
-                                    ? "border-red-500"
-                                    : "border-gray-500",
-                                formData.reservationType === ""
-                                    ? "text-placeholder-text"
-                                    : "text-black"
-                            )}
-                        >
-                                <option value="">
-                                    Seleccione la duración de uso
-                                </option>
-                            <option value="N">Corta</option>
-                            <option value="H">Media</option>
-                            <option value="D">Larga</option>
-                        </select>
-                        {errors.reservationType && (
-                            <span className="text-red-500 text-xs mt-1">
-                                Este campo es obligatorio
+                            <span>
+                                Duración de la reserva <span className="text-red-500">*</span>
                             </span>
-                        )}
-                    </label>
+                            <SelectInput
+                                name="reservationType"
+                                value={formData.reservationType}
+                                onChange={handleChange}
+                                required
+                                placeholder="Seleccione la duración de uso"
+                                options={[
+                                    { value: "N", label: "Corta" },
+                                    { value: "H", label: "Media" },
+                                    { value: "D", label: "Larga" },
+                                ]}
+                                showError={errors.reservationType}
+                                errorMessage={"Este campo es obligatorio"}
+                            />
+                        </label>
                         <label className="flex flex-col font-montserrat font-semibold">
                             <span>
                                 Ubicación{" "}
@@ -383,7 +421,7 @@ export default function AddEquipmentPanel({
                             Cancelar
                         </Button>
                         <Button
-                            onClick={() => console.log("Aplicar cambios")}
+                            onClick={() => handleEdit()}
                             className="w-40 bg-approve-btn hover:bg-approve-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-md transition inline-flex items-center cursor-pointer"
                         >
                             Aplicar cambios
