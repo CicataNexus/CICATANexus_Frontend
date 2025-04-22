@@ -56,14 +56,17 @@ body {
     /* Request Status */
     --color-rejected-status: #FFBFBF; /* Applies for rejected and notified status too */
     --color-rejected-status-text: #DC1313; /* Applies for rejected and notified status too */
-    --color-in-progress-status: #FFEA99; /* Applies for approval dept head status too */
-    --color-in-progress-status-text: #705E19; /* Applies for approval dept head status too */
+    --color-in-progress-status: #FFEA99; /* Applies for pending approval dept head status too */
+    --color-in-progress-status-text: #705E19; /* Applies for pending approval dept head status too */
     --color-approved-status: #C1E9AD; /* Applies for approval and notified status too */
     --color-approved-status-text: #27751B; /* Applies for approval and notified status too*/
     --color-pending-approval-technician: #FFC04C;
     --color-pending-approval-technician-text: #895800;
     --color-approved-by-technician: #AFE6FF;
     --color-approved-by-technician-text: #0078AF;
+    --color-rejected-by-tech: #FFB1D0;
+    --color-rejected-by-tech-text: #C30052;
+
 
     /* Dashboard Alerts */
     --color-expiring-soon: #007aff; /* For expiring sticker too */
