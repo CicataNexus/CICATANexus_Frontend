@@ -1,6 +1,4 @@
-import { RiMicroscopeLine } from "react-icons/ri";
 import { GoBeaker } from "react-icons/go";
-import { RiCustomerService2Line } from "react-icons/ri";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
@@ -21,7 +19,7 @@ const Navbar = () => {
     return (
         <div className="w-full flex justify-around h-24 items-center">
             <div
-                className={`flex items-center p-4 justify-center cursor-pointer ${
+                className={`flex items-center p-4 justify-center cursor-pointer hover:text-dark-blue ${
                     activeItem === "/request/equipment"
                         ? "text-dark-blue border-b-2 "
                         : "text-deep-blue"
@@ -34,7 +32,7 @@ const Navbar = () => {
                 </div>
             </div>
             <div
-                className={`flex items-center p-4 justify-center cursor-pointer ${
+                className={`flex items-center p-4 justify-center cursor-pointer hover:text-dark-blue ${
                     activeItem === "/request/materials"
                         ? "text-dark-blue border-b-2 "
                         : "text-deep-blue"
@@ -47,7 +45,7 @@ const Navbar = () => {
                 </div>
             </div>
             <div
-                className={`flex items-center p-4 justify-center cursor-pointer ${
+                className={`flex items-center p-4 justify-center cursor-pointer hover:text-dark-blue ${
                     activeItem === "/request/support"
                         ? "text-dark-blue border-b-2 "
                         : "text-deep-blue"

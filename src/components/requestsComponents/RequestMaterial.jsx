@@ -193,7 +193,7 @@ const RequestMaterial = () => {
                                     handleSelectedItemsChange
                                 }
                                 className="font-montserrat"
-                                placeholder="Buscar con el nombre..."
+                                placeholder="Buscar con el nombre"
                             />
                         </div>
                         <div className="p-2 flex flex-col">
@@ -218,7 +218,7 @@ const RequestMaterial = () => {
                                 {areas.map((option) => {
                                     return (
                                         <li key={option}>
-                                            <label className="flex items-center cursor-pointer">
+                                            <label className="flex items-center cursor-pointer mb-1">
                                                 <div className="relative">
                                                     <input
                                                         type="checkbox"
