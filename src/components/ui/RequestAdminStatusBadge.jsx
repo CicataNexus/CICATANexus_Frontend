@@ -1,12 +1,14 @@
-export default function MyRequestStatusBadge({ status }) {
+export default function RequestAdminStatusBadge({ status }) {
     const statusMap = {
-        pendingDeptApproval: {
-            label: "Pendiente de aprobación (Jefe Dpto)",
+        pendingDept: {
+            label: "Pendiente de\naprobación (Jefe Dpto)",
             class: "bg-in-progress-status text-in-progress-status-text font-montserrat font-bold",
+            multiLine: true,
         },
-        pendingTechApproval: {
-            label: "Pendiente de aprobación (Técnico)",
+        pendingTech: {
+            label: "Pendiente de\naprobación (Técnico)",
             class: "bg-pending-approval-technician text-pending-approval-technician-text font-montserrat font-bold",
+            multiLine: true,
         },
         approvedByTech: {
             label: "Aprobada por Técnico",
@@ -30,14 +32,17 @@ export default function MyRequestStatusBadge({ status }) {
         },
     };
 
-    const { label, class: styleClass } = statusMap[status] || {
+    const { label, class: styleClass, multiLine } = statusMap[status] || {
         label: "Desconocido",
         class: "bg-gray-300 text-black font-montserrat font-bold",
+        multiLine: false,
     };
 
     return (
         <span
-            className={`inline-block px-3 py-1 rounded-full text-sm text-center font-montserrat font-semibold w-35 ${styleClass}`}
+            className={`inline-block px-3 py-1 rounded-full text-sm text-center font-montserrat font-semibold w-[195px] ${
+                multiLine ? "whitespace-pre-line" : ""
+            } ${styleClass}`}
         >
             {label}
         </span>
