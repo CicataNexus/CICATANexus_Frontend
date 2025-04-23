@@ -17,7 +17,7 @@ export default function ProductStatusBadge({ status }) {
 
     return (
         <span
-            className={`inline-block px-3 py-1 rounded-full text-sm text-center font-montserrat font-semibold w-28 ${styleClass}`}
+            className={`inline-block px-3 py-1 rounded-full text-sm text-center font-montserrat font-semibold w-30 ${styleClass}`}
         >
             {label}
         </span>
