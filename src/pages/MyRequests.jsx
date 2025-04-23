@@ -1,7 +1,5 @@
 import { useState, useMemo } from "react";
 import Header from "@/components/requestsComponents/Header";
-import Request from "@/components/requestsComponents/Request";
-import { IoMdClose } from "react-icons/io";
 import MyRequestsTable from "@/features/user/my-requests/MyRequestsTable";
 import { MyRequestsColumns } from "@/features/user/my-requests/MyRequestsColumns";
 import ModalCancelReqConfirmation from "@/components/ModalCancelReqConfirmation";

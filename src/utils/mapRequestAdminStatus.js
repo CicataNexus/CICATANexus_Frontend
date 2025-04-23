@@ -9,7 +9,7 @@ export function mapRequestStatusForAdminAndTechnician(rawStatus) {
         "Pendiente de aprobación (Técnico)": "pendingTech",
         "Aprobada por técnico": "approvedByTech",
         "Aprobada y notificada": "approvedAndNotified",
-        "Rechazada por técnico": "rejectedByTech",
+        "Rechazada por Técnico": "rejectedByTech",
         "Rechazada y notificada": "rejectedAndNotified",
         "Cancelada": "cancelled"
     };
