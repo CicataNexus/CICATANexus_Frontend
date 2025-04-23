@@ -1,5 +1,6 @@
 "use client";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { ChevronRight } from "lucide-react";
 import {
     Collapsible,
@@ -14,32 +15,45 @@ import {
     SidebarMenuSub,
     SidebarMenuSubButton,
     SidebarMenuSubItem,
+    useSidebar,
 } from "@/components/ui/Sidebar";
 import { Icon } from "@iconify/react";
 
 export function NavMain({ items }) {
     const location = useLocation();
+    const navigate = useNavigate();
+    const { state } = useSidebar();
+    const isCollapsed = state === "collapsed";
+
     return (
         <SidebarGroup>
             <SidebarMenu>
                 {items.map((item) => {
-                    const isActive = location.pathname.startsWith(item.url);
+                    const isActive = item.items?.some(
+                        (sub) => location.pathname === sub.url
+                    );
                     if (item.title === "Inventarios") {
                         return (
                             <Collapsible
                                 key={item.title}
                                 asChild
-                                defaultOpen={item.items?.some((sub) => location.pathname === sub.url)}
+                                defaultOpen={item.items?.some(
+                                    (sub) => location.pathname === sub.url
+                                )}
                                 className="group/collapsible"
                             >
                                 <SidebarMenuItem>
-                                    <CollapsibleTrigger asChild>
+                                    <CollapsibleTrigger
+                                        asChild
+                                        onClick={() => {
+                                            if (isCollapsed) {
+                                                navigate("inventario/equipos");
+                                            }
+                                        }}
+                                    >
                                         <SidebarMenuButton tooltip={item.title} isActive={isActive}>
                                             {item.icon && (
-                                                <Icon
-                                                    icon={item.icon}
-                                                    className="!w-5 !h-5 mr-1"
-                                                />
+                                                <Icon icon={item.icon} className="!w-5 !h-5 mr-1"/>
                                             )}
 
                                             <span>{item.title}</span>
@@ -65,17 +79,15 @@ export function NavMain({ items }) {
                                                                     : "hover:bg-muted"
                                                             }`}
                                                         >
-                                                            <a
-                                                                href={
-                                                                    subItem.url
-                                                                }
+                                                            <Link
+                                                                to={subItem.url}
                                                             >
                                                                 <span>
                                                                     {
                                                                         subItem.title
                                                                     }
                                                                 </span>
-                                                            </a>
+                                                            </Link>
                                                         </SidebarMenuSubButton>
                                                     </SidebarMenuSubItem>
                                                 );
@@ -89,9 +101,13 @@ export function NavMain({ items }) {
 
                     return (
                         <SidebarMenuItem key={item.title}>
-                            <SidebarMenuButton asChild tooltip={item.title} isActive={isActive}>
-                                <a
-                                    href={item.url}
+                            <SidebarMenuButton
+                                asChild
+                                tooltip={item.title}
+                                isActive={isActive}
+                            >
+                                <Link
+                                    to={item.url}
                                     className="flex items-center w-full"
                                 >
                                     {item.icon && (
@@ -101,7 +117,7 @@ export function NavMain({ items }) {
                                         />
                                     )}
                                     <span>{item.title}</span>
-                                </a>
+                                </Link>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
                     );

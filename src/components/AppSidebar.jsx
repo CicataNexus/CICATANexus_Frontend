@@ -1,5 +1,4 @@
 import * as React from "react"
-import { Icon } from "@iconify/react"
 import { NavMain } from "@/components/NavMain"
 import { Logout } from "@/components/LogoutFooter"
 import { CicataSidebarHeader } from "@/components/CicataSidebarHeader"

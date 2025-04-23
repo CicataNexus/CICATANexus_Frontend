@@ -22,6 +22,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/Tooltip";
+import { useLocation } from "react-router-dom";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -472,6 +473,7 @@ function SidebarMenuButton({
             data-size={size}
             data-active={isActive}
             className={cn(
+                "cursor-pointer",
                 sidebarMenuButtonVariants({ variant, size }),
                 className
             )}
@@ -584,6 +586,9 @@ function SidebarMenuSubButton({
   ...props
 }) {
   const Comp = asChild ? Slot : "a";
+  const location = useLocation();
+
+  const currentIsActive = isActive || location.pathname === props.href;
 
   return (
       <Comp
@@ -592,7 +597,7 @@ function SidebarMenuSubButton({
           data-size={size}
           data-active={isActive}
           className={cn(
-            "text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+            "text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground ",
             "active:bg-sidebar-accent active:text-sidebar-accent-foreground",
             "data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground",
             "flex w-full h-8 items-center gap-2 outline-none rounded-none",

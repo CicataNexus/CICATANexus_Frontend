@@ -6,7 +6,20 @@ export const MaterialColumns = (handleEdit, selectedProduct) => [
     { header: "Descripción", accessorKey: "materialDescription" },
     { header: "Catálogo", accessorKey: "materialCatalog" },
     { header: "Marca", accessorKey: "materialBrand" },
-    { header: "Caducidad", accessorKey: "expirationDate" },
+    {
+        header: "Caducidad",
+        accessorFn: (row) => row.expirationDate,
+        cell: ({ getValue }) => {
+            const value = getValue();
+            return value
+                ? new Date(value).toLocaleDateString("es-MX", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                  })
+                : "-";
+        },
+    },
     { header: "Ubicación", accessorKey: "location" },
     { header: "Cantidad", accessorKey: "materialQuantity" },
     {
