@@ -117,15 +117,22 @@ export default function AddReagentPanel({
 
     const validateForm = () => {
         const newErrors = {};
-
+    
         requiredFields.forEach((field) => {
-            if (!formData[field]) {
-                newErrors[field] = true; // Field is empty
+            const value = formData[field];
+    
+            const isEmpty = // To make sure that 0 is not considered as empty
+                value === "" ||
+                value === null ||
+                value === undefined;
+    
+            if (isEmpty) {
+                newErrors[field] = true;
             }
         });
-
+    
         setErrors(newErrors);
-        return Object.keys(newErrors).length === 0; // True if no errors
+        return Object.keys(newErrors).length === 0;
     };
 
     const handleSubmit = async () => {
@@ -513,7 +520,6 @@ export default function AddReagentPanel({
                                 showError={errors.barcode}
                                 errorMessage={"Este campo es obligatorio"}
                                 placeholder="Haga clic y escanee"
-                                min="0"
                                 className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                             />
                         </label>
@@ -790,7 +796,7 @@ export default function AddReagentPanel({
                 <div className="flex justify-between pt-4 mb-4">
                     <div className="flex ml-4">
                         <Button
-                            className="bg-delete-btn hover:bg-delete-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-xl transition inline-flex items-center cursor-pointer"
+                            className="bg-delete-btn hover:bg-delete-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 transition inline-flex items-center cursor-pointer"
                             onClick={() => setShowConfirmation(true)}
                         >
                             <Icon
@@ -803,13 +809,13 @@ export default function AddReagentPanel({
                     <div className="flex gap-4 mr-4">
                         <Button
                             onClick={onClose}
-                            className="w-40 bg-reject-btn hover:bg-reject-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-xl transition inline-flex items-center"
+                            className="w-40 bg-reject-btn hover:bg-reject-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 transition inline-flex items-center"
                         >
                             Cancelar
                         </Button>
                         <Button
                             onClick={() => handleEdit()}
-                            className="w-40 bg-approve-btn hover:bg-approve-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-xl transition inline-flex items-center"
+                            className="w-40 bg-approve-btn hover:bg-approve-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 transition inline-flex items-center"
                         >
                             Aplicar cambios
                         </Button>

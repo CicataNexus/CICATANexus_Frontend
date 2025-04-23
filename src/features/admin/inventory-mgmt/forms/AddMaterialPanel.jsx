@@ -88,15 +88,22 @@ export default function AddMaterialPanel({
 
     const validateForm = () => {
         const newErrors = {};
-
+    
         requiredFields.forEach((field) => {
-            if (!formData[field]) {
-                newErrors[field] = true; // Field is empty
+            const value = formData[field];
+    
+            const isEmpty = // To make sure that 0 is not considered as empty
+                value === "" ||
+                value === null ||
+                value === undefined;
+    
+            if (isEmpty) {
+                newErrors[field] = true;
             }
         });
-
+    
         setErrors(newErrors);
-        return Object.keys(newErrors).length === 0; // True if no errors
+        return Object.keys(newErrors).length === 0;
     };
 
     const handleSubmit = async () => {
