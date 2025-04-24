@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react";
+import { cn } from "@/lib/utils";
 import ModalProductConfirmation from "@/components/ModalProductConfirmation";
 import FileInput from "@/components/ui/FileInput";
 import DateInput from "@/components/ui/DateInput";
@@ -101,13 +102,15 @@ export default function AddReagentPanel({
                 ...prev,
                 [name]: checked,
                 // If unchecked, set the field to an empty string
-                ...(name === "safetyDataSheet" && !checked ? { sdsLink: "" } : {}),
+                ...(name === "safetyDataSheet" && !checked
+                    ? { sdsLink: "" }
+                    : {}),
             }));
         } else if (type === "file") {
             setFormData((prev) => ({ ...prev, [name]: files[0] }));
         } else {
             setFormData((prev) => ({ ...prev, [name]: value }));
-    
+
             setErrors((prevErrors) => ({
                 ...prevErrors,
                 [name]: false,
@@ -117,20 +120,18 @@ export default function AddReagentPanel({
 
     const validateForm = () => {
         const newErrors = {};
-    
+
         requiredFields.forEach((field) => {
             const value = formData[field];
-    
+
             const isEmpty = // To make sure that 0 is not considered as empty
-                value === "" ||
-                value === null ||
-                value === undefined;
-    
+                value === "" || value === null || value === undefined;
+
             if (isEmpty) {
                 newErrors[field] = true;
             }
         });
-    
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -195,13 +196,18 @@ export default function AddReagentPanel({
         };
 
         try {
-            const response = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/reagent`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(payload),
-            });
+            const response = await fetch(
+                `http://${import.meta.env.VITE_SERVER_IP}:${
+                    import.meta.env.VITE_SERVER_PORT
+                }/v1/reagent`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(payload),
+                }
+            );
 
             if (!response.ok) {
                 const errorData = await response.json();
@@ -278,7 +284,10 @@ export default function AddReagentPanel({
 
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/reagent/${formData._id}`, {
+                `http://${import.meta.env.VITE_SERVER_IP}:${
+                    import.meta.env.VITE_SERVER_PORT
+                }/v1/reagent/${formData._id}`,
+                {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
@@ -291,8 +300,7 @@ export default function AddReagentPanel({
                 const errorData = await response.json();
                 console.error("Error:", errorData);
                 throw new Error("Error al editar el reactivo");
-            }
-            else {
+            } else {
                 alert("Reactivo editado correctamente");
             }
         } catch (error) {
@@ -303,7 +311,9 @@ export default function AddReagentPanel({
     const handleDelete = async () => {
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/reagent/${formData._id}`,
+                `http://${import.meta.env.VITE_SERVER_IP}:${
+                    import.meta.env.VITE_SERVER_PORT
+                }/v1/reagent/${formData._id}`,
                 {
                     method: "DELETE",
                     headers: {
@@ -330,7 +340,12 @@ export default function AddReagentPanel({
                 />
             )}
 
-            <div className="flex flex-col gap-4 text-sm text-black font-montserrat bg-white rounded-xl">
+            <div
+                className={cn(
+                    "flex flex-col gap-4 text-sm text-black font-montserrat bg-white rounded-xl",
+                    isEditing && "shadow-sm"
+                )}
+            >
                 {/* Columns Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 divide-x divide-primary-blue">
                     {/* Column 1 Información general */}
@@ -784,7 +799,7 @@ export default function AddReagentPanel({
                                 value={formData.observations}
                                 onChange={handleChange}
                                 placeholder="Ingrese observaciones sobre el reactivo"
-                                className="w-full h-24 rounded-md border border-gray-500 p-2 mt-1 placeholder:text-xs placeholder:font-montserrat font-normal"
+                                className="w-full h-24 rounded-md border border-gray-500 p-3 mt-1 placeholder:text-xs placeholder:font-montserrat font-normal focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-transparent focus:bg-input-background"
                             />
                         </label>
                     </fieldset>

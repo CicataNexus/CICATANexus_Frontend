@@ -122,7 +122,6 @@ export default function AddUserPanel({
                     body: JSON.stringify(payload),
                 }
             );
-
             if (!response.ok) {
                 throw new Error("Error al editar usuario");
             }

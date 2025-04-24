@@ -250,7 +250,44 @@ const solicitudes = [
             timestamp: "2025-02-01T08:00:00Z",
         },
     ],
-  }
+  },
+  {
+    id: 7,
+    requestStatus: "Aprobada por técnico",
+    typeOfRequest: "EQ",
+    workArea: "Laboratorio de Física",
+    requestDate: {
+        startingDate: "2025-05-02T00:00:00.000Z",
+        finishingDate: "2025-05-02T00:00:00.000Z",
+        startingTime: "12:00",
+        finishingTime: "13:30",
+        reservedDays: 0,
+        reservedHours: 1,
+        reservedMinutes: 30,
+    },
+    requestedBy: {
+      name: "Carmen Navarro",
+      email: "carmen.navarro@cicata.mx",
+      registrationNumber: "CUM-U-005",
+  },
+  assignedTechnician: {
+      name: "Iván Hernández",
+      email: "ivan.hernandez@cicata.mx",
+  },
+  observations: [
+      {
+          userName: "Carmen Navarro",
+          message:
+              "usuario Carmen Navarro ha iniciado la solicitud a las 2025-02-01T07:45:00Z",
+          timestamp: "2025-02-01T07:45:00Z",
+      },
+      {
+          userName: "Carmen Navarro",
+          message: "Solicitud cancelada por duplicado",
+          timestamp: "2025-02-01T08:00:00Z",
+      },
+  ],
+}
 ];
 
 const Requests = () => {

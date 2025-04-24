@@ -3,7 +3,17 @@ import { Icon } from "@iconify/react";
 export const UsersColumns = (handleEdit, selectedUser) => [
   { header: "Nombre", accessorKey: "name" },
   { header: "Clave de usuario", accessorKey: "registrationNumber" },
-  { header: "Rol", accessorKey: "role" },
+  { 
+    header: "Rol", 
+    accessorFn: (row => row.role),
+    cell: ({ getValue }) => {
+      const value = getValue();
+      if (value === "Administrator") return "Administrador";
+      if (value === "Tech") return "Técnico";
+      if (value === "user") return "Usuario";
+      return "Desconocido";
+    }
+  },
   { header: "Correo electrónico", accessorKey: "email" },
   {
     header: "",
