@@ -21,7 +21,7 @@ export default function MyRequestsTable({
 
     return (
         <div className="overflow-x-auto">
-            <table className="w-full table-auto rounded-xl overflow-hidden font-poppins border-separate border-spacing-y-1.5">
+            <table className="w-full h-full table-auto rounded-xl overflow-hidden font-poppins border-separate border-spacing-y-1.5">
                 <thead className="bg-dark-blue text-white text-lg">
                     {table.getHeaderGroups().map((headerGroup) => (
                         <tr key={headerGroup.id}>

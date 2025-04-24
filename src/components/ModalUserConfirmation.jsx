@@ -59,13 +59,13 @@ export default function ModalUserConfirmation({
                     <div className="flex flex-col sm:flex-row justify-center gap-4 w-full">
                         <Button
                             onClick={onClose}
-                            className="w-full sm:w-40 bg-reject-btn hover:bg-reject-btn-hover text-white font-poppins font-semibold text-lg py-2"
+                            className="w-full sm:w-40 bg-gray-300 text-gray-600 hover:opacity-85 font-poppins font-semibold text-lg"
                         >
                             Cancelar
                         </Button>
                         <Button
                             onClick={onDelete}
-                            className="w-full sm:w-40 bg-approve-btn hover:bg-approve-btn-hover text-white font-poppins font-semibold text-lg py-2"
+                            className="w-full sm:w-40 bg-sidebar hover:bg-dim-blue-background text-white font-poppins font-semibold text-lg"
                         >
                             Confirmar
                         </Button>

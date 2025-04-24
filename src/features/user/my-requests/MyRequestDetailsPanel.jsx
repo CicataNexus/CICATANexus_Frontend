@@ -31,27 +31,27 @@ export default function MyRequestDetailsPanel({ request, onCancel }) {
             <div className="flex flex-col items-center justify-center p-4 rounded-xl bg-white w-full font-montserrat text-sm ">
                 <div className="grid grid-cols-2 w-full gap-4 divide-primary-blue divide-x">
                     <div className="space-y-1.5 p-2">
-                        <p>
+                        <p className="mb-3">
                             <strong>Email</strong>
                             <br />
                             {requestedBy?.email}
                         </p>
-                        <p>
+                        <p className="mb-3">
                             <strong>Nombre</strong>
                             <br />
                             {requestedBy?.name}
                         </p>
-                        <p>
+                        <p className="mb-3">
                             <strong>Clave de usuario</strong>
                             <br />
                             {requestedBy?.registrationNumber}
                         </p>
-                        <p>
+                        <p className="mb-3">
                             <strong>Fecha en que se requiere</strong>
                             <br />
                             {fechaRequiere}
                         </p>
-                        <p>
+                        <p className="mb-3">
                             <strong>Horario en que se requiere</strong>
                             <br />
                             {horaRequiere}
@@ -63,7 +63,7 @@ export default function MyRequestDetailsPanel({ request, onCancel }) {
                         </p>
                     </div>
                     <div className="space-y-1.5 p-2">
-                        <p>
+                        <p className="mb-3">
                             <strong>Tipo</strong>
                             <br />
                             {typeOfRequest === "EQ"
@@ -72,12 +72,12 @@ export default function MyRequestDetailsPanel({ request, onCancel }) {
                                 ? "Reactivo o Material"
                                 : "Asistencia técnica"}
                         </p>
-                        <p>
+                        <p className="mb-3">
                             <strong>Técnico asignado</strong>
                             <br />
                             {assignedTechnician?.name}
                         </p>
-                        <p>
+                        <p className="mb-3">
                             <strong>
                                 {typeOfRequest === "EQ"
                                     ? "Equipo(s) que utilizará"

@@ -261,7 +261,8 @@ const RequestMaterial = () => {
                             </label>
                             <textarea
                                 id="observaciones"
-                                className="border border-primary-blue rounded-lg p-2 font-montserrat"
+                                className="border border-primary-blue rounded-lg p-2 font-montserrat focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-transparent focus:bg-input-background placeholder:text-sm text-sm"
+                                placeholder="Escriba aquí sus observaciones."
                                 value={observations}
                                 onChange={handleObservationsChange}
                             ></textarea>
@@ -270,7 +271,7 @@ const RequestMaterial = () => {
                 </div>
                 <div className="flex justify-center mt-4">
                     <Button
-                        className="bg-deep-blue hover:bg-dark-blue text-white text-lg font-poppins font-semibold p-4 py-6 w-xs"
+                        className="bg-deep-blue hover:bg-dark-blue text-white text-xl font-poppins font-semibold tracking-wide py-5 w-auto px-15"
                         onClick={handleSubmit}
                     >
                         Enviar

@@ -811,7 +811,7 @@ export default function AddReagentPanel({
                 <div className="flex justify-between pt-4 mb-4">
                     <div className="flex ml-4">
                         <Button
-                            className="bg-delete-btn hover:bg-delete-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 transition inline-flex items-center cursor-pointer"
+                            className="bg-delete-btn hover:bg-delete-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-md transition inline-flex items-center cursor-pointer"
                             onClick={() => setShowConfirmation(true)}
                         >
                             <Icon
@@ -824,13 +824,13 @@ export default function AddReagentPanel({
                     <div className="flex gap-4 mr-4">
                         <Button
                             onClick={onClose}
-                            className="w-40 bg-reject-btn hover:bg-reject-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 transition inline-flex items-center"
+                            className="w-40 bg-gray-300 text-gray-600 hover:opacity-85 font-poppins font-semibold text-base"
                         >
                             Cancelar
                         </Button>
                         <Button
                             onClick={() => handleEdit()}
-                            className="w-40 bg-approve-btn hover:bg-approve-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 transition inline-flex items-center"
+                            className="w-40 bg-sidebar hover:bg-dim-blue-background text-white text-base font-poppins font-semibold py-2 transition cursor-pointer text-center"
                         >
                             Aplicar cambios
                         </Button>
@@ -840,7 +840,7 @@ export default function AddReagentPanel({
                 <div className="flex justify-center gap-4 pt-4 mb-4">
                     <Button
                         onClick={onClose}
-                        className="w-40 bg-reject-btn hover:bg-reject-btn-hover text-white font-poppins font-semibold text-lg"
+                        className="w-40 bg-gray-300 text-gray-600 hover:opacity-85 font-poppins font-semibold text-lg"
                     >
                         Cancelar
                     </Button>

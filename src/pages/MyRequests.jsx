@@ -255,11 +255,9 @@ const MyRequests = () => {
     );
 
     return (
-        <>
-            <div>
+        <main className="flex flex-col min-h-screen">
                 <Header />
-            </div>
-            <main className="p-15 -mt-1 w-full max-w-full overflow-x-hidden bg-background">
+            <section className="p-15 w-full max-w-full overflow-x-hidden bg-background">
                 <h2 className="text-poppins text-2xl font-bold mb-2">
                     Solicitudes de servicio
                 </h2>
@@ -274,14 +272,14 @@ const MyRequests = () => {
                     onCloseDetails={() => setSelectedRequest(null)}
                     onCancelRequest={handleCancelRequest}
                 />
-            </main>
+            </section>
             {showCancelModal && (
                 <ModalCancelReqConfirmation
                     onClose={handleCloseCancelModal}
                     onConfirmCancel={handleConfirmCancel}
                 />
             )}
-        </>
+        </main>
     );
 };
 
