@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react";
+import { cn } from "@/lib/utils";
 import ModalProductConfirmation from "@/components/ModalProductConfirmation";
 import FileInput from "@/components/ui/FileInput";
 import DateInput from "@/components/ui/DateInput";
@@ -88,20 +89,18 @@ export default function AddMaterialPanel({
 
     const validateForm = () => {
         const newErrors = {};
-    
+
         requiredFields.forEach((field) => {
             const value = formData[field];
-    
+
             const isEmpty = // To make sure that 0 is not considered as empty
-                value === "" ||
-                value === null ||
-                value === undefined;
-    
+                value === "" || value === null || value === undefined;
+
             if (isEmpty) {
                 newErrors[field] = true;
             }
         });
-    
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -146,13 +145,18 @@ export default function AddMaterialPanel({
         };
 
         try {
-            const response = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/materials`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(payload),
-            });
+            const response = await fetch(
+                `http://${import.meta.env.VITE_SERVER_IP}:${
+                    import.meta.env.VITE_SERVER_PORT
+                }/v1/materials`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(payload),
+                }
+            );
 
             if (!response.ok) {
                 const errorData = await response.json();
@@ -206,10 +210,13 @@ export default function AddMaterialPanel({
             obsForUsers: String(formData.obsForUsers),
             verified: Boolean(formData.verified),
         };
-        
+
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/materials/${formData.id}`, {
+                `http://${import.meta.env.VITE_SERVER_IP}:${
+                    import.meta.env.VITE_SERVER_PORT
+                }/v1/materials/${formData.id}`,
+                {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
@@ -222,8 +229,7 @@ export default function AddMaterialPanel({
                 const errorData = await response.json();
                 console.error("Error:", errorData);
                 throw new Error("Error al editar el material");
-            }
-            else {
+            } else {
                 alert("Material editado correctamente");
             }
         } catch (error) {
@@ -234,7 +240,9 @@ export default function AddMaterialPanel({
     const handleDelete = async () => {
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/materials/${formData.id}`,
+                `http://${import.meta.env.VITE_SERVER_IP}:${
+                    import.meta.env.VITE_SERVER_PORT
+                }/v1/materials/${formData.id}`,
                 {
                     method: "DELETE",
                 }
@@ -258,7 +266,12 @@ export default function AddMaterialPanel({
                 />
             )}
 
-            <div className="flex flex-col gap-4 text-sm text-black font-montserrat bg-white rounded-xl">
+            <div
+                className={cn(
+                    "flex flex-col gap-4 text-sm text-black font-montserrat bg-white rounded-xl",
+                    isEditing && "shadow-sm"
+                )}
+            >
                 {/* Grid de columnas */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 divide-x divide-primary-blue">
                     {/* Column 1 - Información general */}
@@ -562,7 +575,8 @@ export default function AddMaterialPanel({
                         </h2>
                         <label className="flex flex-col font-montserrat font-semibold">
                             <span>
-                                Ubicación{" "}<span className="text-red-500">*</span>
+                                Ubicación{" "}
+                                <span className="text-red-500">*</span>
                             </span>
                             <Input
                                 name="location"
@@ -582,7 +596,7 @@ export default function AddMaterialPanel({
                                 value={formData.observations}
                                 onChange={handleChange}
                                 placeholder="Ingrese las observaciones"
-                                className="w-full h-20 rounded-md border border-gray-500 p-2 mt-1 font-normal placeholder:text-xs placeholder:font-montserrat placeholder:font-normal placeholder:text-placeholder-text"
+                                className="w-full h-20 rounded-md border border-gray-500 p-2 mt-1 font-normal placeholder:text-xs placeholder:font-montserrat placeholder:font-normal placeholder:text-placeholder-text focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-transparent focus:bg-input-background"
                             />
                         </label>
                         <label className="flex flex-col font-montserrat font-semibold">
@@ -592,7 +606,7 @@ export default function AddMaterialPanel({
                                 value={formData.obsForUsers}
                                 onChange={handleChange}
                                 placeholder="Ingrese las observaciones para los usuarios"
-                                className="w-full h-20 rounded-md border border-gray-500 p-2 mt-1 font-normal placeholder:text-xs placeholder:font-montserrat placeholder:font-normal placeholder:text-placeholder-text"
+                                className="w-full h-20 rounded-md border border-gray-500 p-2 mt-1 font-normal placeholder:text-xs placeholder:font-montserrat placeholder:font-normal placeholder:text-placeholder-text focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-transparent focus:bg-input-background"
                             />
                         </label>
                         <label className="flex items-center font-montserrat font-semibold gap-2">

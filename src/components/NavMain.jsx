@@ -51,7 +51,7 @@ export function NavMain({ items }) {
                                             }
                                         }}
                                     >
-                                        <SidebarMenuButton tooltip={item.title} isActive={isActive}>
+                                        <SidebarMenuButton tooltip={item.title} isActive={isActive} className="transition-colors">
                                             {item.icon && (
                                                 <Icon icon={item.icon} className="!w-5 !h-5 mr-1"/>
                                             )}
@@ -104,11 +104,15 @@ export function NavMain({ items }) {
                             <SidebarMenuButton
                                 asChild
                                 tooltip={item.title}
-                                isActive={isActive}
+                                isActive={location.pathname === item.url}
                             >
                                 <Link
                                     to={item.url}
-                                    className="flex items-center w-full"
+                                    className={`flex items-center w-full transition-colors ${
+                                        location.pathname === item.url
+                                            ? "text-white"
+                                            : "hover:text-sidebar-accent"
+                                    }`}
                                 >
                                     {item.icon && (
                                         <Icon

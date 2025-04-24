@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@iconify/react";
+import { cn } from "@/lib/utils";
 import ModalProductConfirmation from "@/components/ModalProductConfirmation";
 import FileInput from "@/components/ui/FileInput";
 import DateInput from "@/components/ui/DateInput";
@@ -103,13 +104,18 @@ export default function AddEquipmentPanel({
         };
 
         try {
-            const response = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/equipment`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(payload),
-            });
+            const response = await fetch(
+                `http://${import.meta.env.VITE_SERVER_IP}:${
+                    import.meta.env.VITE_SERVER_PORT
+                }/v1/equipment`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(payload),
+                }
+            );
 
             if (!response.ok) {
                 const errorData = await response.json();
@@ -152,7 +158,10 @@ export default function AddEquipmentPanel({
 
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/equipment/${formData.barcode}`, {
+                `http://${import.meta.env.VITE_SERVER_IP}:${
+                    import.meta.env.VITE_SERVER_PORT
+                }/v1/equipment/${formData.barcode}`,
+                {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
@@ -165,8 +174,7 @@ export default function AddEquipmentPanel({
                 const errorData = await response.json();
                 console.error("Error:", errorData);
                 throw new Error("Error al editar el equipo");
-            }
-            else {
+            } else {
                 alert("Equipo editado correctamente");
             }
         } catch (error) {
@@ -177,7 +185,9 @@ export default function AddEquipmentPanel({
     const handleDelete = async () => {
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/equipment/barcode/${formData.barcode}`,
+                `http://${import.meta.env.VITE_SERVER_IP}:${
+                    import.meta.env.VITE_SERVER_PORT
+                }/v1/equipment/barcode/${formData.barcode}`,
                 {
                     method: "DELETE",
                     headers: {
@@ -204,7 +214,12 @@ export default function AddEquipmentPanel({
                 />
             )}
 
-            <div className="flex flex-col gap-4 text-sm text-black font-montserrat bg-white rounded-xl">
+            <div
+                className={cn(
+                    "flex flex-col gap-4 text-sm text-black font-montserrat bg-white rounded-xl",
+                    isEditing && "shadow-sm"
+                )}
+            >
                 {/* Columns Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 divide-x divide-primary-blue">
                     {/* Column 1 - Información general */}
@@ -347,7 +362,8 @@ export default function AddEquipmentPanel({
                         </h2>
                         <label className="flex flex-col font-montserrat font-semibold">
                             <span>
-                                Duración de la reserva <span className="text-red-500">*</span>
+                                Duración de la reserva{" "}
+                                <span className="text-red-500">*</span>
                             </span>
                             <SelectInput
                                 name="reservationType"
@@ -388,7 +404,7 @@ export default function AddEquipmentPanel({
                                 value={formData.observations}
                                 onChange={handleChange}
                                 placeholder="Ingrese observaciones sobre el equipo"
-                                className="mt-1 w-full h-24 rounded-md border border-gray-500 p-2 placeholder:text-xs placeholder:font-montserrat font-normal"
+                                className="mt-1 w-full h-24 rounded-md border border-gray-500 p-2 placeholder:text-xs placeholder:font-montserrat font-normal focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-transparent focus:bg-input-background"
                             />
                         </label>
                     </fieldset>
