@@ -328,7 +328,7 @@ const Requests = () => {
 
   return (
       <>
-          <main className="p-4 -mt-1 w-full max-w-full overflow-x-hidden">
+          <section className="p-4 -mt-1 w-full max-w-full overflow-x-hidden">
               <h2 className="text-poppins text-2xl font-bold mb-2">
                   Solicitudes de servicio
               </h2>
@@ -342,7 +342,7 @@ const Requests = () => {
                   onCloseDetails={() => setSelectedRequest(null)}
                   onCancelRequest={handleCancelRequest}
               />
-          </main>
+          </section>
           {showCancelModal && (
               <ModalCancelReqConfirmation
                   onClose={handleCloseCancelModal}

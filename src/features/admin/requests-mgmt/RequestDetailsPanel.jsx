@@ -222,10 +222,10 @@ export default function RequestDetailsPanel({ request, onClose }) {
                     </div>
 
                     <div className="flex justify-end gap-4 pt-1">
-                        <Button className="bg-reject-btn hover:bg-reject-btn-hover text-white text-base font-poppins font-semibold transition inline-flex items-center cursor-pointer px-6 py-2">
+                        <Button className="bg-reject-btn hover:bg-reject-btn-hover text-white text-base font-poppins font-semibold transition inline-flex items-center cursor-pointer px-6 py-2 w-32 ">
                             Rechazar
                         </Button>
-                        <Button className="bg-approve-btn hover:bg-approve-btn-hover text-white text-base font-poppins font-semibold transition inline-flex items-center cursor-pointer px-6 py-2">
+                        <Button className="bg-approve-btn hover:bg-approve-btn-hover text-white text-base font-poppins font-semibold transition inline-flex items-center cursor-pointer px-6 py-2 w-32">
                             Aprobar
                         </Button>
                     </div>
