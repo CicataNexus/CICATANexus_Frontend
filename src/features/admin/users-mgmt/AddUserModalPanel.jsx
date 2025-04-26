@@ -1,6 +1,10 @@
 import { useEffect, useRef } from "react";
 import AddUserPanel from "./AddUserPanel";
-export default function AddUserModalPanel({ onClose, selectedUser }) {
+export default function AddUserModalPanel({
+  onClose,
+  selectedUser,
+  setReload,
+}) {
   const panelRef = useRef(null);
 
   useEffect(() => {
@@ -34,6 +38,7 @@ export default function AddUserModalPanel({ onClose, selectedUser }) {
           onClose={onClose}
           initialData={selectedUser}
           isEditing={!!selectedUser}
+          setReload={setReload}
         />
       </div>
     </div>
