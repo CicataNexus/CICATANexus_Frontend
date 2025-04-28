@@ -69,17 +69,21 @@ export default function AddUserPanel({
 
     const payload = {
       name: String(formData.name),
-      matricula: String(cleanedRegistrationNumber),
+      registrationNumber: String(cleanedRegistrationNumber),
       email: String(formData.email),
       password: String(formData.password),
       role: String(formData.role),
     };
 
+      if (formData.role === "tech") {
+        payload.workArea = String(formData.workArea);
+      }
+      console.log("Payload:", payload);
     try {
       const response = await fetch(
         `http://${import.meta.env.VITE_SERVER_IP}:${
           import.meta.env.VITE_SERVER_PORT
-        }/v1/auth/register`,
+        }/v1/user`,
         {
           method: "POST",
           headers: {
@@ -114,12 +118,16 @@ export default function AddUserPanel({
 
     const payload = {
       name: String(formData.name),
-      matricula: String(cleanedRegistrationNumber),
+      registrationNumber: String(cleanedRegistrationNumber),
       email: String(formData.email),
       password: String(formData.password),
       role: String(formData.role),
     };
 
+    if (formData.role === "tech") {
+      payload.workArea = String(formData.workArea);
+    }
+    
     try {
       const response = await fetch(
         `http://${import.meta.env.VITE_SERVER_IP}:${
@@ -221,7 +229,7 @@ export default function AddUserPanel({
                     { value: "user", label: "Usuario" },
                     { value: "tech", label: "Técnico" },
                     {
-                      value: "administrator",
+                      value: "Administrator",
                       label: "Administrador",
                     },
                   ]}
@@ -306,11 +314,22 @@ export default function AddUserPanel({
                   <span>
                     Área de trabajo <span className="text-red-500">*</span>
                   </span>
-                  <Input
+                  <SelectInput
                     name="workArea"
                     value={formData["workArea"]}
                     onChange={handleChange}
                     placeholder="Ingrese el área de trabajo"
+                    options={[
+                      { value: "Laboratorio de Biología Molecular", label: "Laboratorio de Biología Molecular" },
+                      { value: "Laboratorio de Cultivo Celular y Microscopía", label: "Laboratorio de Cultivo Celular y Microscopía" },
+                      { value: "Anexo de Cultivo Celular", label: "Anexo de Cultivo Celular" },
+                      { value: "Laboratorio de Microbiología", label: "Laboratorio de Microbiología" },
+                      { value: "Laboratorio de Cromatografía y Espectrofotometría", label: "Laboratorio de Cromatografia y Espectrofotometría" },
+                      { value: "Laboratorio de Bioprocesos", label: "Laboratorio de Bioprocesos" },
+                      { value: "Laboratorio de Acondicionamiento", label: "Laboratorio de Acondicionamiento" },
+                      { value: "Cámara Fría", label: "Cámara Fría" },
+                      { value: "Bioterio", label: "Bioterio" },
+                    ]}
                     required
                     showError={errors.workArea}
                     errorMessage="Este campo es obligatorio"

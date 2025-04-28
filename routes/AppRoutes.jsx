@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ProtectedRoutes from "./ProtectedRoutes";
 import Layout from "../src/components/Layout";
 import Login from "../src/pages/Login";
+import Register from "@/pages/Register";
 import Dashboard from "../src/pages/Dashboard";
 import Solicitudes from "../src/pages/RequestsManagement";
 import InventarioGenerico from "../src/pages/GenericInventory";
@@ -17,6 +18,7 @@ export default function AppRoutes() {
         <Router>
             <Routes>
             	<Route path="/" element={<Login />} />
+                <Route path="/register" element={<Register />} />
 
                 {/* Routes for Administrators */}
                 <Route element={<ProtectedRoutes allowedRoles={["Administrator"]} />}>
