@@ -19,6 +19,9 @@ const solicitudes = [
           reservedHours: 1,
           reservedMinutes: 30,
       },
+      status: {
+        status: "P"
+      },
       requestedBy: {
           name: "Juan Pérez",
           email: "juan.perez@cicata.mx",
