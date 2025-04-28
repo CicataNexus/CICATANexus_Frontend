@@ -10,6 +10,7 @@ export default function UsersManagement() {
   const [error, setError] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [isAddingMode, setIsAddingMode] = useState(false);
+  const [reload, setReload] = useState(false);
 
   const handleEdit = (user) => {
     if (selectedUser?.registrationNumber === user.registrationNumber) {
@@ -18,14 +19,18 @@ export default function UsersManagement() {
       setSelectedUser(user);
       setIsAddingMode(false);
     }
-  };  
+  };
 
   const columns = UsersColumns(handleEdit, selectedUser);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/user`);
+        const response = await fetch(
+          `http://${import.meta.env.VITE_SERVER_IP}:${
+            import.meta.env.VITE_SERVER_PORT
+          }/v1/user`
+        );
         if (!response.ok) {
           throw new Error("Error fetching users data");
         }
@@ -37,7 +42,7 @@ export default function UsersManagement() {
     };
 
     fetchData();
-  }, []);
+  }, [reload]);
 
   if (!data) {
     return <p className="p-4 text-red-600">Cargando datos de usuarios...</p>;
@@ -66,11 +71,13 @@ export default function UsersManagement() {
         columns={columns}
         selectedUser={selectedUser}
         onCloseEdit={() => setSelectedUser(null)}
+        setReload={setReload}
       />
       {isAddingMode && (
         <AddUserModalPanel
           onClose={() => setIsAddingMode(false)}
           isEditing={false}
+          setReload={setReload}
         />
       )}
     </div>

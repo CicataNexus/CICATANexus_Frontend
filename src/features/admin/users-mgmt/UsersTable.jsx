@@ -11,6 +11,7 @@ export default function UsersTable({
   columns,
   selectedUser,
   onCloseEdit,
+  setReload,
 }) {
   const table = useReactTable({
     data,
@@ -62,6 +63,7 @@ export default function UsersTable({
                         initialData={selectedUser}
                         onClose={onCloseEdit}
                         isEditing={true}
+                        setReload={setReload}
                       />
                     </td>
                   </tr>

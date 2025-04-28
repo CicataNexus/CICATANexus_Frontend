@@ -9,7 +9,7 @@ export const UsersColumns = (handleEdit, selectedUser) => [
     cell: ({ getValue }) => {
       const value = getValue();
       if (value === "Administrator") return "Administrador";
-      if (value === "Tech") return "Técnico";
+      if (value === "tech") return "Técnico";
       if (value === "user") return "Usuario";
       return "Desconocido";
     }
