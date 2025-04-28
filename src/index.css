@@ -54,20 +54,20 @@ body {
     --color-dark-gray: #807f89;
 
     /* Request Status */
-    --color-rejected-status: #F6E0E0; /* Applies for rejected and notified status too */
-    --color-rejected-status-text: #B84C4C; /* Applies for rejected and notified status too */
-    --color-in-progress-status: #D4E9FF; /* Applies for pending approval dept head status too */
-    --color-in-progress-status-text: #005B96; /* Applies for pending approval dept head status too */
-    --color-approved-status: #D8F2CC; /* Applies for approval and notified status too */
-    --color-approved-status-text: #377E39; /* Applies for approval and notified status too*/
-    --color-pending-approval-technician: #E3F6F5;
-    --color-pending-approval-technician-text: #158C82;
-    --color-approved-by-technician: #D0ECFF;
-    --color-approved-by-technician-text: #006ec4;
-    --color-rejected-by-tech: #C5D6E0;
-    --color-rejected-by-tech-text: #31495E;
-    --color-cancelled-user: #E0E0E0;
-    --color-cancelled-user-text: #5B5B5B;
+    --color-rejected-status: #F3CFCF; /* Applies for rejected and notified status too */
+    --color-rejected-status-text: #B03030; /* Applies for rejected and notified status too */
+    --color-in-progress-status: #D0ECFF; /* Applies for pending approval dept head status too */
+    --color-in-progress-status-text: #2A88B8; /* Applies for pending approval dept head status too */
+    --color-approved-status: #CDE8D4; /* Applies for approval and notified status too */
+    --color-approved-status-text: #3A7F58; /* Applies for approval and notified status too*/
+    --color-pending-approval-technician: #D4E9FF;
+    --color-pending-approval-technician-text: #005B96;
+    --color-approved-by-technician: #D8F2CC;
+    --color-approved-by-technician-text: #377E39;
+    --color-rejected-by-tech: #FAD4D4;
+    --color-rejected-by-tech-text: #C84B4B;
+    --color-cancelled-user: #F0F0F0;
+    --color-cancelled-user-text: #515151;
 
 
     /* Dashboard Alerts */
