@@ -160,7 +160,7 @@ export default function AddEquipmentPanel({
             const response = await fetch(
                 `http://${import.meta.env.VITE_SERVER_IP}:${
                     import.meta.env.VITE_SERVER_PORT
-                }/v1/equipment/${formData.barcode}`,
+                }/v1/equipment/barcode/${formData.barcode}`,
                 {
                     method: "PUT",
                     headers: {

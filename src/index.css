@@ -69,6 +69,18 @@ body {
     --color-cancelled-user: #F0F0F0;
     --color-cancelled-user-text: #515151;
 
+    /* Toast */
+    --color-success-toast-icon: #039855;
+    --color-success-toast-icon-front: #D1FADF;
+    --color-success-toast-icon-background: #ECFDF3;
+
+    --color-error-toast-icon: #FC3636;
+    --color-error-toast-icon-front: #FFB0B0;
+    --color-error-toast-icon-background: #FFEBEB;
+
+    --color-warning-toast-icon: #FECB54;
+    --color-warning-toast-icon-front: #FFF0CE;
+    --color-warning-toast-icon-background: #FFF8E9;
 
     /* Dashboard Alerts */
     --color-expiring-soon: #007aff; /* For expiring sticker too */
@@ -118,3 +130,30 @@ body {
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
 }
+
+@keyframes slide-in-right {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes slide-out-right {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(200%);
+    }
+}
+  
+.animate-slide-in-right {
+    animation: slide-in-right 0.25s ease-out forwards;
+}
+
+.animate-slide-out-right {
+    animation: slide-out-right 0.5s ease-in forwards;
+}
+  

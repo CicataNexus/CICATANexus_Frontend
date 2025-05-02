@@ -6,7 +6,7 @@ function Register() {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: "",
-        matricula: "",
+        registrationNumber: "",
         email: "",
         password: "",
         role: "user",
@@ -26,17 +26,18 @@ function Register() {
         setError(""); // Limpiar el error
     
         // Validaciones previas
-        if (!formData.name || !formData.matricula || !formData.email || !formData.password) {
+        if (!formData.name || !formData.registrationNumber || !formData.email || !formData.password) {
             setError("Todos los campos son requeridos.");
             return;
         }
-    
+        if (formData.password.length < 6) {
+            setError("La contraseña debe tener al menos 6 caracteres.");
+            return;
+        }
         if (!/\S+@\S+\.\S+/.test(formData.email)) {
             setError("Por favor ingresa un correo electrónico válido.");
             return;
         }
-    
-        console.log("Formulario enviado:", JSON.stringify(formData));
     
         try {
             const response = await fetch(
@@ -108,8 +109,8 @@ function Register() {
                                 </span>
                                 <input
                                     type="text"
-                                    name="matricula"
-                                    value={formData.matricula}
+                                    name="registrationNumber"
+                                    value={formData.registrationNumber}
                                     onChange={handleChange}
                                     className="rounded-md p-1 border-2 border-gray-200 outline-none focus:border-input-focus focus:bg-input-background placeholder:text-sm placeholder:text-placeholder-text"
                                     placeholder="Ingrese su clave de usuario"
