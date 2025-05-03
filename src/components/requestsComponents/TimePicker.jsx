@@ -15,7 +15,7 @@ const TimePicker = ({ hour, setHour, minute, setMinute }) => {
           <select
             value={hour}
             onChange={(e) => setHour(e.target.value)}
-            className="bg-white border border-primary-blue rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2"
+            className="bg-white border-2 border-primary-blue rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-blue p-2"
           >
             <option value="" disabled>
               HH
@@ -32,7 +32,7 @@ const TimePicker = ({ hour, setHour, minute, setMinute }) => {
           <select
             value={minute}
             onChange={(e) => setMinute(e.target.value)}
-            className="bg-white border border-primary-blue rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2"
+            className="bg-white border-2 border-primary-blue rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-blue p-2"
           >
             <option value="" disabled>
               MM
