@@ -54,7 +54,9 @@ export default function AddEquipmentPanel({
         if (type === "file") {
             setFormData((prev) => ({ ...prev, [name]: files[0] }));
         } else {
-            setFormData((prev) => ({ ...prev, [name]: value }));
+            const newValue = name === "barcode" ? value.replace(/\s/g, "") : value;
+            
+            setFormData((prev) => ({ ...prev, [name]: newValue }));
 
             setErrors((prevErrors) => ({
                 // Delete the error for the field being changed
@@ -81,14 +83,13 @@ export default function AddEquipmentPanel({
         if (!validateForm()) {
             return; // Stop submission if validation fails
         }
-        const payload = {
+        const equipmentData = {
             inventoryNumber: String(formData.inventoryNumber),
             equipmentName: String(formData.equipmentName),
             equipmentBrand: String(formData.equipmentBrand),
             equipmentModel: String(formData.equipmentModel),
             equipmentSerialNumber: String(formData.equipmentSerialNumber),
             equipmentSupplier: String(formData.equipmentSupplier),
-            equipmentImage: String(formData.equipmentImage),
             invoiceNumber: String(formData.invoiceNumber),
             dateOfReception: formData.dateOfReception
                 ? new Date(formData.dateOfReception).toISOString()
@@ -103,17 +104,18 @@ export default function AddEquipmentPanel({
             observations: String(formData.observations),
         };
 
+        const equipmentFormData = new FormData();
+        equipmentFormData.append("body", JSON.stringify(equipmentData));
+        if (formData.equipmentImage) {
+            equipmentFormData.append("thumbnail", formData.equipmentImage);
+        }
+
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${
-                    import.meta.env.VITE_SERVER_PORT
-                }/v1/equipment`,
+                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/equipment`,
                 {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(payload),
+                    body: equipmentFormData,
                 }
             );
 
@@ -147,9 +149,7 @@ export default function AddEquipmentPanel({
                 ? new Date(formData.dateOfReception).toISOString()
                 : null,
             SICPatRegistered: String(formData.SICPatRegistered),
-            vinculatedStrategicProject: String(
-                formData.vinculatedStrategicProject
-            ),
+            vinculatedStrategicProject: String(formData.vinculatedStrategicProject),
             barcode: String(formData.barcode),
             reservationType: String(formData.reservationType),
             location: String(formData.location),
@@ -158,9 +158,7 @@ export default function AddEquipmentPanel({
 
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${
-                    import.meta.env.VITE_SERVER_PORT
-                }/v1/equipment/barcode/${formData.barcode}`,
+                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/equipment/barcode/${initialData.barcode}`,
                 {
                     method: "PUT",
                     headers: {
@@ -185,14 +183,9 @@ export default function AddEquipmentPanel({
     const handleDelete = async () => {
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${
-                    import.meta.env.VITE_SERVER_PORT
-                }/v1/equipment/barcode/${formData.barcode}`,
+                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/equipment/barcode/${formData.barcode}`,
                 {
                     method: "DELETE",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
                 }
             );
 
@@ -278,12 +271,28 @@ export default function AddEquipmentPanel({
                         ))}
                         <label className="flex flex-col font-montserrat font-semibold">
                             Imagen
-                            <FileInput
-                                name="equipmentImage"
-                                value={formData.equipmentImage}
-                                onChange={handleChange}
-                                className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
-                            />
+                            {isEditing && initialData.photoId ? (
+                                <div className="flex gap-4 items-start">
+                                    <FileInput
+                                        name="equipmentImage"
+                                        value={formData.equipmentImage}
+                                        onChange={handleChange}
+                                        className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
+                                    />
+                                    <img
+                                        src={`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/photo/${initialData.photoId}`}
+                                        alt="Imagen del equipo"
+                                        className="mt-2 w-200 h-50 object-cover rounded-md"
+                                    />
+                                </div>
+                            ) : (
+                                <FileInput
+                                    name="equipmentImage"
+                                    value={formData.equipmentImage}
+                                    onChange={handleChange}
+                                    className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
+                                />
+                            )}
                         </label>
                     </fieldset>
 
@@ -321,38 +330,49 @@ export default function AddEquipmentPanel({
                                 className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                             />
                         </label>
-                        {[
-                            [
-                                "vinculatedStrategicProject",
-                                "Proyecto estratégico vinculado",
-                                "Ingrese el proyecto vinculado",
-                            ],
-                            [
-                                "barcode",
-                                "Escanear código de barras",
-                                "Haga clic y escanee",
-                            ],
-                        ].map(([name, label, placeholder]) => (
-                            <label
-                                key={name}
-                                className="flex flex-col font-montserrat font-semibold"
-                            >
-                                <span>
-                                    {label}{" "}
-                                    <span className="text-red-500">*</span>
-                                </span>
-                                <Input
-                                    name={name}
-                                    value={formData[name]}
-                                    onChange={handleChange}
-                                    placeholder={placeholder}
-                                    required
-                                    showError={errors[name]}
-                                    errorMessage={"Este campo es obligatorio"}
-                                    className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
-                                />
-                            </label>
-                        ))}
+                        <label className="flex flex-col font-montserrat font-semibold">
+                            <span>
+                                Proyecto estratégico vinculado{" "}
+                                <span className="text-red-500">*</span>
+                            </span>
+                            <Input
+                                name="vinculatedStrategicProject"
+                                value={formData.vinculatedStrategicProject}
+                                onChange={handleChange}
+                                placeholder="Ingrese el proyecto vinculado"
+                                required
+                                showError={errors.vinculatedStrategicProject}
+                                errorMessage={"Este campo es obligatorio"}
+                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                            />
+                        </label>
+                        <label className="flex flex-col font-montserrat font-semibold">
+                            {isEditing ? (
+                                <>
+                                    <span>Código de barras</span>
+                                    <p className="font-montserrat font-normal">
+                                        {formData.barcode}
+                                    </p>
+                                </>
+                            ) : (
+                                <>
+                                    <span>
+                                        Escanear código de barras{" "}
+                                        <span className="text-red-500">*</span>
+                                    </span>
+                                    <Input
+                                        name="barcode"
+                                        value={formData.barcode}
+                                        onChange={handleChange}
+                                        placeholder="Haga clic y escanee"
+                                        required
+                                        showError={errors.barcode}
+                                        errorMessage={"Este campo es obligatorio"}
+                                        className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                                    />
+                                </>
+                            )}
+                        </label>
                     </fieldset>
 
                     {/* Column 3 - Estado y uso */}
