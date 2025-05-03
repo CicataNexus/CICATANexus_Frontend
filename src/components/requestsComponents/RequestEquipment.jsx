@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 import DatePicker from "./DatePicker";
 import SearchSelect from "./SearchSelect";
 import TimePicker from "./TimePicker";
@@ -95,7 +96,7 @@ const RequestEquipment = () => {
             occupiedMaterial: selectedItems.map((item) => ({
                 barcode: item.barcode,
             })),
-            workArea: selectedAreas,
+            workArea: selectedAreas[0], // Por ahora, solo se permite un área en el backend, para arreglarlo solo se quita el [0]
             requestDate: {
                 startingDate: new Date(dateRange.startDate).toISOString(),
                 finishingDate: new Date(dateRange.endDate).toISOString(),
@@ -105,7 +106,7 @@ const RequestEquipment = () => {
                 reservedHours: timeRange.reservedHours,
                 reservedMinutes: timeRange.reservedMinutes,
             },
-            registrationNumber: "CUM-U-042", // placeholder
+            registrationNumber: jwtDecode(localStorage.getItem("token")).registrationNumber, // placeholder
             observations: observations,
         };
 
@@ -113,9 +114,7 @@ const RequestEquipment = () => {
 
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${
-                    import.meta.env.VITE_SERVER_PORT
-                }/v1/request`,
+                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/request`,
                 {
                     method: "POST",
                     headers: {
