@@ -34,6 +34,7 @@ const RequestMaterial = () => {
     const [selectedAreas, setSelectedAreas] = useState([]);
     const [observations, setObservations] = useState("");
     const [materials, setMaterials] = useState([]);
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         const fetchData = async () => {
@@ -89,16 +90,19 @@ const RequestMaterial = () => {
     };
 
     const handleSubmit = async () => {
-        const isValid =
-            dateRange.startDate &&
-            selectedItems.length > 0 &&
-            timeRange.startTime &&
-            selectedAreas.length > 0;
+        const newErrors = {
+            dateRange: !dateRange.startDate,
+            timeRange:
+                !timeRange.startTime ||
+                (timeRange.reservedHours === 0 &&
+                    timeRange.reservedMinutes === 0),
+            selectedItems: selectedItems.length === 0,
+            selectedAreas: selectedAreas.length === 0,
+        };
+        setErrors(newErrors);
 
-        if (!isValid) {
-            alert("Por favor complete todos los campos requeridos.");
-            return;
-        }
+        const hasErrors = Object.values(newErrors).some(Boolean);
+        if (hasErrors) return;
 
         const formattedRequest = {
             typeOfRequest: "R&M",
@@ -143,6 +147,7 @@ const RequestMaterial = () => {
             });
             setSelectedAreas([]);
             setObservations("");
+            setErrors({});
         } catch (error) {
             alert(error.message);
         }
@@ -161,18 +166,27 @@ const RequestMaterial = () => {
                 <div className="grid grid-cols-2 gap-4 mt-5">
                     <div className="flex flex-col">
                         <div className="p-2">
-              <p className="mb-2 font-montserrat font-semibold">Fecha en la que se requiere *</p>
-              <DatePicker
-                startDate={dateRange.startDate}
-                endDate={dateRange.endDate}
-                onChange={setDateRange}
-                mode="single"
-              />
-            </div>
+                            <span className="inline-block mb-2 font-montserrat font-semibold">
+                                Fecha en la que se requiere{" "}
+                                <span className="text-red-500">*</span>
+                            </span>
+                            <DatePicker
+                                startDate={dateRange.startDate}
+                                endDate={dateRange.endDate}
+                                onChange={setDateRange}
+                                mode="single"
+                            />
+                            {errors.dateRange && (
+                                <p className="mt-1 text-red-500 text-xs font-montserrat font-semibold">
+                                    Este campo es obligatorio
+                                </p>
+                            )}
+                        </div>
                         <div className="p-2 flex flex-col">
-                            <p className="mb-2 font-montserrat font-semibold">
-                                Reactivo(s) y/o material(es) que utilizará *
-                            </p>
+                            <span className="mb-2 font-montserrat font-semibold">
+                                Reactivo(s) y/o material(es) que utilizará{" "}
+                                <span className="text-red-500">*</span>
+                            </span>
                             <SearchSelect
                                 options={[
                                     ...materials.map((eq) => ({
@@ -195,25 +209,43 @@ const RequestMaterial = () => {
                                 className="font-montserrat"
                                 placeholder="Buscar con el nombre"
                             />
+                            {errors.selectedItems && (
+                                <p className="mt-1 text-red-500 text-xs font-montserrat font-semibold">
+                                    Este campo es obligatorio
+                                </p>
+                            )}
                         </div>
                         <div className="p-2 flex flex-col">
-              <p className="mb-2 font-montserrat font-semibold">Horario en el que se requiere *</p>
-              <div className="flex gap-2">
-                <div className="font-montserrat">
-                  <div className=" bg-white flex select-none">Desde</div>
-                  <TimePicker
-                    timeRange={timeRange}
-                    setTimeRange={setTimeRange}
-                    type="start"
-                    className="select-none"
-                  />
-                </div>
-              </div>
-            </div> 
+                            <p className="mb-2 font-montserrat font-semibold">
+                                Horario en el que se requiere{" "}
+                                <span className="text-red-500">*</span>
+                            </p>
+                            <div className="flex gap-2">
+                                <div className="font-montserrat">
+                                    <div className=" bg-white flex select-none font-medium">
+                                        Desde
+                                    </div>
+                                    <TimePicker
+                                        timeRange={timeRange}
+                                        setTimeRange={setTimeRange}
+                                        type="start"
+                                        className="select-none"
+                                    />
+                                    {errors.timeRange && (
+                                        <p className="mt-1 text-red-500 text-xs font-montserrat font-semibold">
+                                            Este campo es obligatorio
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div className="flex flex-col">
                         <div className="p-2">
-                            <p className="mb-2 font-montserrat font-semibold">Áreas de Trabajo *</p>
+                            <span className="inline-block mb-1 font-montserrat font-semibold">
+                                Áreas de Trabajo{" "}
+                                <span className="text-red-500">*</span>
+                            </span>
                             <ul className="font-montserrat">
                                 {areas.map((option) => {
                                     return (
@@ -225,7 +257,11 @@ const RequestMaterial = () => {
                                                         checked={selectedAreas.includes(
                                                             option
                                                         )}
-                                                        onChange={() => handleAreaChange(option)}
+                                                        onChange={() =>
+                                                            handleAreaChange(
+                                                                option
+                                                            )
+                                                        }
                                                         className="sr-only peer"
                                                     />
                                                     <div className="w-4 h-4 border-2 border-primary-blue rounded-xs peer-checked:bg-primary-blue"></div>
@@ -251,6 +287,9 @@ const RequestMaterial = () => {
                                     );
                                 })}
                             </ul>
+                            {errors.selectedAreas && (
+                                <p className="mt-1 text-red-500 text-xs font-montserrat font-semibold">Este campo es obligatorio</p>
+                            )}
                         </div>
                         <div className="flex flex-col w-full">
                             <label
@@ -261,7 +300,7 @@ const RequestMaterial = () => {
                             </label>
                             <textarea
                                 id="observaciones"
-                                className="border border-primary-blue rounded-lg p-2 font-montserrat focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-transparent focus:bg-input-background placeholder:text-sm text-sm"
+                                className="border-2 border-primary-blue rounded-lg p-2 font-montserrat focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-transparent focus:bg-input-background placeholder:text-sm text-sm"
                                 placeholder="Escriba aquí sus observaciones."
                                 value={observations}
                                 onChange={handleObservationsChange}
@@ -269,7 +308,7 @@ const RequestMaterial = () => {
                         </div>
                     </div>
                 </div>
-                <div className="flex justify-center mt-4">
+                <div className="flex justify-center mt-8">
                     <Button
                         className="bg-deep-blue hover:bg-dark-blue text-white text-xl font-poppins font-semibold tracking-wide py-5 w-auto px-15"
                         onClick={handleSubmit}
