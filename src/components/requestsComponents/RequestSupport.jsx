@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { jwtDecode } from "jwt-decode";
 import { IoMdClose } from "react-icons/io";
 import DatePicker from "./DatePicker";
 import TimePicker from "./TimePicker";
@@ -78,7 +79,7 @@ const RequestSupport = () => {
         const formattedRequest = {
             typeOfRequest: "TA",
             requestSubtype: selectedOption,
-            workArea: selectedAreas,
+            workArea: selectedAreas[0], // Por ahora, solo se permite un área en el backend, para arreglarlo solo se quita el [0]
             requestDate: {
                 startingDate: new Date(dateRange.startDate).toISOString(),
                 finishingDate: new Date(dateRange.endDate).toISOString(),
@@ -88,7 +89,7 @@ const RequestSupport = () => {
                 reservedHours: timeRange.reservedHours,
                 reservedMinutes: timeRange.reservedMinutes,
             },
-            registrationNumber: "CUM-U-042",
+            registrationNumber: jwtDecode(localStorage.getItem("token")).registrationNumber, 
             observations: observations,
         };
         console.log(formattedRequest);

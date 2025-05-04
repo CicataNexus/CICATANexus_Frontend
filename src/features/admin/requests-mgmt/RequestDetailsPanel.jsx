@@ -1,6 +1,7 @@
 import { mapRequestStatusForAdminAndTechnician } from "@/utils/mapRequestAdminStatus";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react";
+import { jwtDecode } from "jwt-decode";
 import {
     Tooltip,
     TooltipContent,
@@ -23,13 +24,67 @@ export default function RequestDetailsPanel({ request, onClose }) {
         occupiedMaterial,
     } = request;
 
-    const requestedDate = requestDate?.startingDate
-        ? new Date(requestDate.startingDate).toLocaleDateString()
-        : "-";
+    const requestedDate = 
+        requestDate?.startingDate && requestDate?.finishingDate
+            ? `${new Date(requestDate.startingDate).toLocaleDateString()} - ${new Date(requestDate.finishingDate).toLocaleDateString()}`
+            : `${new Date(requestDate.startingDate).toLocaleDateString()}`;
     const requestedTime =
         requestDate?.startingTime && requestDate?.finishingTime
             ? `${requestDate.startingTime} - ${requestDate.finishingTime}`
-            : "-";
+            : `${requestDate.startingTime}`;
+
+    const getObservationText = () => {
+        const obsText = document.getElementById("observation")?.value || "";
+        return obsText.trim();
+    };
+
+    const handleAprove = async () => {
+        const { registrationNumber } = jwtDecode(localStorage.getItem("token"));
+        try {
+            const response = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/request/admin-action/${request.id}`, 
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    registrationNumber,
+                    requestStatus: "Pendiente de aprobación (Técnico)",
+                    observations: getObservationText(),
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Error approving request");
+            }
+        } catch (error) {
+            console.error("Error approving request:", error);
+        }
+    };
+
+    const handleReject = async () => {
+        const { registrationNumber } = jwtDecode(localStorage.getItem("token"));
+        try {
+            const response = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/request/admin-action/${request.id}`, 
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    registrationNumber,
+                    requestStatus: "Rechazada y notificada",
+                    observations: getObservationText(),
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Error rejecting request");
+            }
+        } catch (error) {
+            console.error("Error rejecting request:", error);
+        }
+    };
 
     return (
         <div className="w-full max-w-4xl flex justify-center py-2 place-self-center">
@@ -126,7 +181,7 @@ export default function RequestDetailsPanel({ request, onClose }) {
                                 </strong>
                                 <br />
                                 {typeOfRequest === "TA"
-                                    ? request.requestSubtype || "-"
+                                    ? requestSubtype || "-"
                                     : occupiedMaterial?.length > 0
                                     ? occupiedMaterial
                                           .map((mat) => mat.name)
@@ -225,10 +280,16 @@ export default function RequestDetailsPanel({ request, onClose }) {
                     </div>
 
                     <div className="flex justify-end gap-4 pt-1">
-                        <Button className="bg-reject-btn hover:bg-reject-btn-hover text-white text-base font-poppins font-semibold transition inline-flex items-center cursor-pointer px-6 py-2 w-32 ">
+                        <Button 
+                            className="bg-reject-btn hover:bg-reject-btn-hover text-white text-base font-poppins font-semibold transition inline-flex items-center cursor-pointer px-6 py-2 w-32 "
+                            onClick={handleReject}
+                        >
                             Rechazar
                         </Button>
-                        <Button className="bg-approve-btn hover:bg-approve-btn-hover text-white text-base font-poppins font-semibold transition inline-flex items-center cursor-pointer px-6 py-2 w-32">
+                        <Button 
+                            className="bg-approve-btn hover:bg-approve-btn-hover text-white text-base font-poppins font-semibold transition inline-flex items-center cursor-pointer px-6 py-2 w-32"
+                            onClick={handleAprove}
+                        >
                             Aprobar
                         </Button>
                     </div>
