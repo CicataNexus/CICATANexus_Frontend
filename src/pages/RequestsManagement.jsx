@@ -19,26 +19,28 @@ const Requests = () => {
                 const data = await response.json();
 
                 const mapped = data.map((req) => {
-                    const startDate = new Date(req.startingDate);
-                    const endDate = new Date(req.finishingDate);
-                    const reservedDays = Math.floor(
-                        (endDate - startDate) / (1000 * 60 * 60 * 24)
-                    );
+                    const startDate = new Date(req.requestDate?.startingDate);
+                    const endDate = req.requestDate?.finishingDate ? new Date(req.requestDate.finishingDate) : null;
+                    const reservedDays = endDate
+                        ? Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24))
+                        : null;
 
-                    const [startHour, startMin] = req.startingTime
-                        .split(":")
-                        .map(Number);
-                    const [endHour, endMin] = req.finishingTime
-                        .split(":")
-                        .map(Number);
-                    const totalMinutes =
-                        endHour * 60 + endMin - (startHour * 60 + startMin);
-                    const reservedHours = Math.floor(totalMinutes / 60);
-                    const reservedMinutes = totalMinutes % 60;
+                    let reservedHours = null;
+                    let reservedMinutes = null;
+
+                    if (req.requestDate?.startingTime && req.requestDate?.finishingTime) {
+                        const [startHour, startMin] = req.requestDate.startingTime.split(":").map(Number);
+                        const [endHour, endMin] = req.requestDate.finishingTime.split(":").map(Number);
+                        const totalMinutes =
+                            endHour * 60 + endMin - (startHour * 60 + startMin);
+                        reservedHours = Math.floor(totalMinutes / 60);
+                        reservedMinutes = totalMinutes % 60;
+                    }
 
                     return {
                         id: req.requestId,
                         typeOfRequest: req.typeOfRequest,
+                        requestSubtype: req.requestSubtype,
                         requestStatus: req.requestStatus,
                         workArea: req.workArea,
                         requestDate: {

@@ -27,11 +27,11 @@ export default function RequestDetailsPanel({ request, onClose }) {
     const requestedDate = 
         requestDate?.startingDate && requestDate?.finishingDate
             ? `${new Date(requestDate.startingDate).toLocaleDateString()} - ${new Date(requestDate.finishingDate).toLocaleDateString()}`
-            : "-";
+            : `${new Date(requestDate.startingDate).toLocaleDateString()}`;
     const requestedTime =
         requestDate?.startingTime && requestDate?.finishingTime
             ? `${requestDate.startingTime} - ${requestDate.finishingTime}`
-            : "-";
+            : `${requestDate.startingTime}`;
 
     const getObservationText = () => {
         const obsText = document.getElementById("observation")?.value || "";
@@ -181,7 +181,7 @@ export default function RequestDetailsPanel({ request, onClose }) {
                                 </strong>
                                 <br />
                                 {typeOfRequest === "TA"
-                                    ? request.requestSubtype || "-"
+                                    ? requestSubtype || "-"
                                     : occupiedMaterial?.length > 0
                                     ? occupiedMaterial
                                           .map((mat) => mat.name)
