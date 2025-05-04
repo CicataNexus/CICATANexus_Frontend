@@ -21,7 +21,7 @@ export default function ProtectedRoutes({ allowedRoles }) {
 
     const roleHomeRoutes = {
         Administrator: "/dashboard",
-        Tech: "/dashboard",
+        tech: "/gestion/solicitudes",
         user: "/request/equipment",
     };
 
