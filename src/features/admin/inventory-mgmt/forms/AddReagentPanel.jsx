@@ -109,7 +109,9 @@ export default function AddReagentPanel({
         } else if (type === "file") {
             setFormData((prev) => ({ ...prev, [name]: files[0] }));
         } else {
-            setFormData((prev) => ({ ...prev, [name]: value }));
+            const newValue = name === "barcode" ? value.replace(/\s/g, "") : value;
+            
+            setFormData((prev) => ({ ...prev, [name]: newValue }));
 
             setErrors((prevErrors) => ({
                 ...prevErrors,
@@ -140,7 +142,7 @@ export default function AddReagentPanel({
         if (!validateForm()) {
             return; // Stop submission if validation fails
         }
-        const payload = {
+        const reagentData = {
             reagentCode: String(formData.reagentCode),
             reagentName: String(formData.reagentName),
             reagentPresentation: String(formData.reagentPresentation),
@@ -148,7 +150,6 @@ export default function AddReagentPanel({
             reagentBrand: String(formData.reagentBrand),
             reagentCatalog: String(formData.reagentCatalog),
             reagentSupplier: String(formData.reagentSupplier),
-            reagentImage: String(formData.reagentImage),
             reagentLot: String(formData.reagentLot),
             dateOfReception: formData.dateOfReception
                 ? new Date(formData.dateOfReception).toISOString()
@@ -164,9 +165,7 @@ export default function AddReagentPanel({
                 ? new Date(formData.expirationDate).toISOString()
                 : null,
             invoiceNumber: String(formData.invoiceNumber),
-            vinculatedStrategicProject: String(
-                formData.vinculatedStrategicProject
-            ),
+            vinculatedStrategicProject: String(formData.vinculatedStrategicProject),
             barcode: String(formData.barcode),
             nfpaName: String(formData.nfpaName),
             storageClass: String(formData.storageClass),
@@ -180,10 +179,7 @@ export default function AddReagentPanel({
             flammable: parseInt(formData.flammable, 10),
             corrosive: parseInt(formData.corrosive, 10),
             toxic: parseInt(formData.toxic, 10),
-            mutagenicOrCarcinogenic: parseInt(
-                formData.mutagenicOrCarcinogenic,
-                10
-            ),
+            mutagenicOrCarcinogenic: parseInt(formData.mutagenicOrCarcinogenic, 10),
             irritation: parseInt(formData.irritation, 10),
             compressedGases: parseInt(formData.compressedGases, 10),
             healthHazard: parseInt(formData.healthHazard, 10),
@@ -195,17 +191,18 @@ export default function AddReagentPanel({
             observations: String(formData.observations),
         };
 
+        const reagentFormData = new FormData();
+        reagentFormData.append("body", JSON.stringify(reagentData));
+        if (formData.reagentImage) {
+            reagentFormData.append("thumbnail", formData.reagentImage);
+        }
+
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${
-                    import.meta.env.VITE_SERVER_PORT
-                }/v1/reagent`,
+                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/reagent`,
                 {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(payload),
+                    body: reagentFormData,
                 }
             );
 
@@ -251,9 +248,7 @@ export default function AddReagentPanel({
                 ? new Date(formData.expirationDate).toISOString()
                 : null,
             invoiceNumber: String(formData.invoiceNumber),
-            vinculatedStrategicProject: String(
-                formData.vinculatedStrategicProject
-            ),
+            vinculatedStrategicProject: String(formData.vinculatedStrategicProject),
             barcode: String(formData.barcode),
             nfpaName: String(formData.nfpaName),
             storageClass: String(formData.storageClass),
@@ -267,10 +262,7 @@ export default function AddReagentPanel({
             flammable: parseInt(formData.flammable, 10),
             corrosive: parseInt(formData.corrosive, 10),
             toxic: parseInt(formData.toxic, 10),
-            mutagenicOrCarcinogenic: parseInt(
-                formData.mutagenicOrCarcinogenic,
-                10
-            ),
+            mutagenicOrCarcinogenic: parseInt(formData.mutagenicOrCarcinogenic, 10),
             irritation: parseInt(formData.irritation, 10),
             compressedGases: parseInt(formData.compressedGases, 10),
             healthHazard: parseInt(formData.healthHazard, 10),
@@ -284,9 +276,7 @@ export default function AddReagentPanel({
 
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${
-                    import.meta.env.VITE_SERVER_PORT
-                }/v1/reagent/${formData._id}`,
+                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/reagent/${formData._id}`,
                 {
                     method: "PUT",
                     headers: {
@@ -311,14 +301,9 @@ export default function AddReagentPanel({
     const handleDelete = async () => {
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${
-                    import.meta.env.VITE_SERVER_PORT
-                }/v1/reagent/${formData._id}`,
+                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/reagent/barcode/${formData.barcode}`,
                 {
                     method: "DELETE",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
                 }
             );
 
@@ -400,12 +385,28 @@ export default function AddReagentPanel({
                         ))}
                         <label className="flex flex-col font-montserrat font-semibold">
                             Imagen
-                            <FileInput
-                                name="reagentImage"
-                                value={formData.reagentImage}
-                                onChange={handleChange}
-                                className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
-                            />
+                            {isEditing && initialData.photoId ? (
+                                <div className="flex gap-4 items-start">
+                                    <FileInput
+                                        name="reagentImage"
+                                        value={formData.reagentImage}
+                                        onChange={handleChange}
+                                        className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
+                                    />
+                                    <img
+                                        src={`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/photo/${initialData.photoId}`}
+                                        alt="Imagen del reactivo"
+                                        className="mt-2 w-200 h-50 object-cover rounded-md"
+                                    />
+                                </div>
+                            ) : (
+                                <FileInput
+                                    name="reagentImage"
+                                    value={formData.reagentImage}
+                                    onChange={handleChange}
+                                    className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
+                                />
+                            )}
                         </label>
                     </fieldset>
 
@@ -522,21 +523,31 @@ export default function AddReagentPanel({
                             />
                         </label>
                         <label className="flex flex-col font-montserrat font-semibold">
-                            <span>
-                                Escanear código de barras
-                                <span className="text-red-500">*</span>
-                            </span>
-                            <Input
-                                type="text"
-                                name="barcode"
-                                value={formData.barcode}
-                                onChange={handleChange}
-                                required
-                                showError={errors.barcode}
-                                errorMessage={"Este campo es obligatorio"}
-                                placeholder="Haga clic y escanee"
-                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
-                            />
+                            {isEditing ? (
+                                <>
+                                    <span>Código de barras</span>
+                                    <p className="font-montserrat font-normal">
+                                        {formData.barcode}
+                                    </p>
+                                </>
+                            ) : (
+                                <>
+                                    <span>
+                                        Escanear código de barras{" "}
+                                        <span className="text-red-500">*</span>
+                                    </span>
+                                    <Input
+                                        name="barcode"
+                                        value={formData.barcode}
+                                        onChange={handleChange}
+                                        placeholder="Haga clic y escanee"
+                                        required
+                                        showError={errors.barcode}
+                                        errorMessage={"Este campo es obligatorio"}
+                                        className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                                    />
+                                </>
+                            )}
                         </label>
                     </fieldset>
 

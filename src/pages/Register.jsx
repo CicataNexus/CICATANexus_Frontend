@@ -1,87 +1,63 @@
 import React, { useState } from "react";
-import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
 
-function Login() {
+function Register() {
     const navigate = useNavigate();
-    const [matricula, setMatricula] = useState("");
-    const [password, setPassword] = useState("");
+    const [formData, setFormData] = useState({
+        name: "",
+        registrationNumber: "",
+        email: "",
+        password: "",
+        role: "user",
+    });
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
 
-    const handleLogin = async () => {
-        setError("");
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
 
-        // Usuarios temporales para no prender la api
-        if (matricula === "ana" && password === "123") {
-            const token = import.meta.env.VITE_ADMIN_TOKEN;
-            localStorage.setItem("token", token);
-            navigate("/dashboard");
+    const handleRegister = async () => {
+        setError(""); // Limpiar el error
+    
+        // Validaciones previas
+        if (!formData.name || !formData.registrationNumber || !formData.email || !formData.password) {
+            setError("Todos los campos son requeridos.");
             return;
         }
-        if (matricula === "juan" && password === "123") {
-            const token = import.meta.env.VITE_USER_TOKEN;
-            localStorage.setItem("token", token);
-            navigate("/request/equipment");
+        if (formData.password.length < 6) {
+            setError("La contraseña debe tener al menos 6 caracteres.");
             return;
         }
-
-        if (!matricula && !password) {
-            setError("Por favor, ingrese su clave de usuario y contraseña");
-            return;
-        } else if (!matricula) {
-            setError("Por favor, ingrese su clave de usuario");
-            return;
-        } else if (!password) {
-            setError("Por favor, ingrese su contraseña");
+        if (!/\S+@\S+\.\S+/.test(formData.email)) {
+            setError("Por favor ingresa un correo electrónico válido.");
             return;
         }
-
-        // Validar credenciales con el back
+    
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/auth/login`,
+                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/auth/register`,
                 {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({ matricula, password }),
+                    body: JSON.stringify(formData),
                 }
             );
-
-            const data = await response.json();
-
             if (response.ok) {
-                const token = data.token;
-                localStorage.setItem("token", token);
-
-                const decoded = jwtDecode(token);
-                const role = decoded.role;
-
-                // Dependiendo del rol, se envía al usuario a su ruts
-                switch (role) {
-                    case "Administrator":
-                        navigate("/dashboard");
-                        break;
-                    case "Tech":
-                        navigate("/dashboard");
-                        break;
-                    case "user":
-                        navigate("/request/equipment");
-                        break;
-                    default:
-                        setError("Usuario con rol no reconocido");
-                        break;
-                }
-            } else {
-                setError("Datos incorrectos, intente nuevamente");
+                navigate("/");
             }
         } catch (error) {
-            setError(data.error);
+            // Manejo de error en la solicitud
+            setError(error.message || "Hubo un error al registrar. Intente de nuevo.");
         }
-    };
+    };      
 
     return (
         <>
@@ -108,24 +84,49 @@ function Login() {
                 <div className="fixed bottom-20 left-3 w-65 h-65 bg-sphere-blue opacity-50 blur-[100px] rounded-full"></div>
                 <div className="fixed top-10 right-3 w-65 h-65 bg-sphere-blue opacity-50 blur-[100px] rounded-full"></div>
 
-                <div className="fixed rounded-2xl min-w-[42vw] max-w-[42vw] min-h-[40vh] max-h-[45vh]">
+                <div className="fixed rounded-2xl min-w-[42vw] max-w-[42vw] min-h-[70vh] max-h-[75vh]">
                     <div className="flex flex-col w-full h-full items-center justify-center text-center p-15 gap-10 bg-white rounded-2xl">
                         <h1 className="text-3xl text-black font-semibold font-poppins">
-                            Iniciar Sesión
+                            Crear una cuenta
                         </h1>
                         <div className="flex flex-col items-center justify-center text-center gap-5 flex-grow">
+                            <div className="flex flex-col min-w-[30vw] max-w-[40vw] text-1xl text-left gap-1 font-montserrat">
+                                <span className="font-semibold">
+                                    Nombre completo
+                                </span>
+                                <input
+                                    type="text"
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    className="rounded-md p-1 border-2 border-gray-200 outline-none focus:border-input-focus focus:bg-input-background placeholder:text-sm placeholder:text-placeholder-text"
+                                    placeholder="Ingrese su nombre completo"
+                                ></input>
+                            </div>
                             <div className="flex flex-col min-w-[30vw] max-w-[40vw] text-1xl text-left gap-1 font-montserrat">
                                 <span className="font-semibold">
                                     Clave de usuario
                                 </span>
                                 <input
                                     type="text"
-                                    value={matricula}
-                                    onChange={(e) =>
-                                        setMatricula(e.target.value)
-                                    }
+                                    name="registrationNumber"
+                                    value={formData.registrationNumber}
+                                    onChange={handleChange}
                                     className="rounded-md p-1 border-2 border-gray-200 outline-none focus:border-input-focus focus:bg-input-background placeholder:text-sm placeholder:text-placeholder-text"
                                     placeholder="Ingrese su clave de usuario"
+                                ></input>
+                            </div>
+                            <div className="flex flex-col min-w-[30vw] max-w-[40vw] text-1xl text-left gap-1 font-montserrat">
+                                <span className="font-semibold">
+                                    Correo electrónico
+                                </span>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    className="rounded-md p-1 border-2 border-gray-200 outline-none focus:border-input-focus focus:bg-input-background placeholder:text-sm placeholder:text-placeholder-text"
+                                    placeholder="Ingrese su correo electrónico"
                                 ></input>
                             </div>
                             <div className="flex flex-col min-w-[30vw] max-w-[40vw] text-1xl text-left gap-1 font-montserrat">
@@ -134,47 +135,34 @@ function Login() {
                                 </span>
                                 <div className="relative">
                                     <input
-                                        type={
-                                            showPassword ? "text" : "password"
-                                        }
-                                        value={password}
-                                        onChange={(e) => {
-                                            setPassword(e.target.value);
-                                            setError("");
-                                        }}
+                                        type={showPassword ? "text" : "password"}
+                                        name="password"
+                                        value={formData.password}
+                                        onChange={handleChange}
                                         className="w-full rounded-md p-1 pr-10 border-2 border-gray-200 outline-none focus:border-input-focus focus:bg-input-background placeholder:text-sm placeholder:text-placeholder-text"
                                         placeholder="Ingrese su contraseña"
                                     />
                                     <button
                                         type="button"
-                                        onClick={() =>
-                                            setShowPassword(!showPassword)
-                                        }
+                                        onClick={() => setShowPassword(!showPassword)}
                                         className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-black focus:outline-none cursor-pointer"
                                     >
                                         <Icon
-                                            icon={
-                                                showPassword
-                                                    ? "mdi:eye-off-outline"
-                                                    : "mdi:eye-outline"
-                                            }
+                                            icon={showPassword ? "mdi:eye-off-outline" : "mdi:eye-outline"}
                                             className="text-lg"
                                         />
-                                        <span className="sr-only">
-                                            Mostrar u ocultar contraseña
-                                        </span>
+                                        <span className="sr-only">Mostrar u ocultar contraseña</span>
                                     </button>
                                 </div>
                                 <span className="mt-1 text-[15px] font-montserrat font-medium">
-                                    ¿No tiene una cuenta?{" "}
+                                    ¿Ya tienes cuenta?{" "}
                                     <button
                                         className="cursor-pointer text-dark-blue font-semibold hover:underline"
                                         onClick={() => {
-                                            navigate("/register");
-                                        }
-                                        }
+                                            navigate("/");
+                                        }}
                                     >
-                                        Regístrese
+                                        Entrar
                                     </button>
                                 </span>
                                 {/* Mensaje de error */}
@@ -186,9 +174,9 @@ function Login() {
                             </div>
                             <button
                                 className="rounded-md p-2 min-w-[30vw] max-w-[40vw] items-center justify-center bg-primary-green text-white text-lg font-bold font-poppins transition-all duration-200 hover:bg-login-btn-hover hover:scale-102 active:scale-95 cursor-pointer"
-                                onClick={handleLogin}
+                                onClick={handleRegister}
                             >
-                                Ingresar
+                                Crear cuenta
                             </button>
                         </div>
                     </div>
@@ -198,4 +186,4 @@ function Login() {
     );
 }
 
-export default Login;
+export default Register;

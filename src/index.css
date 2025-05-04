@@ -54,29 +54,43 @@ body {
     --color-dark-gray: #807f89;
 
     /* Request Status */
-    --color-rejected-status: #FFBFBF; /* Applies for rejected and notified status too */
-    --color-rejected-status-text: #DC1313; /* Applies for rejected and notified status too */
-    --color-in-progress-status: #FFEA99; /* Applies for pending approval dept head status too */
-    --color-in-progress-status-text: #705E19; /* Applies for pending approval dept head status too */
-    --color-approved-status: #C1E9AD; /* Applies for approval and notified status too */
-    --color-approved-status-text: #27751B; /* Applies for approval and notified status too*/
-    --color-pending-approval-technician: #FFC04C;
-    --color-pending-approval-technician-text: #895800;
-    --color-approved-by-technician: #AFE6FF;
-    --color-approved-by-technician-text: #0078AF;
-    --color-rejected-by-tech: #FFB1D0;
-    --color-rejected-by-tech-text: #C30052;
+    --color-rejected-status: #F3CFCF; /* Applies for rejected and notified status too */
+    --color-rejected-status-text: #B03030; /* Applies for rejected and notified status too */
+    --color-in-progress-status: #D0ECFF; /* Applies for pending approval dept head status too */
+    --color-in-progress-status-text: #2A88B8; /* Applies for pending approval dept head status too */
+    --color-approved-status: #CDE8D4; /* Applies for approval and notified status too */
+    --color-approved-status-text: #3A7F58; /* Applies for approval and notified status too*/
+    --color-pending-approval-technician: #D4E9FF;
+    --color-pending-approval-technician-text: #005B96;
+    --color-approved-by-technician: #D8F2CC;
+    --color-approved-by-technician-text: #377E39;
+    --color-rejected-by-tech: #FAD4D4;
+    --color-rejected-by-tech-text: #C84B4B;
+    --color-cancelled-user: #F0F0F0;
+    --color-cancelled-user-text: #515151;
 
+    /* Toast */
+    --color-success-toast-icon: #039855;
+    --color-success-toast-icon-front: #D1FADF;
+    --color-success-toast-icon-background: #ECFDF3;
+
+    --color-error-toast-icon: #FC3636;
+    --color-error-toast-icon-front: #FFB0B0;
+    --color-error-toast-icon-background: #FFEBEB;
+
+    --color-warning-toast-icon: #FECB54;
+    --color-warning-toast-icon-front: #FFF0CE;
+    --color-warning-toast-icon-background: #FFF8E9;
 
     /* Dashboard Alerts */
     --color-expiring-soon: #007aff; /* For expiring sticker too */
     --color-low-stock: #ff6464;
 
     /* Buttons */
-    --color-reject-btn: #ff4456;
-    --color-reject-btn-hover: #cc3644;
-    --color-approve-btn: #2dbe4e;
-    --color-approve-btn-hover: #24963e;
+    --color-reject-btn: #C14C4C;
+    --color-reject-btn-hover: #A93C3C;
+    --color-approve-btn: #4FA766;
+    --color-approve-btn-hover: #3E8952;
     --color-delete-btn: #4eb5ea;
     --color-delete-btn-hover: #3a9acb;
     --color-login-btn-hover: #5b9b87;
@@ -116,3 +130,30 @@ body {
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
 }
+
+@keyframes slide-in-right {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes slide-out-right {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(200%);
+    }
+}
+  
+.animate-slide-in-right {
+    animation: slide-in-right 0.25s ease-out forwards;
+}
+
+.animate-slide-out-right {
+    animation: slide-out-right 0.5s ease-in forwards;
+}
+  

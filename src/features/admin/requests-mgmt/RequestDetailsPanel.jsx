@@ -23,18 +23,16 @@ export default function RequestDetailsPanel({ request, onClose }) {
         occupiedMaterial,
     } = request;
 
-    const userStatus = mapRequestStatusForAdminAndTechnician(requestStatus);
-    const showCancelButton = userStatus === "inProgress";
-    const fechaRequiere = requestDate?.startingDate
+    const requestedDate = requestDate?.startingDate
         ? new Date(requestDate.startingDate).toLocaleDateString()
         : "-";
-    const horaRequiere =
+    const requestedTime =
         requestDate?.startingTime && requestDate?.finishingTime
             ? `${requestDate.startingTime} - ${requestDate.finishingTime}`
             : "-";
 
     return (
-        <div className="w-full flex justify-center py-2">
+        <div className="w-full max-w-4xl flex justify-center py-2 place-self-center">
             <section>
                 <article className="flex flex-col items-center justify-center p-4 w-full max-w-4xl rounded-xl bg-white font-montserrat text-sm shadow-sm">
                     <div className="grid grid-cols-2 w-full gap-4 divide-primary-blue divide-x">
@@ -57,17 +55,22 @@ export default function RequestDetailsPanel({ request, onClose }) {
                             <p className="mb-3">
                                 <strong>Fecha en que se requiere</strong>
                                 <br />
-                                {fechaRequiere}
+                                {requestedDate}
                             </p>
                             <p className="mb-3">
                                 <strong>Horario en que se requiere</strong>
                                 <br />
-                                {horaRequiere}
+                                {requestedTime}
                             </p>
                             <p className="mb-3">
                                 <strong>Área de trabajo</strong>
                                 <br />
                                 {workArea}
+                            </p>
+                            <p className="mb-3">
+                                <strong>Estado de la solicitud</strong>
+                                <br />
+                                {requestStatus}
                             </p>
                         </div>
                         <div className="space-y-1.5 p-2">

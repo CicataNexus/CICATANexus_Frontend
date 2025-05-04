@@ -78,7 +78,9 @@ export default function AddMaterialPanel({
         } else if (type === "file") {
             setFormData((prev) => ({ ...prev, [name]: files[0] }));
         } else {
-            setFormData((prev) => ({ ...prev, [name]: value }));
+            const newValue = name === "barcode" ? value.replace(/\s/g, "") : value;
+            
+            setFormData((prev) => ({ ...prev, [name]: newValue }));
 
             setErrors((prevErrors) => ({
                 ...prevErrors,
@@ -109,7 +111,7 @@ export default function AddMaterialPanel({
         if (!validateForm()) {
             return; // Stop submission if validation fails
         }
-        const payload = {
+        const materialData = {
             materialCategory: String(formData.materialCategory),
             materialDescription: String(formData.materialDescription),
             materialPresentation: String(formData.materialPresentation),
@@ -117,7 +119,6 @@ export default function AddMaterialPanel({
             materialSupplier: String(formData.materialSupplier),
             materialCatalog: String(formData.materialCatalog),
             materialQuantity: Number(formData.materialQuantity),
-            materialImage: String(formData.materialImage),
             warehouseUnits: Number(formData.warehouseUnits),
             labUnits: Number(formData.labUnits),
             l1: Number(formData.l1),
@@ -144,17 +145,18 @@ export default function AddMaterialPanel({
             verified: Boolean(formData.verified),
         };
 
+        const materialFormData = new FormData();
+        materialFormData.append("body", JSON.stringify(materialData));
+        if (formData.materialImage) {
+            materialFormData.append("thumbnail", formData.materialImage);
+        }
+
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${
-                    import.meta.env.VITE_SERVER_PORT
-                }/v1/materials`,
+                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/materials`,
                 {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(payload),
+                    body: materialFormData,
                 }
             );
 
@@ -213,9 +215,7 @@ export default function AddMaterialPanel({
 
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${
-                    import.meta.env.VITE_SERVER_PORT
-                }/v1/materials/${formData.id}`,
+                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/materials/${formData.id}`,
                 {
                     method: "PUT",
                     headers: {
@@ -240,9 +240,7 @@ export default function AddMaterialPanel({
     const handleDelete = async () => {
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${
-                    import.meta.env.VITE_SERVER_PORT
-                }/v1/materials/${formData.id}`,
+                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/materials/${formData.barcode}`,
                 {
                     method: "DELETE",
                 }
@@ -370,12 +368,30 @@ export default function AddMaterialPanel({
                                 />
                             </label>
                         ))}
-                        <label className="font-montserrat font-semibold">
+                        <label className="flex flex-col font-montserrat font-semibold">
                             Imagen
-                            <FileInput
-                                name="materialImage"
-                                onChange={handleChange}
-                            />
+                            {isEditing && initialData.photoId ? (
+                                <div className="flex gap-4 items-start">
+                                    <FileInput
+                                        name="materialImage"
+                                        value={formData.materialImage}
+                                        onChange={handleChange}
+                                        className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
+                                    />
+                                    <img
+                                        src={`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/photo/${initialData.photoId}`}
+                                        alt="Imagen del material"
+                                        className="mt-2 w-200 h-50 object-cover rounded-md"
+                                    />
+                                </div>
+                            ) : (
+                                <FileInput
+                                    name="materialImage"
+                                    value={formData.materialImage}
+                                    onChange={handleChange}
+                                    className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
+                                />
+                            )}
                         </label>
                     </fieldset>
 
@@ -550,21 +566,31 @@ export default function AddMaterialPanel({
                             )
                         )}
                         <label className="flex flex-col font-montserrat font-semibold">
-                            <span>
-                                Escanear código de barras{" "}
-                                <span className="text-red-500">*</span>
-                            </span>
-                            <Input
-                                type="text"
-                                name="barcode"
-                                value={formData.barcode}
-                                onChange={handleChange}
-                                placeholder="Haga clic y escanee"
-                                required
-                                showError={errors.barcode}
-                                errorMessage={"Este campo es obligatorio"}
-                                className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
-                            />
+                            {isEditing ? (
+                                <>
+                                    <span>Código de barras</span>
+                                    <p className="font-montserrat font-normal">
+                                        {formData.barcode}
+                                    </p>
+                                </>
+                            ) : (
+                                <>
+                                    <span>
+                                        Escanear código de barras{" "}
+                                        <span className="text-red-500">*</span>
+                                    </span>
+                                    <Input
+                                        name="barcode"
+                                        value={formData.barcode}
+                                        onChange={handleChange}
+                                        placeholder="Haga clic y escanee"
+                                        required
+                                        showError={errors.barcode}
+                                        errorMessage={"Este campo es obligatorio"}
+                                        className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                                    />
+                                </>
+                            )}
                         </label>
                     </fieldset>
 
