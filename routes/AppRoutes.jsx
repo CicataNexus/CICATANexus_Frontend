@@ -6,6 +6,7 @@ import Register from "@/pages/Register";
 import Dashboard from "../src/pages/Dashboard";
 import Solicitudes from "../src/pages/RequestsManagement";
 import InventarioGenerico from "../src/pages/GenericInventory";
+import Movimientos from "../src/pages/Movements"
 import Usuarios from "../src/pages/UsersManagement";
 import RequestsLayout from "@/components/requestsComponents/RequestsLayout";
 import MyRequests from "@/pages/MyRequests";
@@ -19,18 +20,28 @@ export default function AppRoutes() {
             <Routes>
             	<Route path="/" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                {/* Routes for Authorized Personnel */}
+                <Route element={<ProtectedRoutes allowedRoles={["Administrator", "tech"]} />}>
+                    <Route element={<Layout />}>
+                        <Route path="/gestion/solicitudes" element={<Solicitudes />} />
+                        <Route path="/inventario/:type" element={<InventarioGenerico />} />
+                    </Route>
+                </Route>
 
                 {/* Routes for Administrators */}
                 <Route element={<ProtectedRoutes allowedRoles={["Administrator"]} />}>
                     <Route element={<Layout />}>
                         <Route path="/dashboard" element={<Dashboard />} />
-                        <Route path="/gestion/solicitudes" element={<Solicitudes />} />
-                        <Route path="/inventario/:type" element={<InventarioGenerico />} />
                         <Route path="/gestion/usuarios" element={<Usuarios />} />
                     </Route>
                 </Route>
 
-                {/* Routes for Tech */}
+                {/* Routes for Technicians */}
+                <Route element={<ProtectedRoutes allowedRoles={["tech"]} />}>
+                    <Route element={<Layout />}>
+                        <Route path="/movimientos" element={<Movimientos />} />
+                    </Route>
+                </Route>
 
                 {/* Routes for Users */}
                 <Route element={<ProtectedRoutes allowedRoles={["user"]} />}>

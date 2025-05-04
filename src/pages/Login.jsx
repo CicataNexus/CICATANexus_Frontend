@@ -65,8 +65,8 @@ function Login() {
                     case "Administrator":
                         navigate("/dashboard");
                         break;
-                    case "Tech":
-                        navigate("/dashboard");
+                    case "tech":
+                        navigate("/movimientos");
                         break;
                     case "user":
                         navigate("/request/equipment");
