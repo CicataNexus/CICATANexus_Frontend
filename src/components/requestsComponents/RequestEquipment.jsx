@@ -74,21 +74,45 @@ const RequestEquipment = () => {
     setObservations(event.target.value);
   };
 
+  const calculateTimeDifference = (startTime, endTime) => {
+    const [startHour, startMinute] = startTime.split(":").map(Number);
+    const [endHour, endMinute] = endTime.split(":").map(Number);
+
+    const start = new Date(0, 0, 0, startHour, startMinute);
+    const end = new Date(0, 0, 0, endHour, endMinute);
+
+    let diff = (end - start) / (1000 * 60);
+
+    if (diff < 0) {
+      diff += 24 * 60;
+    }
+
+    const reservedHours = Math.floor(diff / 60);
+    const reservedMinutes = diff % 60;
+
+    return { reservedHours, reservedMinutes };
+  };
+
   const handleSubmit = async () => {
     const isValid =
-      dateRange.startDate &&
-      dateRange.endDate &&
-      dateRange.reservedDays &&
+      !!dateRange.startDate &&
+      !!dateRange.endDate &&
       selectedItems.length > 0 &&
-      timeRange.startTime &&
-      timeRange.endTime &&
-      (timeRange.reservedHours > 0 || timeRange.reservedMinutes > 0) &&
+      typeof timeRange.startTime === "string" &&
+      typeof timeRange.endTime === "string" &&
+      timeRange.startTime.length > 0 &&
+      timeRange.endTime.length > 0 &&
       selectedAreas.length > 0;
 
     if (!isValid) {
       alert("Por favor complete todos los campos requeridos.");
       return;
     }
+
+    const { reservedHours, reservedMinutes } = calculateTimeDifference(
+      timeRange.startTime,
+      timeRange.endTime
+    );
 
     const formattedRequest = {
       typeOfRequest: "EQ",
@@ -102,8 +126,8 @@ const RequestEquipment = () => {
         startingTime: timeRange.startTime,
         finishingTime: timeRange.endTime,
         reservedDays: dateRange.reservedDays,
-        reservedHours: timeRange.reservedHours,
-        reservedMinutes: timeRange.reservedMinutes,
+        reservedHours,
+        reservedMinutes,
       },
       registrationNumber: "CUM-U-042", // placeholder
       observations: observations,

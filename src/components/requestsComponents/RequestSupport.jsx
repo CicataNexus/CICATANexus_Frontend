@@ -186,6 +186,7 @@ const RequestSupport = () => {
                     timeRange={timeRange}
                     setTimeRange={setTimeRange}
                     type="start"
+                    className="select-none"
                   />
                 </div>
                 <div className="">
@@ -194,6 +195,7 @@ const RequestSupport = () => {
                     timeRange={timeRange}
                     setTimeRange={setTimeRange}
                     type="end"
+                    className="select-none"
                   />
                 </div>
               </div>
