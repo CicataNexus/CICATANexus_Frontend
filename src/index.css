@@ -58,8 +58,8 @@ body {
     --color-rejected-status-text: #B03030; /* Applies for rejected and notified status too */
     --color-in-progress-status: #D0ECFF; /* Applies for pending approval dept head status too */
     --color-in-progress-status-text: #2A88B8; /* Applies for pending approval dept head status too */
-    --color-approved-status: #CDE8D4; /* Applies for approval and notified status too */
-    --color-approved-status-text: #3A7F58; /* Applies for approval and notified status too*/
+    --color-approved-status: #C2E5B5; /* Applies for approval and notified status too */
+    --color-approved-status-text: #2C7033; /* Applies for approval and notified status too*/
     --color-pending-approval-technician: #D4E9FF;
     --color-pending-approval-technician-text: #005B96;
     --color-approved-by-technician: #D8F2CC;

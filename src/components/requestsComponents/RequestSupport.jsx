@@ -40,6 +40,7 @@ const RequestSupport = () => {
     const [selectedOption, setSelectedOption] = useState("");
     const [selectedAreas, setSelectedAreas] = useState([]);
     const [observations, setObservations] = useState("");
+    const [errors, setErrors] = useState({});
 
     const handleRadioButtonChange = (option) => {
         setSelectedOption(option);
@@ -60,19 +61,20 @@ const RequestSupport = () => {
     };
 
     const handleSubmit = async () => {
-        const isValid =
-            dateRange.startDate &&
-            dateRange.endDate &&
-            selectedOption &&
-            timeRange.startTime &&
-            timeRange.endTime &&
-            (timeRange.reservedHours > 0 || timeRange.reservedMinutes > 0) &&
-            selectedAreas.length > 0;
+        const newErrors = {
+            dateRange: !dateRange.startDate || !dateRange.endDate,
+            timeRange:
+                !timeRange.startTime ||
+                !timeRange.endTime ||
+                (timeRange.reservedHours === 0 &&
+                    timeRange.reservedMinutes === 0),
+            selectedOption: !selectedOption,
+            selectedAreas: selectedAreas.length === 0,
+        };
+        setErrors(newErrors);
 
-        if (!isValid) {
-            alert("Por favor complete todos los campos requeridos.");
-            return;
-        }
+        const hasErrors = Object.values(newErrors).some(Boolean);
+        if (hasErrors) return;
 
         const formattedRequest = {
             typeOfRequest: "TA",
@@ -120,6 +122,7 @@ const RequestSupport = () => {
             });
             setObservations("");
             setSelectedOption("");
+            setErrors({});
         } catch (error) {
             alert("Ocurrió un error al enviar la solicitud. Intente de nuevo.");
             console.error(error);
@@ -139,20 +142,27 @@ const RequestSupport = () => {
                 <div className="grid grid-cols-2 gap-4 mt-5">
                     <div className="flex flex-col">
                         <div className="p-2">
-                            <p className="mb-2 font-montserrat font-semibold">
-                                Fecha en la que se requiere *
-                            </p>
+                            <span className="inline-block mb-2 font-montserrat font-semibold">
+                                Fecha en la que se requiere{" "}
+                                <span className="text-red-500">*</span>
+                            </span>
                             <DatePicker
                                 startDate={dateRange.startDate}
                                 endDate={dateRange.endDate}
                                 onChange={setDateRange}
                                 mode="range"
                             />
+                            {errors.dateRange && (
+                                <p className="mt-1 text-red-500 text-xs font-montserrat font-semibold">
+                                    Este campo es obligatorio
+                                </p>
+                            )}
                         </div>
                         <div className="p-2 flex flex-col">
-                            <p className="mb-2 font-montserrat font-semibold">
-                                Tipo de Apoyo *
-                            </p>
+                            <span className="inline-block mb-2 font-montserrat font-semibold">
+                                Tipo de Apoyo{" "}
+                                <span className="text-red-500">*</span>
+                            </span>
                             {options.map((option) => {
                                 return (
                                     <label
@@ -173,6 +183,7 @@ const RequestSupport = () => {
                                                 }
                                                 className="peer sr-only"
                                             />
+
                                             <div className="w-4 h-4 rounded-full border-2 border-primary-blue peer-checked:border-primary-blue peer-checked:bg-primary-blue flex items-center justify-center"></div>
                                             <div className="absolute w-2 h-2 rounded-fullleft-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 peer-checked:block hidden"></div>
                                         </div>
@@ -180,14 +191,20 @@ const RequestSupport = () => {
                                     </label>
                                 );
                             })}
+                            {errors.selectedOption && (
+                                <p className="text-red-500 text-xs font-montserrat font-semibold">
+                                    Este campo es obligatorio
+                                </p>
+                            )}
                         </div>
                         <div className="p-2 flex flex-col">
-                            <p className="mb-2 font-montserrat font-semibold">
-                                Horario en el que se requiere *
-                            </p>
+                            <span className="inline-block mb-2 font-montserrat font-semibold">
+                                Horario en el que se requiere{" "}
+                                <span className="text-red-500">*</span>
+                            </span>
                             <div className="flex gap-2 font-montserrat">
                                 <div className="">
-                                    <div className=" bg-white flex select-none">
+                                    <div className=" bg-white flex select-none font-medium">
                                         Desde
                                     </div>
                                     <TimePicker
@@ -197,7 +214,7 @@ const RequestSupport = () => {
                                     />
                                 </div>
                                 <div className="">
-                                    <div className=" bg-white flex select-none">
+                                    <div className=" bg-white flex select-none font-medium">
                                         Hasta
                                     </div>
                                     <TimePicker
@@ -207,13 +224,19 @@ const RequestSupport = () => {
                                     />
                                 </div>
                             </div>
+                            {errors.timeRange && (
+                                <p className="mt-1 text-red-500 text-xs font-montserrat font-semibold">
+                                    Este campo es obligatorio
+                                </p>
+                            )}
                         </div>
                     </div>
                     <div className="flex flex-col">
                         <div className="p-2">
-                            <p className="mb-2 font-montserrat font-semibold">
-                                Áreas de Trabajo *
-                            </p>
+                            <span className="inline-block mb-1 font-montserrat font-semibold">
+                                Áreas de Trabajo{" "}
+                                <span className="text-red-500">*</span>
+                            </span>
                             <ul className="font-montserrat">
                                 {areas.map((option) => {
                                     return (
@@ -255,6 +278,9 @@ const RequestSupport = () => {
                                     );
                                 })}
                             </ul>
+                            {errors.selectedAreas && (
+                                <p className="mt-1 text-red-500 text-xs font-montserrat font-semibold">Este campo es obligatorio</p>
+                            )}
                         </div>
                         <div className="flex flex-col w-full">
                             <label
@@ -265,7 +291,7 @@ const RequestSupport = () => {
                             </label>
                             <textarea
                                 id="observaciones"
-                                className="border border-primary-blue rounded-lg p-2 font-montserrat focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-transparent focus:bg-input-background placeholder:text-sm text-sm"
+                                className="border-2 border-primary-blue rounded-lg p-2 font-montserrat focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-transparent focus:bg-input-background placeholder:text-sm text-sm"
                                 placeholder="Escriba aquí sus observaciones."
                                 value={observations}
                                 onChange={handleObservationsChange}
@@ -273,7 +299,7 @@ const RequestSupport = () => {
                         </div>
                     </div>
                 </div>
-                <div className="flex justify-center mt-4">
+                <div className="flex justify-center mt-8">
                     <Button
                         className="bg-deep-blue hover:bg-dark-blue text-white text-xl font-poppins font-semibold tracking-wide py-5 w-auto px-15"
                         onClick={handleSubmit}
