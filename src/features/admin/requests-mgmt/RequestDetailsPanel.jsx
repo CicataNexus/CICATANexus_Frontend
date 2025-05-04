@@ -181,7 +181,7 @@ export default function RequestDetailsPanel({ request, onClose }) {
                 </article>
 
                 <section className="mt-3 w-full max-w-2xl mx-auto bg-white border border-gray-200 rounded-xl shadow-md p-6 space-y-4">
-                    <h2 className="text-base font-semibold font-poppins text-gray-800 border-b pb-2">
+                    <h2 className="text-base font-semibold font-poppins text-gray-800 border-b border-b-primary-blue pb-2">
                         Revisión de la solicitud
                     </h2>
 

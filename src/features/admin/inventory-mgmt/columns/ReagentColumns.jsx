@@ -47,7 +47,7 @@ export const ReagentColumns = (handleEdit, selectedProduct) => [
                                 )}
                             />
                         </TooltipTrigger>
-                    <TooltipContent side="right" align="center" className="bg-white text-black px-1 py-1 rounded-md shadow-lg text-xs font-poppins font-medium">
+                    <TooltipContent side="top" align="center" className="bg-white text-black px-1 py-1 rounded-md shadow-lg text-xs font-poppins font-medium">
                       <span className="text-xs">{colorInfo.description}</span>
                         </TooltipContent>
                     </Tooltip>
