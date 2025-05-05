@@ -35,6 +35,8 @@ const RequestMaterial = () => {
   const [observations, setObservations] = useState("");
   const [materials, setMaterials] = useState([]);
 
+  const matricula = localStorage.getItem("matricula");
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -58,8 +60,77 @@ const RequestMaterial = () => {
         const materialsData = await materialsResponse.json();
         const reagentsData = await reagentsResponse.json();
 
-        setMaterials(materialsData);
-        setReagents(reagentsData);
+        // Enrich materials with photos
+        const enrichedMaterials = await Promise.all(
+          materialsData.map(async (material) => {
+            try {
+              const photoResponse = await fetch(
+                `http://${import.meta.env.VITE_SERVER_IP}:${
+                  import.meta.env.VITE_SERVER_PORT
+                }/v1/photo/${material.photoId}`
+              );
+
+              if (!photoResponse.ok) {
+                throw new Error("Failed to fetch photo for material");
+              }
+
+              const blob = await photoResponse.blob();
+              const photoUrl = URL.createObjectURL(blob);
+
+              return {
+                ...material,
+                photo: photoUrl,
+              };
+            } catch (error) {
+              console.error(
+                `Error fetching photo for material ${material.name}:`,
+                error
+              );
+              return {
+                ...material,
+                photo: null,
+              };
+            }
+          })
+        );
+
+        // Enrich reagents with photos
+        const enrichedReagents = await Promise.all(
+          reagentsData.map(async (reagent) => {
+            try {
+              const photoResponse = await fetch(
+                `http://${import.meta.env.VITE_SERVER_IP}:${
+                  import.meta.env.VITE_SERVER_PORT
+                }/v1/photo/${reagent.photoId}`
+              );
+
+              if (!photoResponse.ok) {
+                throw new Error("Failed to fetch photo for reagent");
+              }
+
+              const blob = await photoResponse.blob();
+              const photoUrl = URL.createObjectURL(blob);
+
+              return {
+                ...reagent,
+                photo: photoUrl,
+              };
+            } catch (error) {
+              console.error(
+                `Error fetching photo for reagent ${reagent.name}:`,
+                error
+              );
+              return {
+                ...reagent,
+                photo: null,
+              };
+            }
+          })
+        );
+
+        // Update states
+        setMaterials(enrichedMaterials);
+        setReagents(enrichedReagents);
       } catch (err) {
         setError(err);
       }
@@ -108,7 +179,7 @@ const RequestMaterial = () => {
         startingDate: new Date(dateRange.startDate).toISOString(),
         startingTime: timeRange.startTime,
       },
-      registrationNumber: "CUM-U-042", // you can make this dynamic later
+      registrationNumber: matricula,
       observations: observations,
     };
     console.log(formattedRequest);
@@ -116,7 +187,7 @@ const RequestMaterial = () => {
       const response = await fetch(
         `http://${import.meta.env.VITE_SERVER_IP}:${
           import.meta.env.VITE_SERVER_PORT
-        }/v1/request-material`,
+        }/v1/request`,
         {
           method: "POST",
           headers: {
@@ -169,12 +240,14 @@ const RequestMaterial = () => {
                     name: eq.materialDescription,
                     brand: eq.materialBrand,
                     location: eq.location,
+                    image: eq.photo,
                   })),
                   ...reagents.map((eq) => ({
                     barcode: eq.barcode,
                     name: eq.reagentName,
                     brand: eq.reagentBrand,
                     location: eq.location,
+                    image: eq.photo,
                   })),
                 ]}
                 selectedItems={selectedItems}

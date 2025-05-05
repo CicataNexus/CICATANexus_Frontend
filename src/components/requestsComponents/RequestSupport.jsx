@@ -24,6 +24,8 @@ const options = [
   "Recepción/resguardo de líneas celulares",
 ];
 
+const matricula = localStorage.getItem("matricula");
+
 const RequestSupport = () => {
   const [dateRange, setDateRange] = useState({
     startDate: "",
@@ -86,7 +88,7 @@ const RequestSupport = () => {
         reservedHours: timeRange.reservedHours,
         reservedMinutes: timeRange.reservedMinutes,
       },
-      registrationNumber: "CUM-U-042",
+      registrationNumber: matricula,
       observations: observations,
     };
     console.log(formattedRequest);
@@ -171,7 +173,7 @@ const RequestSupport = () => {
                 startDate={dateRange.startDate}
                 endDate={dateRange.endDate}
                 onChange={setDateRange}
-                mode="range"
+                mode="single"
               />
             </div>
 
@@ -265,14 +267,6 @@ const RequestSupport = () => {
             </div>
           </div>
         </div>
-        {/* <div className="flex justify-center mt-4">
-          <Button
-            className="bg-deep-blue hover:bg-dark-blue text-white text-xl font-poppins font-semibold tracking-wide py-5 w-auto px-15"
-            onClick={handleSubmit}
-          >
-            Enviar
-          </Button>
-        </div> */}
       </div>
       {message && (
         <div className="h-full w-full absolute backdrop-blur-sm bg-black/50 flex text-center justify-center items-center">

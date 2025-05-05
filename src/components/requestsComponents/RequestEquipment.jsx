@@ -19,6 +19,8 @@ const areas = [
 
 const RequestEquipment = () => {
   const [selectedItems, setSelectedItems] = useState([]);
+  const [occupiedDates, setOccupiedDates] = useState([]);
+  const [datePickerMode, setDatePickerMode] = useState("single");
   const [dateRange, setDateRange] = useState({
     startDate: "",
     endDate: "",
@@ -35,6 +37,8 @@ const RequestEquipment = () => {
   const [observations, setObservations] = useState("");
   const [equipments, setEquipments] = useState([]);
 
+  const matricula = localStorage.getItem("matricula");
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -43,11 +47,48 @@ const RequestEquipment = () => {
             import.meta.env.VITE_SERVER_PORT
           }/v1/equipment`
         );
+
         if (!response.ok) {
           throw new Error("Error fetching data");
         }
-        const result = await response.json();
-        setEquipments(result);
+
+        const equipmentList = await response.json();
+
+        const enrichedEquipment = await Promise.all(
+          equipmentList.map(async (equipment) => {
+            try {
+              const photoResponse = await fetch(
+                `http://${import.meta.env.VITE_SERVER_IP}:${
+                  import.meta.env.VITE_SERVER_PORT
+                }/v1/photo/${equipment.photoId}`
+              );
+
+              if (!photoResponse.ok) {
+                throw new Error("Failed to fetch photo");
+              }
+
+              const blob = await photoResponse.blob();
+
+              const photoUrl = URL.createObjectURL(blob);
+
+              return {
+                ...equipment,
+                photo: photoUrl,
+              };
+            } catch (error) {
+              console.error(
+                `Error fetching photo for ${equipment.barcode}:`,
+                error
+              );
+              return {
+                ...equipment,
+                photo: null,
+              };
+            }
+          })
+        );
+
+        setEquipments(enrichedEquipment);
       } catch (err) {
         setError(err);
       }
@@ -56,8 +97,61 @@ const RequestEquipment = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const fetchSelectedEquipmentData = async () => {
+      try {
+        const occupied = [];
+        let hasDailyReservation = false;
+
+        const fetches = selectedItems.map(async (equipment) => {
+          const equipmentResponse = await fetch(
+            `http://${import.meta.env.VITE_SERVER_IP}:${
+              import.meta.env.VITE_SERVER_PORT
+            }/v1/equipment/barcode/${equipment.barcode}`
+          );
+
+          if (!equipmentResponse.ok) {
+            throw new Error("Failed to fetch equipment");
+          }
+
+          const data = await equipmentResponse.json();
+
+          // Check if reservationType is "D"
+          if (data.reservationType === "D") {
+            hasDailyReservation = true;
+          }
+
+          if (Array.isArray(data.occupiedTime)) {
+            occupied.push(...data.occupiedTime);
+          }
+        });
+
+        await Promise.all(fetches);
+
+        // Set the datePickerMode based on the presence of "D"
+        setDatePickerMode(hasDailyReservation ? "range" : "single");
+
+        setOccupiedDates(occupied);
+      } catch (err) {
+        setError(err);
+      }
+    };
+
+    if (selectedItems.length > 0) {
+      fetchSelectedEquipmentData();
+    } else {
+      setOccupiedDates([]);
+      setDatePickerMode("single"); // reset when no items selected
+    }
+  }, [selectedItems]);
+
   const handleSelectedItemsChange = (newSelectedItems) => {
     setSelectedItems(newSelectedItems);
+    setDateRange({
+      startDate: "",
+      endDate: "",
+      reservedDays: 0,
+    });
   };
 
   const handleAreaChange = (area) => {
@@ -129,7 +223,7 @@ const RequestEquipment = () => {
         reservedHours,
         reservedMinutes,
       },
-      registrationNumber: "CUM-U-042", // placeholder
+      registrationNumber: matricula,
       observations: observations,
     };
 
@@ -192,6 +286,7 @@ const RequestEquipment = () => {
                   name: eq.equipmentName,
                   brand: eq.equipmentBrand,
                   location: eq.location,
+                  image: eq.photo,
                 }))}
                 selectedItems={selectedItems}
                 onSelectedItemsChange={handleSelectedItemsChange}
@@ -207,7 +302,8 @@ const RequestEquipment = () => {
                 startDate={dateRange.startDate}
                 endDate={dateRange.endDate}
                 onChange={setDateRange}
-                mode="range"
+                mode={datePickerMode}
+                occupiedDates={occupiedDates}
               />
             </div>
 
@@ -301,14 +397,6 @@ const RequestEquipment = () => {
             </div>
           </div>
         </div>
-        {/* <div className="flex justify-center mt-4">
-          <Button
-            className="bg-deep-blue hover:bg-dark-blue text-white text-xl font-poppins font-semibold tracking-wide py-5 w-auto px-15"
-            onClick={handleSubmit}
-          >
-            Enviar
-          </Button>
-        </div> */}
       </div>
       {message && (
         <div className="h-full w-full absolute backdrop-blur-sm bg-black/50 flex text-center justify-center items-center">
