@@ -1,10 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
 
 function Login() {
     const navigate = useNavigate();
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            try {
+                const { role } = jwtDecode(token);
+                const roleHomeRoutes = {
+                    Administrator: "/dashboard",
+                    tech: "/movimientos",
+                    user: "/request/equipment",
+                };
+                navigate(roleHomeRoutes[role] || "/", { replace: true });
+            } catch (error) {
+                console.error("Token inválido:", error);
+                localStorage.removeItem("token");
+            }
+        }
+    }, []);
     const [matricula, setMatricula] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);

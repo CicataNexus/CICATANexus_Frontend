@@ -28,7 +28,7 @@ export default function Toast({ t, message, type }) {
     const { icon, color, background, front } = variants[type] || variants.success;
 
     return (
-        <div className = {`fixed top-6 right-6 bg-white rounded-2xl justify-between p-3 min-h-[100px] w-[350px] transition-all ${t.visible ? 'animate-slide-in-right' : 'animate-slide-out-right'}`}>
+        <div className = {`fixed top-6 right-6 bg-white rounded-2xl justify-between p-3 min-h-[100px] w-[375px] transition-all ${t.visible ? 'animate-slide-in-right' : 'animate-slide-out-right'}`}>
             <div className = 'flex items-center font-bold text-black'>
                 <div className = {`${background} p-2 rounded-full mr-2`}>
                     <div className = {`${front} p-2 rounded-full`}>
@@ -40,9 +40,6 @@ export default function Toast({ t, message, type }) {
             <Button onClick = {() => toast.dismiss(t.id)} className = 'absolute top-2 right-2'>
                 <Icon icon = 'mingcute:close-fill' className = 'text-xl' />
             </Button>
-            <button className = 'cursor-pointer bg-deep-blue hover:bg-dark-blue text-white transition-colors text-sm font-poppins font-semibold rounded-full p-1 px-7 absolute bottom-3 right-5 '>
-                Deshacer
-            </button>
         </div>
     );
 };

@@ -3,7 +3,7 @@ import AddReagentPanel from "./forms/AddReagentPanel";
 import AddMaterialPanel from "./forms/AddMaterialPanel";
 import { useEffect, useRef } from "react";
 
-export default function AddProductPanel({ type, onClose, selectedProduct }) {
+export default function AddProductPanel({ type, onClose, selectedProduct, setReload }) {
     const panelRef = useRef(null);
 
     useEffect(() => {
@@ -34,6 +34,8 @@ export default function AddProductPanel({ type, onClose, selectedProduct }) {
                     <AddEquipmentPanel
                         onClose={onClose}
                         initialData={selectedProduct}
+                        setReload={setReload}
+                        isEditing={!!selectedProduct}
                     />
                 );
             case "reactivos":
@@ -41,6 +43,8 @@ export default function AddProductPanel({ type, onClose, selectedProduct }) {
                     <AddReagentPanel
                         onClose={onClose}
                         initialData={selectedProduct}
+                        setReload={setReload}
+                        isEditing={!!selectedProduct}
                     />
                 );
             case "materiales":
@@ -48,6 +52,8 @@ export default function AddProductPanel({ type, onClose, selectedProduct }) {
                     <AddMaterialPanel
                         onClose={onClose}
                         initialData={selectedProduct}
+                        setReload={setReload}
+                        isEditing={!!selectedProduct}
                     />
                 );
             default:

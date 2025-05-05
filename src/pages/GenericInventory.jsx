@@ -36,14 +36,15 @@ export default function GenericInventory() {
   const [search, setSearch] = useState("");
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
+  const [reload, setReload] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isAddingMode, setIsAddingMode] = useState(false);
   const getProductId = (product, type) => {
     // Function to get the product ID based on the type
     if (!product) return null;
-    if (type === "equipos") return product.inventoryNumber;
-    if (type === "reactivos") return product.reagentCode;
-    if (type === "materiales") return product.materialDescription;
+    if (type === "equipos") return product.barcode;
+    if (type === "reactivos") return product.barcode;
+    if (type === "materiales") return product.barcode;
     return null;
   };
 
@@ -80,8 +81,10 @@ export default function GenericInventory() {
       }
     };
 
-    fetchData();
-  }, [type]);
+    if (!isAddingMode && !selectedProduct) {
+      fetchData();
+    }
+  }, [type, reload, isAddingMode, selectedProduct]);
 
   if (!columns || !data) {
         return (
@@ -106,17 +109,25 @@ export default function GenericInventory() {
                 onSearchChange={setSearch}
                 onAddClick={() => {setIsAddingMode(true); setSelectedProduct(null);}}
             />
-            <InventoryTable 
-                data={data} 
-                columns={columns}
-                selectedProduct={selectedProduct} // Pass selected product to the table
-                type={type} // Pass the type to the table
-                onCloseEdit={() => setSelectedProduct(null)}
-            />
+            {Array.isArray(data) && data.length === 0 ? (
+              <div className="flex items-center justify-center h-[60vh] text-gray-500 font-montserrat text-4xl font-semibold text-center">
+                No hay {type} disponibles en el inventario
+              </div>            
+            ) : (
+              <InventoryTable 
+                  data={data} 
+                  columns={columns}
+                  selectedProduct={selectedProduct} // Pass selected product to the table
+                  type={type} // Pass the type to the table
+                  onCloseEdit={() => setSelectedProduct(null)}
+              />
+            )}
             {isAddingMode && (
                 <AddProductPanel
                     type={type}
                     onClose={() => setIsAddingMode(false)}
+                    selectedProduct={selectedProduct}
+                    setReload={setReload}
                 />
             )}
         </section>

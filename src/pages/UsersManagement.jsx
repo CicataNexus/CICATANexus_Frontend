@@ -41,8 +41,10 @@ export default function UsersManagement() {
       }
     };
 
-    fetchData();
-  }, [reload]);
+    if (!isAddingMode && !selectedUser) {
+      fetchData();
+    }
+  }, [reload, isAddingMode, selectedUser]);
 
   if (!data) {
     return <p className="p-4 text-red-600">Cargando datos de usuarios...</p>;

@@ -40,11 +40,7 @@ const RequestEquipment = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(
-                    `http://${import.meta.env.VITE_SERVER_IP}:${
-                        import.meta.env.VITE_SERVER_PORT
-                    }/v1/equipment`
-                );
+                const response = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/equipment/basic`);
                 if (!response.ok) {
                     throw new Error("Error fetching data");
                 }
@@ -184,8 +180,9 @@ const RequestEquipment = () => {
                             <SearchSelect
                                 options={equipments.map((eq) => ({
                                     barcode: eq.barcode,
-                                    name: eq.equipmentName,
-                                    brand: eq.equipmentBrand,
+                                    photoId: eq.photoId,
+                                    name: eq.name,
+                                    brand: eq.brand,
                                     location: eq.location,
                                 }))}
                                 selectedItems={selectedItems}
