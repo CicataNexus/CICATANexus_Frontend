@@ -30,9 +30,9 @@ export default function InventoryTable({
     const PanelComponent = panelMap[type];
 
     const getProductId = (product) => {
-        if (type === "equipos") return product.inventoryNumber;
-        if (type === "reactivos") return product.reagentCode;
-        if (type === "materiales") return product.materialDescription;
+        if (type === "equipos") return product.barcode;
+        if (type === "reactivos") return product.barcode;
+        if (type === "materiales") return product.barcode;
         return null;
     };
 

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@iconify/react";
+import { showToast } from '@/utils/toastUtils';
 import ModalUserConfirmation from "@/components/ModalUserConfirmation";
 import SelectInput from "@/components/ui/SelectInput";
 
@@ -85,7 +86,6 @@ export default function AddUserPanel({
         if (formData.role === "tech") {
             payload.workArea = String(formData.workArea);
         }
-        console.log("Payload:", payload);
         try {
             const response = await fetch(
                 `http://${import.meta.env.VITE_SERVER_IP}:${
@@ -102,7 +102,15 @@ export default function AddUserPanel({
 
             if (!response.ok) {
                 const errorData = await response.json();
-                console.error("Error:", errorData);
+                if (errorData.error === "registrationNumber already exists") {
+                    showToast("La clave de usuario ya existe", "error");
+                }
+                else if (errorData.error === "Email already in use") {
+                    showToast("El correo electrónico ya existe", "error");
+                }
+                else {
+                    showToast("Error al agregar usuario", "error");
+                }
                 throw new Error("Error al agregar usuario");
             }
             setReload((prev) => !prev);
@@ -151,6 +159,12 @@ export default function AddUserPanel({
 
             if (!response.ok) {
                 throw new Error("Error al editar usuario");
+            } else {
+                showToast("Usuario editado correctamente", "success");
+                onClose();
+                setTimeout(() => {
+                    setReload(prev => !prev);
+                }, 0);
             }
             setReload((prev) => !prev);
             onClose();
@@ -162,21 +176,21 @@ export default function AddUserPanel({
     const handleDelete = async () => {
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${
-                    import.meta.env.VITE_SERVER_PORT
-                }/v1/user/${formData.registrationNumber}`,
+                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/user/${formData.registrationNumber}`,
                 {
                     method: "DELETE",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
                 }
             );
 
             if (!response.ok) {
                 throw new Error("Error al eliminar usuario");
+            } else {
+                showToast("Usuario eliminado exitosamente", "success");
+                onClose();
+                setTimeout(() => {
+                    setReload(prev => !prev);
+                }, 0);
             }
-            setReload((prev) => !prev);
         } catch (error) {
             console.error("Error:", error);
         }
@@ -186,7 +200,7 @@ export default function AddUserPanel({
         <>
             {showConfirmation && (
                 <ModalUserConfirmation
-                    onClose={onClose}
+                    onClose={() => setShowConfirmation(false)}
                     onDelete={handleDelete}
                     isConfirming={modalConfirming}
                 />
@@ -292,20 +306,31 @@ export default function AddUserPanel({
                                 key={"registrationNumber"}
                                 className="flex flex-col font-montserrat font-semibold"
                             >
-                                <span>
-                                    Clave de usuario{" "}
-                                    <span className="text-red-500">*</span>
-                                </span>
-                                <Input
-                                    name={"registrationNumber"}
-                                    value={formData["registrationNumber"]}
-                                    onChange={handleChange}
-                                    placeholder={"Ingrese la clave de usuario"}
-                                    required
-                                    showError={errors.registrationNumber}
-                                    errorMessage={"Este campo es obligatorio"}
-                                    className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
-                                />
+                                {isEditing ? (
+                                    <>
+                                        <span>Clave de usuario</span>
+                                        <p className="font-montserrat font-normal">
+                                            {formData.registrationNumber}
+                                        </p>
+                                    </>
+                                ) : (
+                                    <>
+                                        <span>
+                                            Clave de usuario{" "}
+                                            <span className="text-red-500">*</span>
+                                        </span>
+                                        <Input
+                                            name={"registrationNumber"}
+                                            value={formData["registrationNumber"]}
+                                            onChange={handleChange}
+                                            placeholder={"Ingrese la clave de usuario"}
+                                            required
+                                            showError={errors.registrationNumber}
+                                            errorMessage={"Este campo es obligatorio"}
+                                            className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                                        />
+                                    </>
+                                )}
                             </label>
                             <label
                                 key={"email"}
@@ -362,7 +387,7 @@ export default function AddUserPanel({
                                             },
                                             {
                                                 value: "Laboratorio de Cromatografía y Espectrofotometría",
-                                                label: "Laboratorio de Cromatografia y Espectrofotometría",
+                                                label: "Laboratorio de Cromatografía y Espectrofotometría",
                                             },
                                             {
                                                 value: "Laboratorio de Bioprocesos",

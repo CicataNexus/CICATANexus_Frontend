@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
+import { showToast } from '@/utils/toastUtils';
 import ModalProductConfirmation from "@/components/ModalProductConfirmation";
 import FileInput from "@/components/ui/FileInput";
 import DateInput from "@/components/ui/DateInput";
@@ -12,6 +13,7 @@ export default function AddReagentPanel({
     onClose,
     initialData = {},
     isEditing = false,
+    setReload,
 }) {
     const [modalConfirming, setModalConfirming] = useState(true);
     const [showConfirmation, setShowConfirmation] = useState(false);
@@ -51,7 +53,6 @@ export default function AddReagentPanel({
     ];
 
     const [formData, setFormData] = useState({
-        _id: initialData._id || "",
         reagentCode: "",
         reagentName: "",
         reagentPresentation: "",
@@ -207,8 +208,7 @@ export default function AddReagentPanel({
             );
 
             if (!response.ok) {
-                const errorData = await response.json();
-                console.error("Error:", errorData);
+                showToast("El código de barras ya está registrado, inténtelo de nuevo", "error");
                 throw new Error("Error al agregar el reactivo");
             }
             // If product was added successfully, set confirmation
@@ -291,7 +291,11 @@ export default function AddReagentPanel({
                 console.error("Error:", errorData);
                 throw new Error("Error al editar el reactivo");
             } else {
-                alert("Reactivo editado correctamente");
+                showToast("Reactivo editado exitosamente", "success");
+                onClose();
+                setTimeout(() => {
+                    setReload(prev => !prev);
+                }, 0);
             }
         } catch (error) {
             console.error("Error:", error);
@@ -309,6 +313,12 @@ export default function AddReagentPanel({
 
             if (!response.ok) {
                 throw new Error("Error al eliminar el reactivo");
+            } else {
+                showToast("Reactivo eliminado exitosamente", "success");
+                onClose();
+                setTimeout(() => {
+                    setReload(prev => !prev);
+                }, 0);
             }
         } catch (error) {
             console.error("Error:", error);
@@ -319,7 +329,7 @@ export default function AddReagentPanel({
         <>
             {showConfirmation && (
                 <ModalProductConfirmation
-                    onClose={onClose}
+                    onClose={() => setShowConfirmation(false)}
                     onDelete={handleDelete}
                     isConfirming={modalConfirming}
                 />
@@ -386,7 +396,7 @@ export default function AddReagentPanel({
                         <label className="flex flex-col font-montserrat font-semibold">
                             Imagen
                             {isEditing && initialData.photoId ? (
-                                <div className="flex gap-4 items-start">
+                                <>
                                     <FileInput
                                         name="reagentImage"
                                         value={formData.reagentImage}
@@ -396,9 +406,9 @@ export default function AddReagentPanel({
                                     <img
                                         src={`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/photo/${initialData.photoId}`}
                                         alt="Imagen del reactivo"
-                                        className="mt-2 w-200 h-50 object-cover rounded-md"
+                                        className="mt-2 mx-auto w-[50%] h-40 object-cover"
                                     />
-                                </div>
+                                </>
                             ) : (
                                 <FileInput
                                     name="reagentImage"

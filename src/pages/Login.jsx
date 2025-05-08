@@ -1,10 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
 
 function Login() {
     const navigate = useNavigate();
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            try {
+                const { role } = jwtDecode(token);
+                const roleHomeRoutes = {
+                    Administrator: "/dashboard",
+                    tech: "/gestion/solicitudes",
+                    user: "/solicitud/equipo",
+                };
+                navigate(roleHomeRoutes[role] || "/", { replace: true });
+            } catch (error) {
+                console.error("Token inválido:", error);
+                localStorage.removeItem("token");
+            }
+        }
+    }, []);
     const [matricula, setMatricula] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -23,7 +40,7 @@ function Login() {
         if (matricula === "juan" && password === "123") {
             const token = import.meta.env.VITE_USER_TOKEN;
             localStorage.setItem("token", token);
-            navigate("/request/equipment");
+            navigate("/solicitud/equipo");
             return;
         }
 
@@ -66,10 +83,10 @@ function Login() {
                         navigate("/dashboard");
                         break;
                     case "tech":
-                        navigate("/movimientos");
+                        navigate("/gestion/solicitudes");
                         break;
                     case "user":
-                        navigate("/request/equipment");
+                        navigate("/solicitud/equipo");
                         break;
                     default:
                         setError("Usuario con rol no reconocido");
@@ -170,7 +187,7 @@ function Login() {
                                     <button
                                         className="cursor-pointer text-dark-blue font-semibold hover:underline"
                                         onClick={() => {
-                                            navigate("/register");
+                                            navigate("/registro");
                                         }
                                         }
                                     >

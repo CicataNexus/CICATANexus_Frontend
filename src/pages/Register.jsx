@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
+import { showToast } from '@/utils/toastUtils';
 
 function Register() {
     const navigate = useNavigate();
@@ -47,7 +48,7 @@ function Register() {
             registrationNumber: !formData.registrationNumber.trim(),
             email: (() => {
                 if (formData.email.trim() === "") return "Este campo es obligatorio";
-                if (!/\S+@\S+\.\S+/.test(formData.email)) return "Correo no válido";
+                if (!/\S+@\S+\.\S+/.test(formData.email)) return "Correo no válido: example@ipn.mx";
                 return "";
             })(),
             password: !formData.password.trim()
@@ -76,6 +77,7 @@ function Register() {
             );
             if (response.ok) {
                 navigate("/");
+                showToast("Usuario registrado correctamente", "success");
             } else {
                 const errorData = await response.json();
                 setGlobalError(
