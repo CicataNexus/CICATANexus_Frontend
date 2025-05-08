@@ -12,65 +12,74 @@ export default function UsersManagement() {
     const [isAddingMode, setIsAddingMode] = useState(false);
     const [reload, setReload] = useState(false);
 
-    const handleEdit = (user) => {
-        if (selectedUser?.registrationNumber === user.registrationNumber) {
-            setSelectedUser(null);
-        } else {
-            setSelectedUser(user);
-            setIsAddingMode(false);
-        }
-    };
+const [search, setSearch] = useState("");
+const [data, setData] = useState(null);
+const [error, setError] = useState(null);
+const [reload, setReload] = useState(false);
+const [selectedUser, setSelectedUser] = useState(null);
+const [isAddingMode, setIsAddingMode] = useState(false);
 
-    const columns = UsersColumns(handleEdit, selectedUser);
+// Pagination
+const [page, setPage] = useState(1);
+const [pageSize, setPageSize] = useState(5);
+const [totalItems, setTotalItems] = useState(0);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch(
-                    `http://${import.meta.env.VITE_SERVER_IP}:${
-                        import.meta.env.VITE_SERVER_PORT
-                    }/v1/user`
-                );
-                if (!response.ok) {
-                    throw new Error("Error fetching users data");
-                }
-                const result = await response.json();
-                setData(result);
-            } catch (err) {
-                setError(err);
-            }
-        };
+useEffect(() => { setPage(1); }, []);
 
-        if (!isAddingMode && !selectedUser) {
-            fetchData();
-        }
-    }, [reload, isAddingMode, selectedUser]);
+const handleEdit = (user) => {
+  if (selectedUser?.registrationNumber === user.registrationNumber) {
+    setSelectedUser(null);
+  } else {
+    setSelectedUser(user);
+    setIsAddingMode(false);
+  }
+};
 
-    if (!data) {
-        return (
-            <p className="p-4 text-red-600 font-poppins">
-                Cargando datos de usuarios
-            </p>
-        );
+const columns = UsersColumns(handleEdit, selectedUser);
+
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const response = await fetch(
+        `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/user?page=${page}&limit=${pageSize}`
+      );
+      if (!response.ok) {
+        throw new Error("Error fetching users data");
+      }
+      const result = await response.json();
+      setData(result.users);
+      setTotalItems(result.total);
+    } catch (err) {
+      setError(err);
     }
+  };
 
-    const normalizeText = (text) =>
-        text
-            ?.normalize("NFD")
-            .replace(/[\u0301\u0300\u0302\u0308\u0304\u0307]/g, "")
-            .toLowerCase();
+  if (!isAddingMode && !selectedUser) {
+    fetchData();
+  }
+}, [page, pageSize, reload, isAddingMode, selectedUser]);
 
-    const searchedItem = normalizeText(search);
+if (!data) {
+  return <p className="p-4 text-red-600 font-poppins">Cargando datos de usuarios</p>;
+}
 
-    const filteredData = data.filter((user) => {
-        if (!searchedItem) return true;
+const normalizeText = (text) =>
+  text
+    ?.normalize("NFD")
+    .replace(/[\u0301\u0300\u0302\u0308\u0304\u0307]/g, "")
+    .toLowerCase();
 
-        return (
-            normalizeText(user.name).includes(searchedItem) ||
-            normalizeText(user.registrationNumber).includes(searchedItem) ||
-            normalizeText(user.email).includes(searchedItem)
-        );
-    });
+const searchedItem = normalizeText(search);
+
+const filteredData = data.filter((user) => {
+  if (!searchedItem) return true;
+  return (
+    normalizeText(user.name).includes(searchedItem) ||
+    normalizeText(user.registrationNumber).includes(searchedItem) ||
+    normalizeText(user.email).includes(searchedItem)
+  );
+});
+
 
     return (
         <div className="p-4 -mt-1 w-full max-w-full overflow-x-hidden">
@@ -105,6 +114,11 @@ export default function UsersManagement() {
                     selectedUser={selectedUser}
                     onCloseEdit={() => setSelectedUser(null)}
                     setReload={setReload}
+                    page={page}
+                    setPage={setPage}
+                    pageSize={pageSize}
+                    setPageSize={setPageSize}
+                    totalItems={totalItems}
                 />
             )}
             {isAddingMode && (

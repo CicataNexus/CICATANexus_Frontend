@@ -37,60 +37,76 @@ const apiEndpoints = {
     }/v1/materials`,
 };
 
+const resultKeyMap = {
+  // Backend key mapping to frontend
+  equipos: "equipment",
+  materiales: "materials",
+  reactivos: "reagents",
+};
+
 export default function GenericInventory() {
-    const { type } = useParams();
-    const [search, setSearch] = useState("");
-    const [data, setData] = useState(null);
-    const [error, setError] = useState(null);
-    const [reload, setReload] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState(null);
-    const [isAddingMode, setIsAddingMode] = useState(false);
-    const getProductId = (product, type) => {
-        // Function to get the product ID based on the type
-        if (!product) return null;
-        if (type === "equipos") return product.barcode;
-        if (type === "reactivos") return product.barcode;
-        if (type === "materiales") return product.barcode;
-        return null;
-    };
+const { type } = useParams();
+const [search, setSearch] = useState("");
+const [data, setData] = useState(null);
+const [error, setError] = useState(null);
+const [reload, setReload] = useState(false);
+const [selectedProduct, setSelectedProduct] = useState(null);
+const [isAddingMode, setIsAddingMode] = useState(false);
 
-    const handleEdit = (product) => {
-        // If the product is already selected, deselect it
-        if (
-            selectedProduct &&
-            getProductId(selectedProduct, type) === getProductId(product, type)
-        ) {
-            setSelectedProduct(null); // Deselect the product
-        } else {
-            // Otherwise, select the product
-            setSelectedProduct(product);
-            setIsAddingMode(false); // Close the add panel if it's open
-        }
-    };
+// Pagination
+const [page, setPage] = useState(1); // Current page
+useEffect(() => { setPage(1); }, [type]);
+const [pageSize, setPageSize] = useState(5); // Number of items per page
+const [totalItems, setTotalItems] = useState(0); // Total number of items
 
-    const columns =
-        typeof columnsMap[type] === "function"
-            ? columnsMap[type](handleEdit, selectedProduct)
-            : null; // Get the columns based on the type and pass the handleEdit function
+const getProductId = (product, type) => {
+  if (!product) return null;
+  if (type === "equipos") return product.barcode;
+  if (type === "reactivos") return product.barcode;
+  if (type === "materiales") return product.barcode;
+  return null;
+};
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch(apiEndpoints[type]);
-                if (!response.ok) {
-                    throw new Error("Error fetching data");
-                }
-                const result = await response.json();
-                setData(result);
-            } catch (err) {
-                setError(err);
-            }
-        };
+const handleEdit = (product) => {
+  if (
+    selectedProduct &&
+    getProductId(selectedProduct, type) === getProductId(product, type)
+  ) {
+    setSelectedProduct(null);
+  } else {
+    setSelectedProduct(product);
+    setIsAddingMode(false);
+  }
+};
 
-        if (!isAddingMode && !selectedProduct) {
-            fetchData();
-        }
-    }, [type, reload, isAddingMode, selectedProduct]);
+const columns =
+  typeof columnsMap[type] === "function"
+    ? columnsMap[type](handleEdit, selectedProduct)
+    : null;
+
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const response = await fetch(
+        `${apiEndpoints[type]}?page=${page}&limit=${pageSize}`
+      );
+      if (!response.ok) {
+        throw new Error("Error fetching data");
+      }
+      const result = await response.json();
+      const resultKey = resultKeyMap[type];
+      setData(result[resultKey]);
+      setTotalItems(result.total);
+    } catch (err) {
+      setError(err);
+    }
+  };
+
+  if (!isAddingMode && !selectedProduct) {
+    fetchData();
+  }
+}, [type, page, pageSize, reload, isAddingMode, selectedProduct]);
+
 
     if (!columns || !data) {
         return (
@@ -180,6 +196,11 @@ export default function GenericInventory() {
                     selectedProduct={selectedProduct} // Pass selected product to the table
                     type={type} // Pass the type to the table
                     onCloseEdit={() => setSelectedProduct(null)}
+                    page={page}
+                    setPage={setPage}
+                    pageSize={pageSize}
+                    setPageSize={setPageSize}
+                    totalItems={totalItems}
                 />
             )}
             {isAddingMode && (
