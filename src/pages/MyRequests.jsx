@@ -50,172 +50,6 @@ const solicitudes = [
       },
     ],
   },
-  {
-    id: 2,
-    requestStatus: "Pendiente de aprobación (Técnico)",
-    typeOfRequest: "EQ",
-    workArea: "Laboratorio de Química",
-    requestDate: {
-      startingDate: "2025-02-28T00:00:00.000Z",
-      finishingDate: "2025-02-28T00:00:00.000Z",
-      startingTime: "10:00",
-      finishingTime: "12:00",
-      reservedDays: 0,
-      reservedHours: 2,
-      reservedMinutes: 0,
-    },
-    requestedBy: {
-      name: "Laura Gómez",
-      email: "laura.gomez@cicata.mx",
-      registrationNumber: "CUM-U-002",
-    },
-    assignedTechnician: {
-      name: "Carlos Méndez",
-      email: "carlos.mendez@cicata.mx",
-    },
-    occupiedMaterial: [
-      {
-        _id: "4",
-        name: "Centrífuga de alta velocidad",
-        barcode: "EQ-004",
-      },
-      { _id: "5", name: "Espectrofotómetro UV-Vis", barcode: "EQ-005" },
-      { _id: "6", name: "Balanza analítica", barcode: "EQ-006" },
-    ],
-    observations: [
-      {
-        userName: "Laura Gómez",
-        message:
-          "usuario Laura Gómez ha iniciado la solicitud a las 2025-02-27T11:30:00Z",
-        timestamp: "2025-02-27T11:30:00Z",
-      },
-    ],
-  },
-  {
-    id: 3,
-    requestStatus: "Aprobada y notificada",
-    typeOfRequest: "R&M",
-    workArea: "Laboratorio de Biología",
-    requestDate: {
-      startingDate: "2025-02-15T00:00:00.000Z",
-      finishingDate: "2025-02-15T00:00:00.000Z",
-      startingTime: "09:00",
-      finishingTime: "11:00",
-      reservedDays: 0,
-      reservedHours: 2,
-      reservedMinutes: 0,
-    },
-    requestedBy: {
-      name: "Miguel Ruiz",
-      email: "miguel.ruiz@cicata.mx",
-      registrationNumber: "CUM-U-003",
-    },
-    assignedTechnician: {
-      name: "Erika Torres",
-      email: "erika.torres@cicata.mx",
-    },
-    occupiedMaterial: [
-      { _id: "7", name: "Yodo", barcode: "RM-001" },
-      { _id: "8", name: "Ácido Sulfúrico", barcode: "RM-002" },
-      { _id: "9", name: "Agarosa E", barcode: "RM-003" },
-    ],
-    observations: [
-      {
-        userName: "Miguel Ruiz",
-        message:
-          "usuario Miguel Ruiz ha iniciado la solicitud a las 2025-02-14T10:15:00Z",
-        timestamp: "2025-02-14T10:15:00Z",
-      },
-    ],
-  },
-  {
-    id: 4,
-    requestStatus: "Rechazada y notificada",
-    typeOfRequest: "R&M",
-    workArea: "Laboratorio de Bioquímica",
-    requestDate: {
-      startingDate: "2025-02-02T00:00:00.000Z",
-      finishingDate: "2025-02-02T00:00:00.000Z",
-      startingTime: "14:00",
-      finishingTime: "15:00",
-      reservedDays: 0,
-      reservedHours: 1,
-      reservedMinutes: 0,
-    },
-    requestedBy: {
-      name: "Andrés Salazar",
-      email: "andres.salazar@cicata.mx",
-      registrationNumber: "CUM-U-004",
-    },
-    assignedTechnician: {
-      name: "Gabriela Soto",
-      email: "gabriela.soto@cicata.mx",
-    },
-    occupiedMaterial: [
-      {
-        _id: "10",
-        name: "Alcohol etilico 96º Garrafon de 10 L",
-        barcode: "M-004",
-      },
-      {
-        _id: "11",
-        name: "Bulbo para pipeta pasteur pq con 50",
-        barcode: "M-005",
-      },
-      { _id: "12", name: "Cinta testigo", barcode: "M-006" },
-    ],
-    observations: [
-      {
-        userName: "Andrés Salazar",
-        message:
-          "usuario Andrés Salazar ha iniciado la solicitud a las 2025-02-01T13:00:00Z",
-        timestamp: "2025-02-01T13:00:00Z",
-      },
-      {
-        userName: "Andrés Salazar",
-        message: "Revisión solicitada para reactivo vencido",
-        timestamp: "2025-02-01T14:00:00Z",
-      },
-    ],
-  },
-  {
-    id: 5,
-    requestStatus: "Cancelada",
-    typeOfRequest: "TA",
-    requestSubtype: "Acompañamiento de uso de equipos",
-    workArea: "Laboratorio de Microbiología",
-    requestDate: {
-      startingDate: "2025-02-02T00:00:00.000Z",
-      finishingDate: "2025-02-02T00:00:00.000Z",
-      startingTime: "08:00",
-      finishingTime: "09:30",
-      reservedDays: 0,
-      reservedHours: 1,
-      reservedMinutes: 30,
-    },
-    requestedBy: {
-      name: "Carmen Navarro",
-      email: "carmen.navarro@cicata.mx",
-      registrationNumber: "CUM-U-005",
-    },
-    assignedTechnician: {
-      name: "Iván Hernández",
-      email: "ivan.hernandez@cicata.mx",
-    },
-    observations: [
-      {
-        userName: "Carmen Navarro",
-        message:
-          "usuario Carmen Navarro ha iniciado la solicitud a las 2025-02-01T07:45:00Z",
-        timestamp: "2025-02-01T07:45:00Z",
-      },
-      {
-        userName: "Carmen Navarro",
-        message: "Solicitud cancelada por duplicado",
-        timestamp: "2025-02-01T08:00:00Z",
-      },
-    ],
-  },
 ];
 
 const MyRequests = () => {
@@ -226,6 +60,35 @@ const MyRequests = () => {
   const [requests, setRequests] = useState([]);
   const matricula = localStorage.getItem("matricula");
 
+  const mapApiResponseToRequiredFormat = (apiResponse) => {
+    return apiResponse.map((item) => {
+      return {
+        id: item.requestId,
+        requestStatus: item.requestStatus,
+        typeOfRequest: item.typeOfRequest,
+        requestSubtype: item.requestSubtype,
+        workArea: item.workArea,
+        requestDate: {
+          startingDate: item.startingDate,
+          finishingDate: item.finishingDate,
+          startingTime: item.startingTime,
+          finishingTime: item.finishingTime,
+        },
+        requestedBy: {
+          name: item.bookerName,
+          email: item.bookerEmail,
+          registrationNumber: item.bookerRegistrationNumber,
+        },
+        occupiedMaterial: item.occupiedMaterial,
+        assignedTechnician: {
+          name: item.assignedTechnicianName,
+        },
+        observations: item.observations,
+      };
+    });
+  };
+
+  // Example usage with the fetch call:
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -238,14 +101,16 @@ const MyRequests = () => {
           throw new Error("Error fetching data");
         }
         const result = await response.json();
-        setRequests(result.requests);
+
+        // Transform the data to match the required format
+        const transformedData = mapApiResponseToRequiredFormat(result.requests);
+        setRequests(transformedData);
       } catch (err) {
         setError(err);
       }
     };
-
     fetchData();
-  }, []);
+  }, [matricula, page]);
 
   const handleToggleDetails = (request) => {
     if (selectedRequest?.id === request.id) {
