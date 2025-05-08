@@ -20,11 +20,11 @@ const Navbar = () => {
         <div className="w-full flex justify-around h-24 items-center">
             <div
                 className={`flex items-center p-4 justify-center cursor-pointer hover:text-dark-blue ${
-                    activeItem === "/request/equipment"
+                    activeItem === "/solicitud/equipo"
                         ? "text-dark-blue border-b-2 "
                         : "text-deep-blue"
                 }`}
-                onClick={() => handleNavigation("/request/equipment")}
+                onClick={() => handleNavigation("/solicitud/equipo")}
             >
                 <Icon icon="iconoir:microscope-solid" className="text-2xl" />
                 <div className="pl-4 font-poppins font-bold text-lg">
@@ -33,11 +33,11 @@ const Navbar = () => {
             </div>
             <div
                 className={`flex items-center p-4 justify-center cursor-pointer hover:text-dark-blue ${
-                    activeItem === "/request/materials"
+                    activeItem === "/solicitud/material"
                         ? "text-dark-blue border-b-2 "
                         : "text-deep-blue"
                 }`}
-                onClick={() => handleNavigation("/request/materials")}
+                onClick={() => handleNavigation("/solicitud/material")}
             >
                 <GoBeaker size={25} />
                 <div className="pl-4 font-poppins font-bold text-lg">
@@ -46,11 +46,11 @@ const Navbar = () => {
             </div>
             <div
                 className={`flex items-center p-4 justify-center cursor-pointer hover:text-dark-blue ${
-                    activeItem === "/request/support"
+                    activeItem === "/solicitud/apoyo"
                         ? "text-dark-blue border-b-2 "
                         : "text-deep-blue"
                 }`}
-                onClick={() => handleNavigation("/request/support")}
+                onClick={() => handleNavigation("/solicitud/apoyo")}
             >
                 <Icon icon="mdi:account-help" className="text-3xl" />
                 <div className="pl-4 font-poppins font-bold text-lg">Apoyo técnico</div>

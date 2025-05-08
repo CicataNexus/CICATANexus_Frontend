@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
+import { showToast } from '@/utils/toastUtils';
 import ModalProductConfirmation from "@/components/ModalProductConfirmation";
 import FileInput from "@/components/ui/FileInput";
 import DateInput from "@/components/ui/DateInput";
@@ -11,6 +12,7 @@ export default function AddMaterialPanel({
     onClose,
     initialData = {},
     isEditing = false,
+    setReload,
 }) {
     const [modalConfirming, setModalConfirming] = useState(true);
     const [showConfirmation, setShowConfirmation] = useState(false);
@@ -39,7 +41,6 @@ export default function AddMaterialPanel({
     ];
 
     const [formData, setFormData] = useState({
-        _id: initialData._id || "",
         materialCategory: "",
         materialDescription: "",
         materialPresentation: "",
@@ -161,8 +162,7 @@ export default function AddMaterialPanel({
             );
 
             if (!response.ok) {
-                const errorData = await response.json();
-                console.error("Error:", errorData);
+                showToast("El código de barras ya está registrado, inténtelo de nuevo", "error");
                 throw new Error("Error al agregar el material");
             }
             // If product was added successfully, set confirmation
@@ -230,7 +230,11 @@ export default function AddMaterialPanel({
                 console.error("Error:", errorData);
                 throw new Error("Error al editar el material");
             } else {
-                alert("Material editado correctamente");
+                showToast("Material editado exitosamente", "success");
+                onClose();
+                setTimeout(() => {
+                    setReload(prev => !prev);
+                }, 0);
             }
         } catch (error) {
             console.error("Error:", error);
@@ -248,6 +252,12 @@ export default function AddMaterialPanel({
 
             if (!response.ok) {
                 throw new Error("Error al eliminar el material");
+            } else {
+                showToast("Material eliminado exitosamente", "success");
+                onClose();
+                setTimeout(() => {
+                    setReload(prev => !prev);
+                }, 0);
             }
         } catch (error) {
             console.error("Error:", error);
@@ -258,7 +268,7 @@ export default function AddMaterialPanel({
         <>
             {showConfirmation && (
                 <ModalProductConfirmation
-                    onClose={onClose}
+                    onClose={() => setShowConfirmation(false)}
                     onDelete={handleDelete}
                     isConfirming={modalConfirming}
                 />
@@ -371,7 +381,7 @@ export default function AddMaterialPanel({
                         <label className="flex flex-col font-montserrat font-semibold">
                             Imagen
                             {isEditing && initialData.photoId ? (
-                                <div className="flex gap-4 items-start">
+                                <>
                                     <FileInput
                                         name="materialImage"
                                         value={formData.materialImage}
@@ -381,9 +391,9 @@ export default function AddMaterialPanel({
                                     <img
                                         src={`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/photo/${initialData.photoId}`}
                                         alt="Imagen del material"
-                                        className="mt-2 w-200 h-50 object-cover rounded-md"
+                                        className="mt-2 mx-auto w-[50%] h-40 object-cover"
                                     />
-                                </div>
+                                </>
                             ) : (
                                 <FileInput
                                     name="materialImage"

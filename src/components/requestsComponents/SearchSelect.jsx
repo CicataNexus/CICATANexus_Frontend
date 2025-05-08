@@ -86,18 +86,21 @@ const SearchSelect = ({
                             return (
                                 <div
                                     key={index}
-                                    className="p-2 border-2 border-primary-blue flex flex-col items-center rounded-lg cursor-pointer bg-white"
+                                    className="border-2 border-primary-blue flex flex-col items-center rounded-lg cursor-pointer bg-white"
                                     onClick={() => handleSelect(option)}
                                 >
-                                    {option.image && (
-                                        <img
-                                            src={option.image}
-                                            alt=""
-                                            className="w-2/3 h-32"
-                                        />
+                                    {option.photoId && (
+                                        <>
+                                            <img
+                                                src={`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/photo/${option.photoId}`}
+                                                alt={`Imagen de ${option.name}`}
+                                                className="p-2 w-full max-h-35 object-contain"
+                                            />
+                                            <div className="w-full border-t border-primary-blue"></div>
+                                        </>
                                     )}
 
-                                    <div className="w-full">
+                                    <div className="p-2 w-full">
                                         <p className="text-base font-montserrat font-semibold">{option.name}</p>
                                         <p className="text-sm font-montserrat mt-2">
                                             <span className="font-medium">Marca:</span>
