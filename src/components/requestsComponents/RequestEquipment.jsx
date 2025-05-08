@@ -20,6 +20,10 @@ const areas = [
 const RequestEquipment = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [occupiedDates, setOccupiedDates] = useState([]);
+  const [occupiedTime, setOccupiedTime] = useState({
+    startTime: "",
+    endTime: "",
+  });
   const [datePickerMode, setDatePickerMode] = useState("single");
   const [dateRange, setDateRange] = useState({
     startDate: "",
@@ -153,6 +157,55 @@ const RequestEquipment = () => {
       reservedDays: 0,
     });
   };
+
+  const parseLocalDate = (isoString) => {
+    const [year, month, day] = isoString.split("T")[0].split("-");
+    return new Date(Number(year), Number(month) - 1, Number(day));
+  };
+
+  useEffect(() => {
+    const checkOccupiedTimes = () => {
+      if (!dateRange.startDate || !dateRange.endDate) return;
+
+      const start = parseLocalDate(dateRange.startDate);
+      const end = parseLocalDate(dateRange.endDate);
+
+      let newOccupiedTime = { startTime: "", endTime: "" };
+
+      console.log(occupiedDates);
+
+      occupiedDates.forEach((occ) => {
+        const occStart = parseLocalDate(occ.startingDate);
+        const occEnd = parseLocalDate(occ.finishingDate);
+
+        const startDateOnly = start.toISOString().split("T")[0];
+        const endDateOnly = end.toISOString().split("T")[0];
+        const occStartDateOnly = occStart.toISOString().split("T")[0];
+        const occEndDateOnly = occEnd.toISOString().split("T")[0];
+
+        if (startDateOnly === occStartDateOnly) {
+          newOccupiedTime.startTime = occ.startingTime;
+          console.log("1");
+        }
+        if (endDateOnly === occEndDateOnly) {
+          newOccupiedTime.endTime = occ.finishingTime;
+          console.log("2");
+        }
+        if (startDateOnly === occEndDateOnly) {
+          newOccupiedTime.startTime = occ.finishingTime;
+          console.log("3");
+        }
+        if (occStartDateOnly === endDateOnly) {
+          newOccupiedTime.endTime = occ.startTime;
+          console.log("4");
+        }
+      });
+
+      setOccupiedTime(newOccupiedTime);
+    };
+
+    checkOccupiedTimes();
+  }, [dateRange]);
 
   const handleAreaChange = (area) => {
     setSelectedAreas((prevSelectedAreas) => {
@@ -319,6 +372,7 @@ const RequestEquipment = () => {
                     setTimeRange={setTimeRange}
                     type="start"
                     className="select-none"
+                    limitTime={occupiedTime.startTime}
                   />
                 </div>
                 <div className="font-montserrat">
@@ -328,6 +382,7 @@ const RequestEquipment = () => {
                     setTimeRange={setTimeRange}
                     type="end"
                     className="select-none"
+                    limitTime={occupiedTime.endTime}
                   />
                 </div>
               </div>

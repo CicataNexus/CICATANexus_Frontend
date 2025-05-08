@@ -1,6 +1,12 @@
 import React from "react";
 
-const TimePicker = ({ timeRange, setTimeRange, type = "start", className }) => {
+const TimePicker = ({
+  timeRange,
+  setTimeRange,
+  type = "start",
+  className,
+  limitTime = null,
+}) => {
   const hours = Array.from({ length: 24 }, (_, i) =>
     String(i).padStart(2, "0")
   );
@@ -10,13 +16,13 @@ const TimePicker = ({ timeRange, setTimeRange, type = "start", className }) => {
 
   const handleChange = (unit, value) => {
     const key = type === "start" ? "startTime" : "endTime";
-    const existingTime = timeRange[key] || "00:00";
-    const [existingHour, existingMinute] = existingTime.split(":");
+    const existingTime = timeRange[key] || ":";
+    const [existingHour = "", existingMinute = ""] = existingTime.split(":");
 
     const newTime =
       unit === "hour"
-        ? `${value}:${existingMinute}`
-        : `${existingHour}:${value}`;
+        ? `${value}:${existingMinute || "00"}`
+        : `${existingHour || "00"}:${value}`;
 
     setTimeRange((prev) => ({
       ...prev,
@@ -25,20 +31,47 @@ const TimePicker = ({ timeRange, setTimeRange, type = "start", className }) => {
   };
 
   const currentTime =
-    timeRange[type === "start" ? "startTime" : "endTime"] || "00:00";
-  const [hour, minute] = currentTime.split(":");
+    timeRange[type === "start" ? "startTime" : "endTime"] || "";
+  const [selectedHour = "", selectedMinute = ""] = currentTime.split(":");
+
+  const [limitHour, limitMinute] = limitTime
+    ? limitTime.split(":").map(Number)
+    : [null, null];
+
+  const limitTotalMinutes =
+    limitHour !== null && limitMinute !== null
+      ? limitHour * 60 + limitMinute
+      : null;
+
+  const isAllowed = (h, m) => {
+    if (limitTotalMinutes === null) return true;
+    const total = parseInt(h) * 60 + parseInt(m);
+    return type === "start"
+      ? total > limitTotalMinutes
+      : total < limitTotalMinutes;
+  };
+
+  const getValidHours = () =>
+    hours.filter((h) => minutes.some((m) => isAllowed(h, m)));
+
+  const getValidMinutes = () =>
+    minutes.map((m) => ({
+      value: m,
+      disabled: !selectedHour || !isAllowed(selectedHour, m),
+    }));
+
+  const validHours = getValidHours();
+  const validMinutes = getValidMinutes();
 
   return (
     <div className={`flex gap-2 ${className}`}>
       <select
-        value={hour}
+        value={selectedHour}
         onChange={(e) => handleChange("hour", e.target.value)}
         className="bg-white border border-primary-blue rounded-md shadow-sm p-2"
       >
-        <option value="" disabled>
-          HH
-        </option>
-        {hours.map((h) => (
+        <option value="">HH</option>
+        {validHours.map((h) => (
           <option key={h} value={h}>
             {h}
           </option>
@@ -46,16 +79,17 @@ const TimePicker = ({ timeRange, setTimeRange, type = "start", className }) => {
       </select>
 
       <select
-        value={minute}
+        value={selectedMinute}
         onChange={(e) => handleChange("minute", e.target.value)}
-        className="bg-white border border-primary-blue rounded-md shadow-sm p-2"
+        className={`bg-white border border-primary-blue rounded-md shadow-sm p-2 ${
+          !selectedHour && ""
+        }`}
+        disabled={!selectedHour}
       >
-        <option value="" disabled>
-          MM
-        </option>
-        {minutes.map((m) => (
-          <option key={m} value={m}>
-            {m}
+        <option value="">MM</option>
+        {validMinutes.map(({ value, disabled }) => (
+          <option key={value} value={value} disabled={disabled}>
+            {value}
           </option>
         ))}
       </select>

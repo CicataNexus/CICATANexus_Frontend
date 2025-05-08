@@ -26,30 +26,15 @@ const DateRangePicker = ({
     }
   }, [startDate, endDate]);
 
+  const parseLocalDate = (isoString) => {
+    const [year, month, day] = isoString.split("T")[0].split("-");
+    return new Date(Number(year), Number(month) - 1, Number(day));
+  };
+
   const blockedRanges = occupiedDates.map(
     ({ startingDate, finishingDate }) => ({
-      start: new Date(
-        Date.UTC(
-          parseInt(startingDate.substring(0, 4)),
-          parseInt(startingDate.substring(5, 7)) - 1,
-          parseInt(startingDate.substring(8, 10)),
-          0,
-          0,
-          0,
-          0
-        )
-      ),
-      end: new Date(
-        Date.UTC(
-          parseInt(finishingDate.substring(0, 4)),
-          parseInt(finishingDate.substring(5, 7)) - 1,
-          parseInt(finishingDate.substring(8, 10)),
-          23,
-          59,
-          59,
-          999
-        )
-      ),
+      start: parseLocalDate(startingDate),
+      end: parseLocalDate(finishingDate),
     })
   );
 
@@ -282,31 +267,19 @@ const DateRangePicker = ({
                 onMouseEnter={() => handleDateHover(day)}
                 className={`py-4 flex items-center justify-center rounded-lg cursor-pointer
                   ${
-                    isBlockedStartDay ? "bg-deep-blue/75 text-white" : ""
-                  }  // Style for start of blocked period
-                  ${
-                    isBlockedEndDay ? "bg-deep-blue/75 text-white" : ""
-                  }  // Style for end of blocked period
+                    isHoverDay ? "bg-indigo-50 text-black" : ""
+                  }  // Hover style for dates in hover range
+                  ${isBlockedStartDay ? "bg-deep-blue/75 text-white" : ""} 
+                  ${isBlockedEndDay ? "bg-deep-blue/75 text-white" : ""} 
                   ${
                     isDisabled && !isBlockedStartDay && !isBlockedEndDay
                       ? "bg-deep-blue text-white"
                       : ""
-                  }  // Style for disabled dates (but not start/end)
-                  ${
-                    isStart || isEnd ? "bg-primary-blue text-white" : ""
-                  }  // Style for start/end dates
-                  ${
-                    isRangeDay ? "bg-indigo-100" : ""
-                  }  // Style for dates in selected range
-                  ${
-                    isHoverDay ? "bg-indigo-50" : ""
-                  }  // Style for dates in hover range
-                  ${
-                    day.getMonth() !== month ? "text-gray-400" : ""
-                  }  // Style for dates from adjacent months
-                  ${
-                    !isDisabled ? "hover:bg-indigo-100" : ""
-                  }  // Hover style for selectable dates
+                  } 
+                  ${isStart || isEnd ? "bg-primary-blue text-white" : ""} 
+                  ${isRangeDay ? "bg-indigo-100" : ""} 
+                  ${day.getMonth() !== month ? "text-gray-400" : ""} 
+                  ${!isDisabled ? "hover:bg-indigo-100" : ""} 
                 `}
               >
                 {day.getDate()}
