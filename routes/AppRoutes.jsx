@@ -21,7 +21,7 @@ export default function AppRoutes() {
             <Toaster />
             <Routes>
             	<Route path="/" element={<Login />} />
-                <Route path="/register" element={<Register />} />
+                <Route path="/registro" element={<Register />} />
                 {/* Routes for Authorized Personnel */}
                 <Route element={<ProtectedRoutes allowedRoles={["Administrator", "tech"]} />}>
                     <Route element={<Layout />}>
@@ -47,12 +47,12 @@ export default function AppRoutes() {
 
                 {/* Routes for Users */}
                 <Route element={<ProtectedRoutes allowedRoles={["user"]} />}>
-                    <Route path="/request" element={<RequestsLayout />}>
-                        <Route index path="equipment" element={<RequestEquipment />} />
-                        <Route path="materials" element={<RequestMaterial />} />
-                        <Route path="support" element={<RequestSupport />} />
+                    <Route path="/solicitud" element={<RequestsLayout />}>
+                        <Route index path="equipo" element={<RequestEquipment />} />
+                        <Route path="material" element={<RequestMaterial />} />
+                        <Route path="apoyo" element={<RequestSupport />} />
                     </Route>
-                    <Route path="/myRequests" element={<MyRequests />} />
+                    <Route path="/solicitudes" element={<MyRequests />} />
                 </Route>
             </Routes>
         </Router>

@@ -12,8 +12,8 @@ function Login() {
                 const { role } = jwtDecode(token);
                 const roleHomeRoutes = {
                     Administrator: "/dashboard",
-                    tech: "/movimientos",
-                    user: "/request/equipment",
+                    tech: "/gestion/solicitudes",
+                    user: "/solicitud/equipo",
                 };
                 navigate(roleHomeRoutes[role] || "/", { replace: true });
             } catch (error) {
@@ -40,7 +40,7 @@ function Login() {
         if (matricula === "juan" && password === "123") {
             const token = import.meta.env.VITE_USER_TOKEN;
             localStorage.setItem("token", token);
-            navigate("/request/equipment");
+            navigate("/solicitud/equipo");
             return;
         }
 
@@ -83,10 +83,10 @@ function Login() {
                         navigate("/dashboard");
                         break;
                     case "tech":
-                        navigate("/movimientos");
+                        navigate("/gestion/solicitudes");
                         break;
                     case "user":
-                        navigate("/request/equipment");
+                        navigate("/solicitud/equipo");
                         break;
                     default:
                         setError("Usuario con rol no reconocido");
@@ -187,7 +187,7 @@ function Login() {
                                     <button
                                         className="cursor-pointer text-dark-blue font-semibold hover:underline"
                                         onClick={() => {
-                                            navigate("/register");
+                                            navigate("/registro");
                                         }
                                         }
                                     >

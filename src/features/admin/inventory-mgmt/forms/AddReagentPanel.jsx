@@ -396,7 +396,7 @@ export default function AddReagentPanel({
                         <label className="flex flex-col font-montserrat font-semibold">
                             Imagen
                             {isEditing && initialData.photoId ? (
-                                <div className="flex gap-4 items-start">
+                                <>
                                     <FileInput
                                         name="reagentImage"
                                         value={formData.reagentImage}
@@ -406,9 +406,9 @@ export default function AddReagentPanel({
                                     <img
                                         src={`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/photo/${initialData.photoId}`}
                                         alt="Imagen del reactivo"
-                                        className="mt-2 w-200 h-50 object-cover rounded-md"
+                                        className="mt-2 mx-auto w-[50%] h-40 object-cover"
                                     />
-                                </div>
+                                </>
                             ) : (
                                 <FileInput
                                     name="reagentImage"

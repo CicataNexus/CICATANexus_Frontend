@@ -387,7 +387,7 @@ export default function AddUserPanel({
                                             },
                                             {
                                                 value: "Laboratorio de Cromatografía y Espectrofotometría",
-                                                label: "Laboratorio de Cromatografia y Espectrofotometría",
+                                                label: "Laboratorio de Cromatografía y Espectrofotometría",
                                             },
                                             {
                                                 value: "Laboratorio de Bioprocesos",

@@ -11,7 +11,7 @@ const areas = [
     "Laboratorio de Cultivo Celular y Microscopía",
     "Anexo de Cultivo Celular",
     "Laboratorio de Microbiología",
-    "Laboratorio de Cromatografia y Espectrofotometría",
+    "Laboratorio de Cromatografía y Espectrofotometría",
     "Laboratorio de Bioprocesos",
     "Laboratorio de Acondicionamiento",
     "Cámara Fría",
