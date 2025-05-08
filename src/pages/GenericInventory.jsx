@@ -31,6 +31,13 @@ const apiEndpoints = {
   materiales: `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/materials`,
 };
 
+const resultKeyMap = {
+  // Backend key mapping to frontend
+  equipos: "equipment",
+  materiales: "materials",
+  reactivos: "reagents",
+};
+
 export default function GenericInventory() {
   const { type } = useParams();
   const [search, setSearch] = useState("");
@@ -38,6 +45,13 @@ export default function GenericInventory() {
   const [error, setError] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isAddingMode, setIsAddingMode] = useState(false);
+
+  // Pagination
+  const [page, setPage] = useState(1); // Current page
+  useEffect(() => { setPage(1); }, [type]);
+  const [pageSize, setPageSize] = useState(5); // Number of items per page
+  const [totalItems, setTotalItems] = useState(0); // Total number of items
+
   const getProductId = (product, type) => {
     // Function to get the product ID based on the type
     if (!product) return null;
@@ -69,19 +83,23 @@ export default function GenericInventory() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(apiEndpoints[type]);
+        const response = await fetch(
+          `${apiEndpoints[type]}?page=${page}&limit=${pageSize}`
+        );
         if (!response.ok) {
           throw new Error("Error fetching data");
         }
         const result = await response.json();
-        setData(result);
+        const resultKey = resultKeyMap[type]; // Get the result key based on the type
+        setData(result[resultKey]); // Set the data based on the type
+        setTotalItems(result.total); // Set the total number of items for pagination
       } catch (err) {
         setError(err);
       }
     };
 
     fetchData();
-  }, [type]);
+  }, [type, page, pageSize]);
 
   if (!columns || !data) {
         return (
@@ -112,6 +130,11 @@ export default function GenericInventory() {
                 selectedProduct={selectedProduct} // Pass selected product to the table
                 type={type} // Pass the type to the table
                 onCloseEdit={() => setSelectedProduct(null)}
+                page={page}
+                setPage={setPage}
+                pageSize={pageSize}
+                setPageSize={setPageSize}
+                totalItems={totalItems}
             />
             {isAddingMode && (
                 <AddProductPanel

@@ -156,4 +156,9 @@ body {
 .animate-slide-out-right {
     animation: slide-out-right 0.5s ease-in forwards;
 }
+
+@keyframes fadeIn {
+    from { opacity: 0.6; }
+    to { opacity: 1; }
+  }
   
