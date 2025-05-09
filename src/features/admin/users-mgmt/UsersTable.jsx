@@ -5,7 +5,6 @@ import {
 } from "@tanstack/react-table";
 import { Fragment } from "react";
 import AddUserPanel from "./AddUserPanel";
-import PaginationControls from "@/components/PaginationControls";
 
 export default function UsersTable({
     data,
@@ -13,11 +12,6 @@ export default function UsersTable({
     selectedUser,
     onCloseEdit,
     setReload,
-    page,
-    setPage,
-    pageSize,
-    setPageSize,
-    totalItems,
 }) {
     const table = useReactTable({
         data,
@@ -82,14 +76,6 @@ export default function UsersTable({
                     ))}
                 </tbody>
             </table>
-            <PaginationControls
-                page={page}
-                setPage={setPage}
-                pageSize={pageSize}
-                setPageSize={setPageSize}
-                totalItems={totalItems}
-                type="usuario"
-            />
         </div>
     );
 }

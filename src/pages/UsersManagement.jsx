@@ -3,83 +3,83 @@ import TableToolbar from "../components/ui/TableToolbar";
 import UsersTable from "@/features/admin/users-mgmt/UsersTable";
 import { UsersColumns } from "@/features/admin/users-mgmt/UsersColumns";
 import AddUserModalPanel from "@/features/admin/users-mgmt/AddUserModalPanel";
+import PaginationControls from "@/components/PaginationControls";
 
 export default function UsersManagement() {
     const [search, setSearch] = useState("");
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
+    const [reload, setReload] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [isAddingMode, setIsAddingMode] = useState(false);
-    const [reload, setReload] = useState(false);
 
-const [search, setSearch] = useState("");
-const [data, setData] = useState(null);
-const [error, setError] = useState(null);
-const [reload, setReload] = useState(false);
-const [selectedUser, setSelectedUser] = useState(null);
-const [isAddingMode, setIsAddingMode] = useState(false);
+    // Pagination
+    const [page, setPage] = useState(1); // Current page
+    useEffect(() => {
+        setPage(1);
+    }, []);
+    const [pageSize, setPageSize] = useState(5); // Number of items per page
+    const [totalItems, setTotalItems] = useState(0); // Total number of items
 
-// Pagination
-const [page, setPage] = useState(1);
-const [pageSize, setPageSize] = useState(5);
-const [totalItems, setTotalItems] = useState(0);
+    const handleEdit = (user) => {
+        if (selectedUser?.registrationNumber === user.registrationNumber) {
+            setSelectedUser(null);
+        } else {
+            setSelectedUser(user);
+            setIsAddingMode(false);
+        }
+    };
 
-useEffect(() => { setPage(1); }, []);
+    const columns = UsersColumns(handleEdit, selectedUser);
 
-const handleEdit = (user) => {
-  if (selectedUser?.registrationNumber === user.registrationNumber) {
-    setSelectedUser(null);
-  } else {
-    setSelectedUser(user);
-    setIsAddingMode(false);
-  }
-};
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch(
+                    `http://${import.meta.env.VITE_SERVER_IP}:${
+                        import.meta.env.VITE_SERVER_PORT
+                    }/v1/user?page=${page}&limit=${pageSize}`
+                );
+                if (!response.ok) {
+                    throw new Error("Error fetching users data");
+                }
+                const result = await response.json();
+                setData(result.users);
+                setTotalItems(result.total);
+            } catch (err) {
+                setError(err);
+            }
+        };
 
-const columns = UsersColumns(handleEdit, selectedUser);
+        if (!isAddingMode && !selectedUser) {
+            fetchData();
+        }
+    }, [page, pageSize, reload, isAddingMode, selectedUser]);
 
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const response = await fetch(
-        `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/user?page=${page}&limit=${pageSize}`
-      );
-      if (!response.ok) {
-        throw new Error("Error fetching users data");
-      }
-      const result = await response.json();
-      setData(result.users);
-      setTotalItems(result.total);
-    } catch (err) {
-      setError(err);
+    if (!data) {
+        return (
+            <p className="p-4 text-red-600 font-poppins">
+                Cargando datos de usuarios
+            </p>
+        );
     }
-  };
 
-  if (!isAddingMode && !selectedUser) {
-    fetchData();
-  }
-}, [page, pageSize, reload, isAddingMode, selectedUser]);
+    const normalizeText = (text) =>
+        text
+            ?.normalize("NFD")
+            .replace(/[\u0301\u0300\u0302\u0308\u0304\u0307]/g, "")
+            .toLowerCase();
 
-if (!data) {
-  return <p className="p-4 text-red-600 font-poppins">Cargando datos de usuarios</p>;
-}
+    const searchedItem = normalizeText(search);
 
-const normalizeText = (text) =>
-  text
-    ?.normalize("NFD")
-    .replace(/[\u0301\u0300\u0302\u0308\u0304\u0307]/g, "")
-    .toLowerCase();
-
-const searchedItem = normalizeText(search);
-
-const filteredData = data.filter((user) => {
-  if (!searchedItem) return true;
-  return (
-    normalizeText(user.name).includes(searchedItem) ||
-    normalizeText(user.registrationNumber).includes(searchedItem) ||
-    normalizeText(user.email).includes(searchedItem)
-  );
-});
-
+    const filteredData = data.filter((user) => {
+        if (!searchedItem) return true;
+        return (
+            normalizeText(user.name).includes(searchedItem) ||
+            normalizeText(user.registrationNumber).includes(searchedItem) ||
+            normalizeText(user.email).includes(searchedItem)
+        );
+    });
 
     return (
         <div className="p-4 -mt-1 w-full max-w-full overflow-x-hidden">
@@ -108,18 +108,28 @@ const filteredData = data.filter((user) => {
                     No se encontraron usuarios para "{search}"
                 </div>
             ) : (
-                <UsersTable
-                    data={filteredData}
-                    columns={columns}
-                    selectedUser={selectedUser}
-                    onCloseEdit={() => setSelectedUser(null)}
-                    setReload={setReload}
-                    page={page}
-                    setPage={setPage}
-                    pageSize={pageSize}
-                    setPageSize={setPageSize}
-                    totalItems={totalItems}
-                />
+                <div className="min-h-[500px] flex flex-col justify-between">
+                    <UsersTable
+                        data={filteredData}
+                        columns={columns}
+                        selectedUser={selectedUser}
+                        onCloseEdit={() => setSelectedUser(null)}
+                        setReload={setReload}
+                        page={page}
+                        setPage={setPage}
+                        pageSize={pageSize}
+                        setPageSize={setPageSize}
+                        totalItems={totalItems}
+                    />
+                    <PaginationControls
+                        page={page}
+                        setPage={setPage}
+                        pageSize={pageSize}
+                        setPageSize={setPageSize}
+                        totalItems={totalItems}
+                        type="usuario"
+                    />
+                </div>
             )}
             {isAddingMode && (
                 <AddUserModalPanel

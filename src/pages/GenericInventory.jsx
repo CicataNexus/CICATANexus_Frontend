@@ -9,6 +9,7 @@ import AddEquipmentPanel from "../features/admin/inventory-mgmt/forms/AddEquipme
 import AddMaterialPanel from "../features/admin/inventory-mgmt/forms/AddMaterialPanel";
 import AddReagentPanel from "../features/admin/inventory-mgmt/forms/AddReagentPanel";
 import AddProductPanel from "../features/admin/inventory-mgmt/AddProductPanel";
+import PaginationControls from "@/components/PaginationControls";
 
 const columnsMap = {
     // For the table columns
@@ -38,75 +39,79 @@ const apiEndpoints = {
 };
 
 const resultKeyMap = {
-  // Backend key mapping to frontend
-  equipos: "equipment",
-  materiales: "materials",
-  reactivos: "reagents",
+    // Backend key mapping to frontend
+    equipos: "equipments",
+    materiales: "materials",
+    reactivos: "reagents",
 };
 
 export default function GenericInventory() {
-const { type } = useParams();
-const [search, setSearch] = useState("");
-const [data, setData] = useState(null);
-const [error, setError] = useState(null);
-const [reload, setReload] = useState(false);
-const [selectedProduct, setSelectedProduct] = useState(null);
-const [isAddingMode, setIsAddingMode] = useState(false);
+    const { type } = useParams();
+    const [search, setSearch] = useState("");
+    const [data, setData] = useState(null);
+    const [error, setError] = useState(null);
+    const [reload, setReload] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [isAddingMode, setIsAddingMode] = useState(false);
 
-// Pagination
-const [page, setPage] = useState(1); // Current page
-useEffect(() => { setPage(1); }, [type]);
-const [pageSize, setPageSize] = useState(5); // Number of items per page
-const [totalItems, setTotalItems] = useState(0); // Total number of items
+    // Pagination
+    const [page, setPage] = useState(1); // Current page
+    useEffect(() => {
+        setPage(1);
+    }, [type]);
+    const [pageSize, setPageSize] = useState(5); // Number of items per page
+    const [totalItems, setTotalItems] = useState(0); // Total number of items
 
-const getProductId = (product, type) => {
-  if (!product) return null;
-  if (type === "equipos") return product.barcode;
-  if (type === "reactivos") return product.barcode;
-  if (type === "materiales") return product.barcode;
-  return null;
-};
+    const getProductId = (product, type) => {
+        // Function to get the product ID based on the type
+        if (!product) return null;
+        if (type === "equipos") return product.barcode;
+        if (type === "reactivos") return product.barcode;
+        if (type === "materiales") return product.barcode;
+        return null;
+    };
 
-const handleEdit = (product) => {
-  if (
-    selectedProduct &&
-    getProductId(selectedProduct, type) === getProductId(product, type)
-  ) {
-    setSelectedProduct(null);
-  } else {
-    setSelectedProduct(product);
-    setIsAddingMode(false);
-  }
-};
+    const handleEdit = (product) => {
+        // If the product is already selected, deselect it
+        if (
+            selectedProduct &&
+            getProductId(selectedProduct, type) === getProductId(product, type)
+        ) {
+            setSelectedProduct(null); // Deselect the product
+        } else {
+            // Otherwise, select the product
+            setSelectedProduct(product);
+            setIsAddingMode(false); // Close the add panel if it's open
+        }
+    };
 
-const columns =
-  typeof columnsMap[type] === "function"
-    ? columnsMap[type](handleEdit, selectedProduct)
-    : null;
+    const columns =
+        typeof columnsMap[type] === "function"
+            ? columnsMap[type](handleEdit, selectedProduct)
+            : null;
 
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const response = await fetch(
-        `${apiEndpoints[type]}?page=${page}&limit=${pageSize}`
-      );
-      if (!response.ok) {
-        throw new Error("Error fetching data");
-      }
-      const result = await response.json();
-      const resultKey = resultKeyMap[type];
-      setData(result[resultKey]);
-      setTotalItems(result.total);
-    } catch (err) {
-      setError(err);
-    }
-  };
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch(
+                    `${apiEndpoints[type]}?page=${page}&limit=${pageSize}`
+                );
+                if (!response.ok) {
+                    throw new Error("Error fetching data");
+                }
+                const result = await response.json();
+                const resultKey = resultKeyMap[type]; // Get the result key based on the type
+                setData(result[resultKey]); // Set the data based on the type
+                setTotalItems(result.total); // Set the total number of items for pagination
+            } catch (err) {
+                setError(err);
+            }
+        };
 
-  if (!isAddingMode && !selectedProduct) {
-    fetchData();
-  }
-}, [type, page, pageSize, reload, isAddingMode, selectedProduct]);
-
+        if (!isAddingMode && !selectedProduct) {
+            fetchData();
+        }
+    }, [type, page, pageSize, reload, isAddingMode, selectedProduct]);
 
     if (!columns || !data) {
         return (
@@ -134,7 +139,7 @@ useEffect(() => {
                 normalizeText(item.equipmentBrand).includes(searchedItem) ||
                 normalizeText(item.equipmentModel).includes(searchedItem) ||
                 normalizeText(item.location).includes(searchedItem) ||
-				item.barcode === search
+                item.barcode === search
             );
         }
 
@@ -144,7 +149,7 @@ useEffect(() => {
                 normalizeText(item.reagentName).includes(searchedItem) ||
                 normalizeText(item.reagentBrand).includes(searchedItem) ||
                 normalizeText(item.location).includes(searchedItem) ||
-				item.barcode === search
+                item.barcode === search
             );
         }
 
@@ -156,7 +161,7 @@ useEffect(() => {
                 normalizeText(item.materialCatalog).includes(searchedItem) ||
                 normalizeText(item.materialBrand).includes(searchedItem) ||
                 normalizeText(item.location).includes(searchedItem) ||
-				item.barcode === search
+                item.barcode === search
             );
         }
 
@@ -190,18 +195,28 @@ useEffect(() => {
                     No se encontraron resultados para "{search}"
                 </div>
             ) : (
-                <InventoryTable
-                    data={filteredData}
-                    columns={columns}
-                    selectedProduct={selectedProduct} // Pass selected product to the table
-                    type={type} // Pass the type to the table
-                    onCloseEdit={() => setSelectedProduct(null)}
-                    page={page}
-                    setPage={setPage}
-                    pageSize={pageSize}
-                    setPageSize={setPageSize}
-                    totalItems={totalItems}
-                />
+                <div className="min-h-[500px] flex flex-col justify-between">
+                    <InventoryTable
+                        data={filteredData}
+                        columns={columns}
+                        selectedProduct={selectedProduct} // Pass selected product to the table
+                        type={type} // Pass the type to the table
+                        onCloseEdit={() => setSelectedProduct(null)}
+                        page={page}
+                        setPage={setPage}
+                        pageSize={pageSize}
+                        setPageSize={setPageSize}
+                        totalItems={totalItems}
+                    />
+                    <PaginationControls
+                        page={page}
+                        setPage={setPage}
+                        pageSize={pageSize}
+                        setPageSize={setPageSize}
+                        totalItems={totalItems}
+                        type={type}
+                    />
+                </div>
             )}
             {isAddingMode && (
                 <AddProductPanel
