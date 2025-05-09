@@ -7,7 +7,6 @@ import { Fragment } from "react";
 import AddEquipmentPanel from "./forms/AddEquipmentPanel";
 import AddReagentPanel from "./forms/AddReagentPanel";
 import AddMaterialPanel from "./forms/AddMaterialPanel";
-import PaginationControls from "@/components/PaginationControls";
 
 const panelMap = {
     equipos: AddEquipmentPanel,
@@ -21,11 +20,6 @@ export default function InventoryTable({
     selectedProduct,
     type,
     onCloseEdit,
-    page,
-    setPage,
-    pageSize,
-    setPageSize,
-    totalItems,
 }) {
     const table = useReactTable({
         data,
@@ -100,14 +94,6 @@ export default function InventoryTable({
                     ))}
                 </tbody>
             </table>
-            <PaginationControls
-                page={page}
-                setPage={setPage}
-                pageSize={pageSize}
-                setPageSize={setPageSize}
-                totalItems={totalItems}
-                type={type}
-            />
         </div>
     );
 }

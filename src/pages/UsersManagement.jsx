@@ -3,6 +3,7 @@ import TableToolbar from "../components/ui/TableToolbar";
 import UsersTable from "@/features/admin/users-mgmt/UsersTable";
 import { UsersColumns } from "@/features/admin/users-mgmt/UsersColumns";
 import AddUserModalPanel from "@/features/admin/users-mgmt/AddUserModalPanel";
+import PaginationControls from "@/components/PaginationControls";
 
 export default function UsersManagement() {
     const [search, setSearch] = useState("");
@@ -14,8 +15,10 @@ export default function UsersManagement() {
 
     // Pagination
     const [page, setPage] = useState(1); // Current page
-    useEffect(() => { setPage(1); }, []);
-    
+    useEffect(() => {
+        setPage(1);
+    }, []);
+
     const [pageSize, setPageSize] = useState(5); // Number of items per page
     const [totalItems, setTotalItems] = useState(0); // Total number of items
 
@@ -31,24 +34,26 @@ export default function UsersManagement() {
     const columns = UsersColumns(handleEdit, selectedUser);
 
     useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const response = await fetch(
-            `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/user?page=${page}&limit=${pageSize}`
-          );
-          if (!response.ok) {
-            throw new Error("Error fetching users data");
-          }
-          const result = await response.json();
-          setData(result.users);
-          setTotalItems(result.total);
-        } catch (err) {
-          setError(err);
-        }
-      };
-    
-      fetchData();
-    }, [page, pageSize, reload]); 
+        const fetchData = async () => {
+            try {
+                const response = await fetch(
+                    `http://${import.meta.env.VITE_SERVER_IP}:${
+                        import.meta.env.VITE_SERVER_PORT
+                    }/v1/user?page=${page}&limit=${pageSize}`
+                );
+                if (!response.ok) {
+                    throw new Error("Error fetching users data");
+                }
+                const result = await response.json();
+                setData(result.users);
+                setTotalItems(result.total);
+            } catch (err) {
+                setError(err);
+            }
+        };
+
+        fetchData();
+    }, [page, pageSize, reload]);
 
     if (!data) {
         return (
@@ -74,6 +79,7 @@ export default function UsersManagement() {
                     setSelectedUser(null);
                 }}
             />
+            <div className="min-h-[500px] flex flex-col justify-between">
             <UsersTable
                 data={data}
                 columns={columns}
@@ -86,6 +92,16 @@ export default function UsersManagement() {
                 setPageSize={setPageSize}
                 totalItems={totalItems}
             />
+                <PaginationControls
+                    page={page}
+                    setPage={setPage}
+                    pageSize={pageSize}
+                    setPageSize={setPageSize}
+                    totalItems={totalItems}
+                    type="usuario"
+                />
+            </div>
+            
             {isAddingMode && (
                 <AddUserModalPanel
                     onClose={() => setIsAddingMode(false)}

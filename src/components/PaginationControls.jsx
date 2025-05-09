@@ -10,6 +10,7 @@ export default function PaginationControls({
 }) {
     const totalPages = Math.ceil(totalItems / pageSize);
     const start = totalItems === 0 ? 0 : (page - 1) * pageSize + 1;
+    const end = Math.min(page * pageSize, totalItems);
 
     const pluralize = (word, count) => {
         const irregulars = {
@@ -29,8 +30,12 @@ export default function PaginationControls({
     return (
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 font-montserrat font-medium text-sm text-gray-500 mt-8">
             <p className="text-center sm:text-left flex items-center gap-2">
-                Mostrando {start} a
-                <select
+                Mostrando {start} a {end} {" "}
+                de {totalItems} {pluralize(type, totalItems)}
+            </p>
+
+            <div className="flex items-center gap-2">
+            <select
                     id="rows"
                     className="rounded-md border px-1 py-1 cursor-pointer focus:ring-2 focus:border-none focus:ring-primary-blue focus:outline-none"
                     value={pageSize}
@@ -45,10 +50,6 @@ export default function PaginationControls({
                         </option>
                     ))}
                 </select>
-                de {totalItems} {pluralize(type, totalItems)}
-            </p>
-
-            <div className="flex items-center gap-2">
                 <button
                     className="px-2 py-1 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                     onClick={() => setPage((p) => Math.max(p - 1, 1))}
