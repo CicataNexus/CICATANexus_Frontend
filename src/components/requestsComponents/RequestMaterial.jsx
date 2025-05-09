@@ -11,7 +11,7 @@ const areas = [
     "Laboratorio de Cultivo Celular y Microscopía",
     "Anexo de Cultivo Celular",
     "Laboratorio de Microbiología",
-    "Laboratorio de Cromatografia y Espectrofotometría",
+    "Laboratorio de Cromatografía y Espectrofotometría",
     "Laboratorio de Bioprocesos",
     "Laboratorio de Acondicionamiento",
     "Cámara Fría",
@@ -93,10 +93,7 @@ const RequestMaterial = () => {
     const handleSubmit = async () => {
         const newErrors = {
             dateRange: !dateRange.startDate,
-            timeRange:
-                !timeRange.startTime ||
-                (timeRange.reservedHours === 0 &&
-                    timeRange.reservedMinutes === 0),
+            timeRange: !timeRange.startTime,
             selectedItems: selectedItems.length === 0,
             selectedAreas: selectedAreas.length === 0,
         };

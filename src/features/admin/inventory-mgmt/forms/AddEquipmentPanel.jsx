@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
+import { showToast } from '@/utils/toastUtils';
 import ModalProductConfirmation from "@/components/ModalProductConfirmation";
 import FileInput from "@/components/ui/FileInput";
 import DateInput from "@/components/ui/DateInput";
@@ -12,6 +13,7 @@ export default function AddEquipmentPanel({
     onClose,
     initialData = {},
     isEditing = false,
+    setReload,
 }) {
     const [modalConfirming, setModalConfirming] = useState(true);
     const [showConfirmation, setShowConfirmation] = useState(false);
@@ -30,7 +32,6 @@ export default function AddEquipmentPanel({
     ];
 
     const [formData, setFormData] = useState({
-        _id: initialData._id || "",
         inventoryNumber: "",
         equipmentName: "",
         equipmentBrand: "",
@@ -120,8 +121,7 @@ export default function AddEquipmentPanel({
             );
 
             if (!response.ok) {
-                const errorData = await response.json();
-                console.error("Error:", errorData);
+                showToast("El código de barras ya está registrado, inténtelo de nuevo", "error");
                 throw new Error("Error al agregar el equipo");
             }
             // If product was added successfully, set confirmation
@@ -173,7 +173,11 @@ export default function AddEquipmentPanel({
                 console.error("Error:", errorData);
                 throw new Error("Error al editar el equipo");
             } else {
-                alert("Equipo editado correctamente");
+                showToast("Equipo editado exitosamente", "success");
+                onClose();
+                setTimeout(() => {
+                    setReload(prev => !prev);
+                }, 0);
             }
         } catch (error) {
             console.error("Error:", error);
@@ -191,6 +195,12 @@ export default function AddEquipmentPanel({
 
             if (!response.ok) {
                 throw new Error("Error al eliminar el equipo");
+            } else {
+                showToast("Equipo eliminado exitosamente", "success");
+                onClose();
+                setTimeout(() => {
+                    setReload(prev => !prev);
+                }, 0);
             }
         } catch (error) {
             console.error("Error:", error);
@@ -201,7 +211,7 @@ export default function AddEquipmentPanel({
         <>
             {showConfirmation && (
                 <ModalProductConfirmation
-                    onClose={onClose}
+                    onClose={() => setShowConfirmation(false)}
                     onDelete={handleDelete}
                     isConfirming={modalConfirming}
                 />
@@ -272,7 +282,7 @@ export default function AddEquipmentPanel({
                         <label className="flex flex-col font-montserrat font-semibold">
                             Imagen
                             {isEditing && initialData.photoId ? (
-                                <div className="flex gap-4 items-start">
+                                <>
                                     <FileInput
                                         name="equipmentImage"
                                         value={formData.equipmentImage}
@@ -282,9 +292,9 @@ export default function AddEquipmentPanel({
                                     <img
                                         src={`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/photo/${initialData.photoId}`}
                                         alt="Imagen del equipo"
-                                        className="mt-2 w-200 h-50 object-cover rounded-md"
+                                        className="mt-2 mx-auto w-[50%] h-40 object-cover"
                                     />
-                                </div>
+                                </>
                             ) : (
                                 <FileInput
                                     name="equipmentImage"

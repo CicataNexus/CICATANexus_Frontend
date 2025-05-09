@@ -2,9 +2,11 @@ import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@iconify/react";
 
-export default function ModalCancelReqConfirmation({
+export default function ModalDeclineReqConfirmation({
     onClose,
-    onConfirmCancel,
+    onConfirm,
+    isVisible = false,
+    action = "approve",
 }) {
     const panelRef = useRef(null);
 
@@ -29,6 +31,13 @@ export default function ModalCancelReqConfirmation({
         };
     }, []);
 
+    if (!isVisible) return null;
+
+    const message =
+        action === "approve"
+            ? "¿Seguro que desea aprobar la solicitud?"
+            : "¿Seguro que desea rechazar la solicitud?";
+
     return (
         <div className="fixed inset-0 bg-gray backdrop-blur-xs flex items-center justify-center z-50">
             <div
@@ -45,20 +54,27 @@ export default function ModalCancelReqConfirmation({
 
                 {/* Message */}
                 <div className="flex-grow flex items-center justify-center">
-                <h2 className="text-center text-2xl font-poppins font-semibold text-neutral-800 leading-snug">
-                    ¿Seguro que desea rechazar la solicitud?
-                </h2>
+                    <h2 className="text-center text-2xl font-poppins font-semibold text-neutral-800 leading-snug">
+                        {message}
+                    </h2>
                 </div>
 
                 {/* Buttons */}
-                <button
-                    onClick={onConfirmCancel}
-                    className="justify-center whitespace-nowrap rounded-md shadow-xs h-9 bg-reject-btn hover:bg-reject-btn-hover text-white text-base font-poppins font-semibold transition inline-flex items-center px-6 py-2 w-32 mt-6"
-                >
-                    Rechazar
-                </button>
+                <div className="flex flex-col sm:flex-row justify-center gap-4 w-full">
+                    <Button
+                        onClick={onClose}
+                        className="w-full sm:w-40 bg-gray-300 text-gray-600 hover:opacity-85 font-poppins font-semibold text-lg"
+                    >
+                        Cancelar
+                    </Button>
+                    <Button
+                        onClick={onConfirm}
+                        className="w-full sm:w-40 bg-sidebar hover:bg-dim-blue-background text-white font-poppins font-semibold text-lg"
+                    >
+                        Confirmar
+                    </Button>
+                </div>
             </div>
         </div>
     );
 }
-// ModalCancelReqConfirmation.jsx

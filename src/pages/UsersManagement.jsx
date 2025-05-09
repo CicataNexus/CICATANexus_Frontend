@@ -9,16 +9,15 @@ export default function UsersManagement() {
     const [search, setSearch] = useState("");
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
+    const [reload, setReload] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [isAddingMode, setIsAddingMode] = useState(false);
-    const [reload, setReload] = useState(false);
 
     // Pagination
     const [page, setPage] = useState(1); // Current page
     useEffect(() => {
         setPage(1);
     }, []);
-
     const [pageSize, setPageSize] = useState(5); // Number of items per page
     const [totalItems, setTotalItems] = useState(0); // Total number of items
 
@@ -52,14 +51,35 @@ export default function UsersManagement() {
             }
         };
 
-        fetchData();
-    }, [page, pageSize, reload]);
+        if (!isAddingMode && !selectedUser) {
+            fetchData();
+        }
+    }, [page, pageSize, reload, isAddingMode, selectedUser]);
 
     if (!data) {
         return (
-            <p className="p-4 text-red-600">Cargando datos de usuarios...</p>
+            <p className="p-4 text-red-600 font-poppins">
+                Cargando datos de usuarios
+            </p>
         );
     }
+
+    const normalizeText = (text) =>
+        text
+            ?.normalize("NFD")
+            .replace(/[\u0301\u0300\u0302\u0308\u0304\u0307]/g, "")
+            .toLowerCase();
+
+    const searchedItem = normalizeText(search);
+
+    const filteredData = data.filter((user) => {
+        if (!searchedItem) return true;
+        return (
+            normalizeText(user.name).includes(searchedItem) ||
+            normalizeText(user.registrationNumber).includes(searchedItem) ||
+            normalizeText(user.email).includes(searchedItem)
+        );
+    });
 
     return (
         <div className="p-4 -mt-1 w-full max-w-full overflow-x-hidden">
@@ -79,29 +99,38 @@ export default function UsersManagement() {
                     setSelectedUser(null);
                 }}
             />
-            <div className="min-h-[500px] flex flex-col justify-between">
-            <UsersTable
-                data={data}
-                columns={columns}
-                selectedUser={selectedUser}
-                onCloseEdit={() => setSelectedUser(null)}
-                setReload={setReload}
-                page={page}
-                setPage={setPage}
-                pageSize={pageSize}
-                setPageSize={setPageSize}
-                totalItems={totalItems}
-            />
-                <PaginationControls
-                    page={page}
-                    setPage={setPage}
-                    pageSize={pageSize}
-                    setPageSize={setPageSize}
-                    totalItems={totalItems}
-                    type="usuario"
-                />
-            </div>
-            
+            {Array.isArray(data) && data.length === 0 ? (
+                <div className="flex items-center justify-center h-[60vh] text-gray-500 font-montserrat text-4xl font-semibold text-center">
+                    No hay usuarios registrados
+                </div>
+            ) : filteredData.length === 0 ? (
+                <div className="flex items-center justify-center h-[60vh] text-gray-500 font-montserrat text-4xl font-semibold text-center">
+                    No se encontraron usuarios para "{search}"
+                </div>
+            ) : (
+                <div className="min-h-[500px] flex flex-col justify-between">
+                    <UsersTable
+                        data={filteredData}
+                        columns={columns}
+                        selectedUser={selectedUser}
+                        onCloseEdit={() => setSelectedUser(null)}
+                        setReload={setReload}
+                        page={page}
+                        setPage={setPage}
+                        pageSize={pageSize}
+                        setPageSize={setPageSize}
+                        totalItems={totalItems}
+                    />
+                    <PaginationControls
+                        page={page}
+                        setPage={setPage}
+                        pageSize={pageSize}
+                        setPageSize={setPageSize}
+                        totalItems={totalItems}
+                        type="usuario"
+                    />
+                </div>
+            )}
             {isAddingMode && (
                 <AddUserModalPanel
                     onClose={() => setIsAddingMode(false)}

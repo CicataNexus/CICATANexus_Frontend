@@ -1,9 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
+import TableToolbar from "../components/ui/TableToolbar";
 import RequestsTable from "@/features/admin/requests-mgmt/RequestsTable";
 import { RequestsColumns } from "@/features/admin/requests-mgmt/RequestsColumns";
 import ModalCancelReqConfirmation from "@/components/ModalCancelReqConfirmation";
 
 const Requests = () => {
+    const [reload, setReload] = useState(false);
+    const [search, setSearch] = useState("");
     const [requestsData, setRequestsData] = useState([]);
     const [selectedRequest, setSelectedRequest] = useState(null);
     const [showCancelModal, setShowCancelModal] = useState(false);
@@ -73,7 +76,28 @@ const Requests = () => {
         };
 
         fetchRequests();
-    }, []);
+    }, [reload]);
+
+    const normalizeText = (text) =>
+        text
+            ?.normalize("NFD")
+            .replace(/[\u0301\u0300\u0302\u0308\u0304\u0307]/g, "")
+            .toLowerCase();
+
+    const searchedItem = normalizeText(search);
+
+    const filteredData = requestsData.filter((request) => {
+        if (!searchedItem) return true;
+    
+        const name = request.requestedBy?.name ?? "";
+        const regNumber = request.requestedBy?.registrationNumber ?? "";
+    
+        return (
+            normalizeText(name).includes(searchedItem) ||
+            normalizeText(regNumber).includes(searchedItem)
+        );
+    });
+    
 
     const handleToggleDetails = (request) => {
         if (selectedRequest?.id === request.id) {
@@ -115,13 +139,32 @@ const Requests = () => {
                     Gestione las solicitudes: apruebe, rechace o agregue
                     observaciones según corresponda.
                 </h3>
-                <RequestsTable
-                    data={requestsData}
-                    columns={columns}
-                    selectedRequest={selectedRequest}
-                    onCloseDetails={() => setSelectedRequest(null)}
-                    onCancelRequest={handleCancelRequest}
+                <TableToolbar
+                    type="users"
+                    searchTerm={search}
+                    onSearchChange={setSearch}
+                    onAddClick={() => {
+                        setSelectedRequest(null);
+                    }}
                 />
+                {Array.isArray(requestsData) && requestsData.length === 0 ? (
+                    <div className="flex items-center justify-center h-[60vh] text-gray-500 font-montserrat text-4xl font-semibold text-center">
+                        No hay solicitudes registradas
+                    </div>
+                ) : filteredData.length === 0 ? (
+                    <div className="flex items-center justify-center h-[60vh] text-gray-500 font-montserrat text-4xl font-semibold text-center">
+                        No se encontraron usuarios para "{search}"
+                    </div>
+                ) : (
+                    <RequestsTable
+                        data={filteredData}
+                        columns={columns}
+                        selectedRequest={selectedRequest}
+                        onCloseDetails={() => setSelectedRequest(null)}
+                        onCancelRequest={handleCancelRequest}
+                        setReload={setReload}
+                    />
+                )}
             </section>
             {showCancelModal && (
                 <ModalCancelReqConfirmation

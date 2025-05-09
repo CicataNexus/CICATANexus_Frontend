@@ -50,6 +50,7 @@ export default function GenericInventory() {
     const [search, setSearch] = useState("");
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
+    const [reload, setReload] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [isAddingMode, setIsAddingMode] = useState(false);
 
@@ -64,9 +65,9 @@ export default function GenericInventory() {
     const getProductId = (product, type) => {
         // Function to get the product ID based on the type
         if (!product) return null;
-        if (type === "equipos") return product.inventoryNumber;
-        if (type === "reactivos") return product.reagentCode;
-        if (type === "materiales") return product.materialDescription;
+        if (type === "equipos") return product.barcode;
+        if (type === "reactivos") return product.barcode;
+        if (type === "materiales") return product.barcode;
         return null;
     };
 
@@ -87,7 +88,7 @@ export default function GenericInventory() {
     const columns =
         typeof columnsMap[type] === "function"
             ? columnsMap[type](handleEdit, selectedProduct)
-            : null; // Get the columns based on the type and pass the handleEdit function
+            : null;
 
     useEffect(() => {
         const fetchData = async () => {
@@ -107,8 +108,10 @@ export default function GenericInventory() {
             }
         };
 
-        fetchData();
-    }, [type, page, pageSize]);
+        if (!isAddingMode && !selectedProduct) {
+            fetchData();
+        }
+    }, [type, page, pageSize, reload, isAddingMode, selectedProduct]);
 
     if (!columns || !data) {
         return (
@@ -117,6 +120,53 @@ export default function GenericInventory() {
             </p>
         );
     }
+
+    const normalizeText = (text) =>
+        text
+            ?.normalize("NFD")
+            .replace(/[\u0301\u0300\u0302\u0308\u0304\u0307]/g, "")
+            .toLowerCase();
+
+    const searchedItem = normalizeText(search);
+
+    const filteredData = data.filter((item) => {
+        if (!searchedItem) return true;
+
+        if (type === "equipos") {
+            return (
+                normalizeText(item.inventoryNumber).includes(searchedItem) ||
+                normalizeText(item.equipmentName).includes(searchedItem) ||
+                normalizeText(item.equipmentBrand).includes(searchedItem) ||
+                normalizeText(item.equipmentModel).includes(searchedItem) ||
+                normalizeText(item.location).includes(searchedItem) ||
+                item.barcode === search
+            );
+        }
+
+        if (type === "reactivos") {
+            return (
+                normalizeText(item.reagentCode).includes(searchedItem) ||
+                normalizeText(item.reagentName).includes(searchedItem) ||
+                normalizeText(item.reagentBrand).includes(searchedItem) ||
+                normalizeText(item.location).includes(searchedItem) ||
+                item.barcode === search
+            );
+        }
+
+        if (type === "materiales") {
+            return (
+                normalizeText(item.materialDescription).includes(
+                    searchedItem
+                ) ||
+                normalizeText(item.materialCatalog).includes(searchedItem) ||
+                normalizeText(item.materialBrand).includes(searchedItem) ||
+                normalizeText(item.location).includes(searchedItem) ||
+                item.barcode === search
+            );
+        }
+
+        return true;
+    });
 
     return (
         <section className="p-4 -mt-1 w-full max-w-full overflow-x-hidden">
@@ -136,32 +186,44 @@ export default function GenericInventory() {
                     setSelectedProduct(null);
                 }}
             />
-            <div className="min-h-[500px] flex flex-col justify-between">
-                <InventoryTable
-                    data={data}
-                    columns={columns}
-                    selectedProduct={selectedProduct} // Pass selected product to the table
-                    type={type} // Pass the type to the table
-                    onCloseEdit={() => setSelectedProduct(null)}
-                    page={page}
-                    setPage={setPage}
-                    pageSize={pageSize}
-                    setPageSize={setPageSize}
-                    totalItems={totalItems}
-                />
-                <PaginationControls
-                    page={page}
-                    setPage={setPage}
-                    pageSize={pageSize}
-                    setPageSize={setPageSize}
-                    totalItems={totalItems}
-                    type={type}
-                />
-            </div>
+            {Array.isArray(data) && data.length === 0 ? (
+                <div className="flex items-center justify-center h-[60vh] text-gray-500 font-montserrat text-4xl font-semibold text-center">
+                    No hay {type} disponibles en el inventario
+                </div>
+            ) : filteredData.length === 0 ? (
+                <div className="flex items-center justify-center h-[60vh] text-gray-500 font-montserrat text-4xl font-semibold text-center">
+                    No se encontraron resultados para "{search}"
+                </div>
+            ) : (
+                <div className="min-h-[500px] flex flex-col justify-between">
+                    <InventoryTable
+                        data={filteredData}
+                        columns={columns}
+                        selectedProduct={selectedProduct} // Pass selected product to the table
+                        type={type} // Pass the type to the table
+                        onCloseEdit={() => setSelectedProduct(null)}
+                        page={page}
+                        setPage={setPage}
+                        pageSize={pageSize}
+                        setPageSize={setPageSize}
+                        totalItems={totalItems}
+                    />
+                    <PaginationControls
+                        page={page}
+                        setPage={setPage}
+                        pageSize={pageSize}
+                        setPageSize={setPageSize}
+                        totalItems={totalItems}
+                        type={type}
+                    />
+                </div>
+            )}
             {isAddingMode && (
                 <AddProductPanel
                     type={type}
                     onClose={() => setIsAddingMode(false)}
+                    selectedProduct={selectedProduct}
+                    setReload={setReload}
                 />
             )}
         </section>
