@@ -4,54 +4,6 @@ import MyRequestsTable from "@/features/user/my-requests/MyRequestsTable";
 import { MyRequestsColumns } from "@/features/user/my-requests/MyRequestsColumns";
 import ModalCancelReqConfirmation from "@/components/ModalCancelReqConfirmation";
 
-// Dummy data for demonstration purposes
-// For implementation, this data would be fetched from API
-const solicitudes = [
-  {
-    id: 1,
-    requestStatus: "Pendiente de aprobación (Jefe de departamento)",
-    typeOfRequest: "EQ",
-    workArea: "Laboratorio de Física",
-    requestDate: {
-      startingDate: "2025-05-02T00:00:00.000Z",
-      finishingDate: "2025-05-02T00:00:00.000Z",
-      startingTime: "12:00",
-      finishingTime: "13:30",
-      reservedDays: 0,
-      reservedHours: 1,
-      reservedMinutes: 30,
-    },
-    requestedBy: {
-      name: "Juan Pérez",
-      email: "juan.perez@cicata.mx",
-      registrationNumber: "CUM-U-001",
-    },
-    occupiedMaterial: [
-      { _id: "1", name: "Incubadora de CO2", barcode: "EQ-001" },
-      { _id: "2", name: "Microscopio invertido", barcode: "EQ-002" },
-      { _id: "3", name: "Campana de bioseguridad", barcode: "EQ-003" },
-    ],
-    assignedTechnician: {
-      name: "Ana Rodríguez",
-      email: "ana.rodriguez@cicata.mx",
-    },
-    observations: [
-      {
-        userName: "Juan Pérez",
-        message:
-          "usuario Juan Pérez ha iniciado la solicitud a las 2025-02-28T09:00:00Z",
-        timestamp: "2025-02-28T09:00:00Z",
-      },
-      {
-        userName: "Juan Pérez",
-        message:
-          "Necesito los materiales de manera urgente para un experimento con el Dr. Castillo",
-        timestamp: "2025-02-28T09:05:00Z",
-      },
-    ],
-  },
-];
-
 const MyRequests = () => {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [showCancelModal, setShowCancelModal] = useState(false);
@@ -95,8 +47,9 @@ const MyRequests = () => {
         const response = await fetch(
           `http://${import.meta.env.VITE_SERVER_IP}:${
             import.meta.env.VITE_SERVER_PORT
-          }/v1/request/user/${matricula}?${page}&limit=4`
+          }/v1/request/user/${matricula}?page=${page}&limit=5`
         );
+
         if (!response.ok) {
           throw new Error("Error fetching data");
         }
@@ -159,6 +112,27 @@ const MyRequests = () => {
           onCloseDetails={() => setSelectedRequest(null)}
           onCancelRequest={handleCancelRequest}
         />
+        <div className="flex w-full justify-between gap-4 pt-5">
+          <div className="text-sm">Mostrando 1 a 5 de 40 solicitudes</div>
+          <div>
+            <button
+              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+              disabled={page === 1}
+              className="px-4 py-2 rounded disabled:opacity-50"
+            >
+              &lt;
+            </button>
+            <span className="self-center px-4 py-3 bg-white rounded-full">
+              {page}
+            </span>
+            <button
+              onClick={() => setPage((prev) => prev + 1)}
+              className="px-4 py-2 rounded"
+            >
+              &gt;
+            </button>
+          </div>
+        </div>
       </section>
       {showCancelModal && (
         <ModalCancelReqConfirmation
