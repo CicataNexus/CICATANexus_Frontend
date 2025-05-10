@@ -6,6 +6,7 @@ const TimePicker = ({
   type = "start",
   className,
   limitTime = null,
+  limitDirection = null,
 }) => {
   const hours = Array.from({ length: 24 }, (_, i) =>
     String(i).padStart(2, "0")
@@ -46,9 +47,9 @@ const TimePicker = ({
   const isAllowed = (h, m) => {
     if (limitTotalMinutes === null) return true;
     const total = parseInt(h) * 60 + parseInt(m);
-    return type === "start"
-      ? total > limitTotalMinutes
-      : total < limitTotalMinutes;
+    if (limitDirection === "before") return total < limitTotalMinutes;
+    if (limitDirection === "after") return total > limitTotalMinutes;
+    return true; // default allow
   };
 
   const getValidHours = () =>

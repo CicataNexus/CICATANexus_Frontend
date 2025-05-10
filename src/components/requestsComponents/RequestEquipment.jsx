@@ -22,6 +22,8 @@ const RequestEquipment = () => {
   const [occupiedDates, setOccupiedDates] = useState([]);
   const [occupiedTime, setOccupiedTime] = useState({
     startTime: "",
+    startDirection: "before",
+    endDirection: "after",
     endTime: "",
   });
   const [datePickerMode, setDatePickerMode] = useState("single");
@@ -185,18 +187,22 @@ const RequestEquipment = () => {
 
         if (startDateOnly === occStartDateOnly) {
           newOccupiedTime.startTime = occ.startingTime;
+          newOccupiedTime.startDirection = "before";
           console.log("1");
         }
         if (endDateOnly === occEndDateOnly) {
           newOccupiedTime.endTime = occ.finishingTime;
+          newOccupiedTime.endDirection = "after";
           console.log("2");
         }
         if (startDateOnly === occEndDateOnly) {
           newOccupiedTime.startTime = occ.finishingTime;
+          newOccupiedTime.startDirection = "after";
           console.log("3");
         }
         if (occStartDateOnly === endDateOnly) {
-          newOccupiedTime.endTime = occ.startTime;
+          newOccupiedTime.endTime = occ.startingTime;
+          newOccupiedTime.endDirection = "before";
           console.log("4");
         }
       });
@@ -373,6 +379,7 @@ const RequestEquipment = () => {
                     type="start"
                     className="select-none"
                     limitTime={occupiedTime.startTime}
+                    limitDirection={occupiedTime.startDirection}
                   />
                 </div>
                 <div className="font-montserrat">
@@ -383,6 +390,7 @@ const RequestEquipment = () => {
                     type="end"
                     className="select-none"
                     limitTime={occupiedTime.endTime}
+                    limitDirection={occupiedTime.endDirection}
                   />
                 </div>
               </div>
