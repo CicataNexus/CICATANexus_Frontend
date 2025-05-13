@@ -28,7 +28,7 @@ export default function PaginationControls({
     };
 
     return (
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 font-montserrat font-medium text-sm text-gray-500 mt-8">
+        <div className="absolute bottom-10 left-0 w-full px-10 flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 font-montserrat font-medium text-sm text-gray-500">
             <p className="text-center sm:text-left flex items-center gap-2">
                 Mostrando {start} a {end} {" "}
                 de {totalItems} {pluralize(type, totalItems)}

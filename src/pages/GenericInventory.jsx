@@ -48,6 +48,7 @@ const resultKeyMap = {
 export default function GenericInventory() {
     const { type } = useParams();
     const [search, setSearch] = useState("");
+    const [activeFilters, setActiveFilters] = useState({});
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
     const [reload, setReload] = useState(false);
@@ -100,9 +101,9 @@ export default function GenericInventory() {
                     throw new Error("Error fetching data");
                 }
                 const result = await response.json();
-                const resultKey = resultKeyMap[type]; // Get the result key based on the type
-                setData(result[resultKey]); // Set the data based on the type
-                setTotalItems(result.total); // Set the total number of items for pagination
+                const resultKey = resultKeyMap[type];
+                setData(result[resultKey]);
+                setTotalItems(result.total);
             } catch (err) {
                 setError(err);
             }
@@ -130,42 +131,50 @@ export default function GenericInventory() {
     const searchedItem = normalizeText(search);
 
     const filteredData = data.filter((item) => {
+        const matchesSearch = (() => {
         if (!searchedItem) return true;
+            if (type === "equipos") {
+                return (
+                    normalizeText(item.inventoryNumber).includes(searchedItem) ||
+                    normalizeText(item.equipmentName).includes(searchedItem) ||
+                    normalizeText(item.equipmentBrand).includes(searchedItem) ||
+                    normalizeText(item.equipmentModel).includes(searchedItem) ||
+                    normalizeText(item.location).includes(searchedItem) ||
+                    item.barcode === search
+                );
+            }
 
-        if (type === "equipos") {
-            return (
-                normalizeText(item.inventoryNumber).includes(searchedItem) ||
-                normalizeText(item.equipmentName).includes(searchedItem) ||
-                normalizeText(item.equipmentBrand).includes(searchedItem) ||
-                normalizeText(item.equipmentModel).includes(searchedItem) ||
-                normalizeText(item.location).includes(searchedItem) ||
-                item.barcode === search
-            );
-        }
+            if (type === "reactivos") {
+                return (
+                    normalizeText(item.reagentCode).includes(searchedItem) ||
+                    normalizeText(item.reagentName).includes(searchedItem) ||
+                    normalizeText(item.reagentBrand).includes(searchedItem) ||
+                    normalizeText(item.location).includes(searchedItem) ||
+                    item.barcode === search
+                );
+            }
 
-        if (type === "reactivos") {
-            return (
-                normalizeText(item.reagentCode).includes(searchedItem) ||
-                normalizeText(item.reagentName).includes(searchedItem) ||
-                normalizeText(item.reagentBrand).includes(searchedItem) ||
-                normalizeText(item.location).includes(searchedItem) ||
-                item.barcode === search
-            );
-        }
+            if (type === "materiales") {
+                return (
+                    normalizeText(item.materialDescription).includes(
+                        searchedItem
+                    ) ||
+                    normalizeText(item.materialCatalog).includes(searchedItem) ||
+                    normalizeText(item.materialBrand).includes(searchedItem) ||
+                    normalizeText(item.location).includes(searchedItem) ||
+                    item.barcode === search
+                );
+            }
 
-        if (type === "materiales") {
-            return (
-                normalizeText(item.materialDescription).includes(
-                    searchedItem
-                ) ||
-                normalizeText(item.materialCatalog).includes(searchedItem) ||
-                normalizeText(item.materialBrand).includes(searchedItem) ||
-                normalizeText(item.location).includes(searchedItem) ||
-                item.barcode === search
-            );
-        }
+            return true;
+        })();
 
-        return true;
+        const matchesFilters = Object.entries(activeFilters).every(([key, values]) => {
+            if (!values || values.length === 0) return true;
+            return values.includes(item[key]);
+        });
+
+        return matchesSearch && matchesFilters;
     });
 
     return (
@@ -185,6 +194,7 @@ export default function GenericInventory() {
                     setIsAddingMode(true);
                     setSelectedProduct(null);
                 }}
+                onFiltersChange={setActiveFilters}
             />
             {Array.isArray(data) && data.length === 0 ? (
                 <div className="flex items-center justify-center h-[60vh] text-gray-500 font-montserrat text-4xl font-semibold text-center">

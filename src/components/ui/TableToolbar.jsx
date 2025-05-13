@@ -8,17 +8,24 @@ export default function TableToolbar({
     onSearchChange,
     onAddClick,
     type,
+    onFiltersChange,
 }) {
     const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [activeFilters, setActiveFilters] = useState({});
     const isUsers = type === "users";
     const placeholder = isUsers
         ? "Escriba el nombre o clave de usuario"
         : "Escriba el nombre o escanee el código";
     const buttonText = isUsers ? "Agregar usuario" : "Agregar producto";
 
+    const handleFiltersChange = (filters) => {
+        setActiveFilters(filters);
+        onFiltersChange?.(filters);
+    };
+
     return (
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
                 {/* Buscador */}
                 <div className="relative w-full md:w-[380px]">
                     <Icon
@@ -33,7 +40,13 @@ export default function TableToolbar({
                         className="w-full pl-10 pr-4 py-2 rounded-md bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent text-sm text-gray-800"
                     />
                 </div>
-                <Filter onClick={() => setIsFilterOpen(!isFilterOpen)} />
+                <Filter
+                    type={type}
+                    open={isFilterOpen}
+                    setOpen={setIsFilterOpen}
+                    onClose={() => setIsFilterOpen(false)}
+                    onChange={handleFiltersChange}
+                />
             </div>
 
             {/* Add button */}
