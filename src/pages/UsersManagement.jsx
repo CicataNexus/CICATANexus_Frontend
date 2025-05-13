@@ -3,15 +3,24 @@ import TableToolbar from "../components/ui/TableToolbar";
 import UsersTable from "@/features/admin/users-mgmt/UsersTable";
 import { UsersColumns } from "@/features/admin/users-mgmt/UsersColumns";
 import AddUserModalPanel from "@/features/admin/users-mgmt/AddUserModalPanel";
+import PaginationControls from "@/components/PaginationControls";
 
 export default function UsersManagement() {
     const [search, setSearch] = useState("");
     const [activeFilters, setActiveFilters] = useState({});
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
+    const [reload, setReload] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [isAddingMode, setIsAddingMode] = useState(false);
-    const [reload, setReload] = useState(false);
+
+    // Pagination
+    const [page, setPage] = useState(1); // Current page
+    useEffect(() => {
+        setPage(1);
+    }, []);
+    const [pageSize, setPageSize] = useState(5); // Number of items per page
+    const [totalItems, setTotalItems] = useState(0); // Total number of items
 
     const handleEdit = (user) => {
         if (selectedUser?.registrationNumber === user.registrationNumber) {
@@ -30,13 +39,14 @@ export default function UsersManagement() {
                 const response = await fetch(
                     `http://${import.meta.env.VITE_SERVER_IP}:${
                         import.meta.env.VITE_SERVER_PORT
-                    }/v1/user`
+                    }/v1/user?page=${page}&limit=${pageSize}`
                 );
                 if (!response.ok) {
                     throw new Error("Error fetching users data");
                 }
                 const result = await response.json();
-                setData(result);
+                setData(result.users);
+                setTotalItems(result.total);
             } catch (err) {
                 setError(err);
             }
@@ -45,7 +55,7 @@ export default function UsersManagement() {
         if (!isAddingMode && !selectedUser) {
             fetchData();
         }
-    }, [reload, isAddingMode, selectedUser]);
+    }, [page, pageSize, reload, isAddingMode, selectedUser]);
 
     if (!data) {
         return (
@@ -109,13 +119,28 @@ export default function UsersManagement() {
                     No se encontraron usuarios para "{search}"
                 </div>
             ) : (
-                <UsersTable
-                    data={filteredData}
-                    columns={columns}
-                    selectedUser={selectedUser}
-                    onCloseEdit={() => setSelectedUser(null)}
-                    setReload={setReload}
-                />
+                <div className="min-h-[500px] flex flex-col justify-between">
+                    <UsersTable
+                        data={filteredData}
+                        columns={columns}
+                        selectedUser={selectedUser}
+                        onCloseEdit={() => setSelectedUser(null)}
+                        setReload={setReload}
+                        page={page}
+                        setPage={setPage}
+                        pageSize={pageSize}
+                        setPageSize={setPageSize}
+                        totalItems={totalItems}
+                    />
+                    <PaginationControls
+                        page={page}
+                        setPage={setPage}
+                        pageSize={pageSize}
+                        setPageSize={setPageSize}
+                        totalItems={totalItems}
+                        type="usuario"
+                    />
+                </div>
             )}
             {isAddingMode && (
                 <AddUserModalPanel
