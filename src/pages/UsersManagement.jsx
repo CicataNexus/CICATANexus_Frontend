@@ -6,6 +6,7 @@ import AddUserModalPanel from "@/features/admin/users-mgmt/AddUserModalPanel";
 
 export default function UsersManagement() {
     const [search, setSearch] = useState("");
+    const [activeFilters, setActiveFilters] = useState({});
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
     const [selectedUser, setSelectedUser] = useState(null);
@@ -63,13 +64,21 @@ export default function UsersManagement() {
     const searchedItem = normalizeText(search);
 
     const filteredData = data.filter((user) => {
-        if (!searchedItem) return true;
+        const matchesSearch = (() => {
+            if (!searchedItem) return true;
+            return (
+                normalizeText(user.name).includes(searchedItem) ||
+                normalizeText(user.registrationNumber).includes(searchedItem) ||
+                normalizeText(user.email).includes(searchedItem)
+            );
+        })();
 
-        return (
-            normalizeText(user.name).includes(searchedItem) ||
-            normalizeText(user.registrationNumber).includes(searchedItem) ||
-            normalizeText(user.email).includes(searchedItem)
-        );
+        const matchesFilters = Object.entries(activeFilters).every(([key, values]) => {
+            if (!values || values.length === 0) return true;
+            return values.includes(item[key]);
+        });
+
+        return matchesSearch && matchesFilters;
     });
 
     return (
@@ -89,6 +98,7 @@ export default function UsersManagement() {
                     setIsAddingMode(true);
                     setSelectedUser(null);
                 }}
+                onFiltersChange={setActiveFilters}
             />
             {Array.isArray(data) && data.length === 0 ? (
                 <div className="flex items-center justify-center h-[60vh] text-gray-500 font-montserrat text-4xl font-semibold text-center">

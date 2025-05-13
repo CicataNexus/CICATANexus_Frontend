@@ -7,6 +7,7 @@ import ModalCancelReqConfirmation from "@/components/ModalCancelReqConfirmation"
 const Requests = () => {
     const [reload, setReload] = useState(false);
     const [search, setSearch] = useState("");
+    const [activeFilters, setActiveFilters] = useState({});
     const [requestsData, setRequestsData] = useState([]);
     const [selectedRequest, setSelectedRequest] = useState(null);
     const [showCancelModal, setShowCancelModal] = useState(false);
@@ -87,15 +88,24 @@ const Requests = () => {
     const searchedItem = normalizeText(search);
 
     const filteredData = requestsData.filter((request) => {
-        if (!searchedItem) return true;
-    
-        const name = request.requestedBy?.name ?? "";
-        const regNumber = request.requestedBy?.registrationNumber ?? "";
-    
-        return (
-            normalizeText(name).includes(searchedItem) ||
-            normalizeText(regNumber).includes(searchedItem)
-        );
+        const matchesSearch = (() => {
+            if (!searchedItem) return true;
+        
+            const name = request.requestedBy?.name ?? "";
+            const regNumber = request.requestedBy?.registrationNumber ?? "";
+        
+            return (
+                normalizeText(name).includes(searchedItem) ||
+                normalizeText(regNumber).includes(searchedItem)
+            );
+        })();
+
+        const matchesFilters = Object.entries(activeFilters).every(([key, values]) => {
+            if (!values || values.length === 0) return true;
+            return values.includes(item[key]);
+        });
+
+        return matchesSearch && matchesFilters;
     });
     
 
@@ -140,12 +150,13 @@ const Requests = () => {
                     observaciones según corresponda.
                 </h3>
                 <TableToolbar
-                    type="users"
+                    type="requests"
                     searchTerm={search}
                     onSearchChange={setSearch}
                     onAddClick={() => {
                         setSelectedRequest(null);
                     }}
+                    onFiltersChange={setActiveFilters}
                 />
                 {Array.isArray(requestsData) && requestsData.length === 0 ? (
                     <div className="flex items-center justify-center h-[60vh] text-gray-500 font-montserrat text-4xl font-semibold text-center">
