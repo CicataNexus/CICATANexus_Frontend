@@ -24,7 +24,7 @@ export default function AddMaterialPanel({
         "materialSupplier",
         "materialCatalog",
         "materialQuantity",
-        // "materialImage", uncomment when implementation is ready in backend
+        "materialImage",
         "warehouseUnits",
         "labUnits",
         "l1",
@@ -379,13 +379,18 @@ export default function AddMaterialPanel({
                             </label>
                         ))}
                         <label className="flex flex-col font-montserrat font-semibold">
-                            Imagen
+                            <span>
+                                Imagen <span className="text-red-500">*</span>
+                            </span>
                             {isEditing && initialData.photoId ? (
                                 <>
                                     <FileInput
                                         name="materialImage"
                                         value={formData.materialImage}
                                         onChange={handleChange}
+                                        required
+                                        showError={errors.materialImage}
+                                        errorMessage={"Este campo es obligatorio"}
                                         className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
                                     />
                                     <img
@@ -399,6 +404,9 @@ export default function AddMaterialPanel({
                                     name="materialImage"
                                     value={formData.materialImage}
                                     onChange={handleChange}
+                                    required
+                                    showError={errors.materialImage}
+                                    errorMessage={"Este campo es obligatorio"}
                                     className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
                                 />
                             )}

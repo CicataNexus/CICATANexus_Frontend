@@ -88,14 +88,14 @@ export function AppSidebar({
   const navItems = data[jwtDecode(localStorage.getItem("token")).role];
 
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible="icon" className="flex flex-col h-full" {...props}>
       <SidebarHeader>
         <CicataSidebarHeader />
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="flex-1 min-h-0 overflow-y-auto pb-70">
         <NavMain items={navItems} />
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="shrink-0">
         <Logout />
       </SidebarFooter>
       <SidebarRail />
