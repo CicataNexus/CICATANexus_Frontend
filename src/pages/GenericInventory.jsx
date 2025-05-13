@@ -101,6 +101,7 @@ export default function GenericInventory() {
                 }
                 const result = await response.json();
                 const resultKey = resultKeyMap[type]; // Get the result key based on the type
+                console.log( result);
                 setData(result[resultKey]); // Set the data based on the type
                 setTotalItems(result.total); // Set the total number of items for pagination
             } catch (err) {
