@@ -13,9 +13,14 @@ export default function TableToolbar({
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [activeFilters, setActiveFilters] = useState({});
     const isUsers = type === "users";
-    const placeholder = isUsers
-        ? "Escriba el nombre o clave de usuario"
-        : "Escriba el nombre o escanee el código";
+    let placeholder;
+    if (type === "users") {
+        placeholder = "Escriba el nombre o clave de usuario";
+    } else if (type === "requests") {
+        placeholder = "Escriba algún dato del solicitante";
+    } else {
+        placeholder = "Escriba el nombre o escanee el código";
+    }
     const buttonText = isUsers ? "Agregar usuario" : "Agregar producto";
 
     const handleFiltersChange = (filters) => {
@@ -50,13 +55,15 @@ export default function TableToolbar({
             </div>
 
             {/* Add button */}
-            <Button
-                onClick={onAddClick}
-                className="bg-deep-blue hover:bg-dark-blue text-white text-sm font-poppins font-semibold py-2 px-4 rounded-md transition inline-flex items-center"
-            >
-                <Icon icon="ic:round-plus" className="mr-2 text-xl" />
-                {buttonText}
-            </Button>
+            {type !== "requests" && (
+                <Button
+                    onClick={onAddClick}
+                    className="bg-deep-blue hover:bg-dark-blue text-white text-sm font-poppins font-semibold py-2 px-4 rounded-md transition inline-flex items-center"
+                >
+                    <Icon icon="ic:round-plus" className="mr-2 text-xl" />
+                    {buttonText}
+                </Button>
+            )}
         </div>
     );
 }
