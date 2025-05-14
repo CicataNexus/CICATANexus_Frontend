@@ -85,7 +85,7 @@ export default function UsersManagement() {
 
         const matchesFilters = Object.entries(activeFilters).every(([key, values]) => {
             if (!values || values.length === 0) return true;
-            return values.includes(item[key]);
+            return values.includes(user[key]);
         });
 
         return matchesSearch && matchesFilters;

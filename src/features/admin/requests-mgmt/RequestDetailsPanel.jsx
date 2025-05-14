@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ModalDeclineReqConfirmation from "@/components/ModalDeclineReqConfirmation";
 import { Button } from "@/components/ui/button";
 import { showToast } from '@/utils/toastUtils';
@@ -7,7 +7,6 @@ import { jwtDecode } from "jwt-decode";
 import {
     Tooltip,
     TooltipContent,
-    TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import SelectInput from "@/components/ui/SelectInput";
@@ -15,10 +14,28 @@ import SelectInput from "@/components/ui/SelectInput";
 
 export default function RequestDetailsPanel({ request, onClose, setReload }) {
     const [showModal, setShowModal] = useState(false);
+    const [availableTechnicians, setAvailableTechnicians] = useState([]);
+    useEffect(() => {
+        const fetchTechnicians = async () => {
+            try {
+                const response = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/user`);
+                if (!response.ok) throw new Error("Error al obtener los técnicos");
+
+                const data = await response.json();
+                const filtered = data.users.filter(user => user.role === "tech");
+                setAvailableTechnicians(filtered);
+            } catch (err) {
+                console.error("Error al cargar técnicos:", err);
+            }
+        };
+
+        fetchTechnicians();
+    }, []);
+
     const [modalAction, setModalAction] = useState("approve");
     const {
         requestedBy,
-        assignedTechnician,
+        assignedTechnicianName,
         workArea,
         typeOfRequest,
         requestSubtype,
@@ -42,10 +59,20 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
         return obsText.trim();
     };
 
+    const [selectedTechnicianId, setSelectedTechnicianId] = useState("");
+    useEffect(() => {
+        if (assignedTechnicianName && availableTechnicians.length > 0) {
+            const tech = availableTechnicians.find(
+            (t) => t.name === assignedTechnicianName
+            );
+            if (tech) setSelectedTechnicianId(tech._id);
+        }
+    }, [assignedTechnicianName, availableTechnicians]);
+
     const { role } = jwtDecode(localStorage.getItem("token"));
 
     const visibleStatesByRole = {
-        Administrator: ["Pendiente de aprobación (Jefe de departamento)", "Aprobada por técnico"],
+        Administrator: ["Pendiente de aprobación (Jefe de departamento)", "Aprobada por técnico", "Rechazada por Técnico"],
         tech: ["Pendiente de aprobación (Técnico)"],
     };
     
@@ -60,6 +87,8 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
         } else if (role === "tech" && requestStatus === "Pendiente de aprobación (Técnico)") {
             nextStatus = "Aprobada por técnico";
         } else if (role === "Administrator" && requestStatus === "Aprobada por técnico") {
+            nextStatus = "Aprobada y notificada";
+        } else if (role === "Administrator" && requestStatus === "Rechazada por Técnico") {
             nextStatus = "Aprobada y notificada";
         } else {
             console.warn("No se puede aprobar en este estado con este rol.");
@@ -97,6 +126,8 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
             nextStatus = "Rechazada y notificada";
         } else if (role === "tech" && requestStatus === "Pendiente de aprobación (Técnico)") {
             nextStatus = "Rechazada por Técnico";
+        } else if (role === "Administrator" && requestStatus === "Rechazada por Técnico") {
+            nextStatus = "Rechazada y notificada";
         } else {
             console.warn("No se puede rechazar en este estado con este rol.");
             return;
@@ -124,6 +155,10 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
             console.error("Error rejecting request:", error);
         }
     };
+
+    const assignedTechnician = availableTechnicians.find(
+        (tech) => tech.name === assignedTechnicianName
+    );
 
     return (
         <>
@@ -200,9 +235,10 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                                 <p><strong>Técnico asignado</strong></p>
                                 <SelectInput
                                     className="-mt-0.5 w-auto text-xs font-montserrat"
-                                    value={assignedTechnician?.id || ""}
+                                    value={selectedTechnicianId}
                                     onChange={(e) => {
                                         const selectedTechnicianId = e.target.value;
+                                        setSelectedTechnicianId(selectedTechnicianId)
                                         // Aquí guardar el nuevo ID seleccionado (state, post, etc.)
                                         console.log(
                                             "Técnico seleccionado:",
@@ -210,26 +246,11 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                                         );
                                         // Tal vez llamar a una función: handleTechnicianChange(selectedTechnicianId)
                                     }}
-                                >
-                                    {/* Este sería el técnico asignado actualmente */}
-                                    {assignedTechnician && (
-                                        <option value={assignedTechnician.id}>
-                                            {assignedTechnician.name}
-                                        </option>
-                                    )}
-
-                                    {/* Técnicos disponibles (ejemplo hardcodeado, pero luego será del backend) */}
-                                    {/* {availableTechnicians
-                                        ?.filter(
-                                            (tech) =>
-                                                tech.id !== assignedTechnician?.id
-                                        )
-                                        .map((tech) => (
-                                            <option key={tech.id} value={tech.id}>
-                                                {tech.name}
-                                            </option>
-                                        ))} */}
-                                </SelectInput>
+                                    options={availableTechnicians.map((tech) => ({
+                                        label: tech.name,
+                                        value: tech._id,
+                                    }))}
+                                />
                                 <p className="mb-3 mt-3">
                                     <strong>
                                         {typeOfRequest === "EQ"

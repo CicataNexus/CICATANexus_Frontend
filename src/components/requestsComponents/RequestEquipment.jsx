@@ -3,8 +3,8 @@ import { jwtDecode } from "jwt-decode";
 import DatePicker from "./DatePicker";
 import SearchSelect from "./SearchSelect";
 import TimePicker from "./TimePicker";
-import { IoMdClose } from "react-icons/io";
 import { Button } from "@/components/ui/button";
+import ModalRequestConfirmation from "@/components/ModalRequestConfirmation";
 
 const areas = [
     "Laboratorio de Biología Molecular",
@@ -314,17 +314,10 @@ const RequestEquipment = () => {
                 </div>
             </div>
             {message && (
-                <div className="h-full w-full absolute backdrop-blur-sm bg-black/50 flex text-center justify-center items-center">
-                    <div className="relative bg-white p-30 text-2xl rounded-3xl">
-                        Solicitud enviada con éxito
-                        <button
-                            className="absolute right-4 top-4"
-                            onClick={handleCloseMessage}
-                        >
-                            <IoMdClose size={30} />
-                        </button>
-                    </div>
-                </div>
+                <ModalRequestConfirmation
+                    onClose={handleCloseMessage}
+                    isConfirming={false}
+                />
             )}
         </div>
     );

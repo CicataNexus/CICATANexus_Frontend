@@ -53,6 +53,9 @@ export default function GenericInventory() {
     const [error, setError] = useState(null);
     const [reload, setReload] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
+    useEffect(() => {
+        setSelectedProduct(null);
+    }, [type]);
     const [isAddingMode, setIsAddingMode] = useState(false);
 
     // Pagination
