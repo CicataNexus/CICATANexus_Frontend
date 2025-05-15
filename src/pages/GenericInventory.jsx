@@ -197,6 +197,7 @@ export default function GenericInventory() {
                     setIsAddingMode(true);
                     setSelectedProduct(null);
                 }}
+                data={data}
                 onFiltersChange={setActiveFilters}
             />
             {Array.isArray(data) && data.length === 0 ? (

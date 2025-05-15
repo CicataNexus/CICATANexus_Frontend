@@ -8,6 +8,7 @@ export default function TableToolbar({
     onSearchChange,
     onAddClick,
     type,
+    data,
     onFiltersChange,
 }) {
     const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -47,6 +48,7 @@ export default function TableToolbar({
                 </div>
                 <Filter
                     type={type}
+                    data={data}
                     open={isFilterOpen}
                     setOpen={setIsFilterOpen}
                     onClose={() => setIsFilterOpen(false)}

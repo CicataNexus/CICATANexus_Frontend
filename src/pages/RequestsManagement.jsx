@@ -156,6 +156,7 @@ const Requests = () => {
                     onAddClick={() => {
                         setSelectedRequest(null);
                     }}
+                    data={requestsData}
                     onFiltersChange={setActiveFilters}
                 />
                 {Array.isArray(requestsData) && requestsData.length === 0 ? (

@@ -108,6 +108,7 @@ export default function UsersManagement() {
                     setIsAddingMode(true);
                     setSelectedUser(null);
                 }}
+                data={data}
                 onFiltersChange={setActiveFilters}
             />
             {Array.isArray(data) && data.length === 0 ? (

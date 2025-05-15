@@ -81,6 +81,46 @@ export default function AddEquipmentPanel({
         return Object.keys(newErrors).length === 0; // True if no errors
     };
 
+    const isFormUnchanged = () => {
+        const fieldsToCompare = [
+            "inventoryNumber",
+            "equipmentName",
+            "equipmentBrand",
+            "equipmentModel",
+            "equipmentSerialNumber",
+            "equipmentSupplier",
+            "invoiceNumber",
+            "dateOfReception",
+            "SICPatRegistered",
+            "vinculatedStrategicProject",
+            "reservationType",
+            "location",
+            "observations"
+        ];
+
+        for (const field of fieldsToCompare) {
+            const formValue = formData[field] ?? "";
+            const initialValue = initialData[field] ?? "";
+
+            if (
+                field === "dateOfReception" &&
+                formValue &&
+                initialValue &&
+                new Date(formValue).toISOString() !==
+                    new Date(initialValue).toISOString()
+            ) {
+                return false;
+            }
+
+            if (formValue !== initialValue) {
+                return false;
+            }
+        }
+
+        return true;
+    };
+
+
     const handleSubmit = async () => {
         if (!validateForm()) {
             return; // Stop submission if validation fails
@@ -494,7 +534,12 @@ export default function AddEquipmentPanel({
                         </Button>
                         <Button
                             onClick={() => handleEdit()}
-                            className="w-40 bg-sidebar hover:bg-dim-blue-background text-white text-base font-poppins font-semibold py-2 transition cursor-pointer text-center"
+                            disabled={isFormUnchanged()}
+                            className={`w-40 text-white text-base font-poppins font-semibold py-2 text-center ${
+                                isFormUnchanged()
+                                    ? "cursor-not-allowed bg-gray-200 text-gray-400"
+                                    : "cursor-pointer transition bg-sidebar hover:bg-dim-blue-background"
+                            }`}
                         >
                             Aplicar cambios
                         </Button>

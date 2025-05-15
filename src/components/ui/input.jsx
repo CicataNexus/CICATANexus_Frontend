@@ -8,8 +8,15 @@ function Input({
     required = false,
     errorMessage = "",
     showError = false,
+    onChange,
     ...props
 }) {
+    const handleChange = (e) => {
+        const value = e.target.value;
+        if (value.startsWith(" ")) return;
+        onChange?.(e);
+    };
+
     return (
         <div>
             <input
@@ -23,6 +30,7 @@ function Input({
                     showError ? "border-red-500" : "",
                     className
                 )}
+                onChange={handleChange}
                 {...props}
             />
             {showError && (
