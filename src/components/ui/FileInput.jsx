@@ -1,7 +1,14 @@
 import { useState } from "react";
 import { Icon } from "@iconify/react";
+import { cn } from "@/lib/utils";
 
-export default function FileInput({ name: inputName, onChange }) {
+export default function FileInput({
+    name: inputName,
+    onChange,
+    showError = false,
+    errorMessage = "",
+    className = "",
+}) {
     const [fileName, setFileName] = useState("");
 
     const handleFileChange = (e) => {
@@ -13,7 +20,8 @@ export default function FileInput({ name: inputName, onChange }) {
     };
 
     return (
-        <label className="relative flex items-center w-full cursor-pointer">
+        <div>
+            <label className="relative flex items-center w-full cursor-pointer mt-1">
             <input
                 type="file"
                 id="input-file"
@@ -23,18 +31,29 @@ export default function FileInput({ name: inputName, onChange }) {
                 className="hidden"
             />
 
-            <div className="flex items-center w-full h-8 px-3 py-1 rounded-md border border-input bg-transparent font-montserrat shadow-xs border-gray-500 overflow-hidden whitespace-nowrap text-xs mt-1 font-normal">
+            <div className={cn(
+                        "font-montserrat truncate selection:bg-primary selection:text-primary-foreground flex h-8 w-full min-w-0 rounded-md border px-3 py-2 text-xs font-normal shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium",
+                        "focus-visible:border-input-focus focus-visible:ring-0 focus:bg-input-background truncate",
+                        showError ? "border-red-500" : "border-gray-500",
+                        className
+                    )}>
                 <span className="text-placeholder-text truncate">
                     {fileName || "Seleccione una imagen"}
                 </span>
 
-                <div className="ml-auto pl-3 flex-shrink-0">
+                <div className="ml-auto flex-shrink-0">
                     <Icon
                         icon="heroicons-outline:paper-clip"
-                        className="text-xl text-dark-blue"
+                        className="text-xl text-dark-blue -mt-0.5"
                     />
                 </div>
             </div>
         </label>
+        {showError && (
+            <p className="text-red-500 text-xs mt-1 font-montserrat">
+                {errorMessage}
+            </p>
+        )}
+        </div>
     );
 }

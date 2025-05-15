@@ -53,6 +53,9 @@ export default function GenericInventory() {
     const [error, setError] = useState(null);
     const [reload, setReload] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
+    useEffect(() => {
+        setSelectedProduct(null);
+    }, [type]);
     const [isAddingMode, setIsAddingMode] = useState(false);
 
     // Pagination
@@ -194,6 +197,7 @@ export default function GenericInventory() {
                     setIsAddingMode(true);
                     setSelectedProduct(null);
                 }}
+                data={data}
                 onFiltersChange={setActiveFilters}
             />
             {Array.isArray(data) && data.length === 0 ? (

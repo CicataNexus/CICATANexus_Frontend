@@ -1,24 +1,47 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ModalDeclineReqConfirmation from "@/components/ModalDeclineReqConfirmation";
 import { Button } from "@/components/ui/button";
-import { showToast } from '@/utils/toastUtils';
+import { showToast } from "@/utils/toastUtils";
 import { Icon } from "@iconify/react";
 import { jwtDecode } from "jwt-decode";
 import {
     Tooltip,
     TooltipContent,
-    TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import SelectInput from "@/components/ui/SelectInput";
 
-
 export default function RequestDetailsPanel({ request, onClose, setReload }) {
     const [showModal, setShowModal] = useState(false);
+    const [availableTechnicians, setAvailableTechnicians] = useState([]);
+    useEffect(() => {
+        const fetchTechnicians = async () => {
+            try {
+                const response = await fetch(
+                    `http://${import.meta.env.VITE_SERVER_IP}:${
+                        import.meta.env.VITE_SERVER_PORT
+                    }/v1/user`
+                );
+                if (!response.ok)
+                    throw new Error("Error al obtener los técnicos");
+
+                const data = await response.json();
+                const filtered = data.users.filter(
+                    (user) => user.role === "tech"
+                );
+                setAvailableTechnicians(filtered);
+            } catch (err) {
+                console.error("Error al cargar técnicos:", err);
+            }
+        };
+
+        fetchTechnicians();
+    }, []);
+
     const [modalAction, setModalAction] = useState("approve");
     const {
         requestedBy,
-        assignedTechnician,
+        assignedTechnicianName,
         workArea,
         typeOfRequest,
         requestSubtype,
@@ -28,9 +51,13 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
         occupiedMaterial,
     } = request;
 
-    const requestedDate = 
+    const requestedDate =
         requestDate?.startingDate && requestDate?.finishingDate
-            ? `${new Date(requestDate.startingDate).toLocaleDateString()} - ${new Date(requestDate.finishingDate).toLocaleDateString()}`
+            ? `${new Date(
+                  requestDate.startingDate
+              ).toLocaleDateString()} - ${new Date(
+                  requestDate.finishingDate
+              ).toLocaleDateString()}`
             : `${new Date(requestDate.startingDate).toLocaleDateString()}`;
     const requestedTime =
         requestDate?.startingTime && requestDate?.finishingTime
@@ -42,88 +69,146 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
         return obsText.trim();
     };
 
+    const [selectedTechnicianId, setSelectedTechnicianId] = useState("");
+    useEffect(() => {
+        if (assignedTechnicianName && availableTechnicians.length > 0) {
+            const tech = availableTechnicians.find(
+                (t) => t.name === assignedTechnicianName
+            );
+            if (tech) setSelectedTechnicianId(tech._id);
+        }
+    }, [assignedTechnicianName, availableTechnicians]);
+
     const { role } = jwtDecode(localStorage.getItem("token"));
 
     const visibleStatesByRole = {
-        Administrator: ["Pendiente de aprobación (Jefe de departamento)", "Aprobada por técnico"],
+        Administrator: [
+            "Pendiente de aprobación (Jefe de departamento)",
+            "Aprobada por técnico",
+            "Rechazada por Técnico",
+        ],
         tech: ["Pendiente de aprobación (Técnico)"],
     };
-    
-    const showActionButtons = visibleStatesByRole[role]?.includes(requestStatus) ?? false;
+
+    const showActionButtons =
+        visibleStatesByRole[role]?.includes(requestStatus) ?? false;
 
     const handleAprove = async () => {
-        const { registrationNumber, role } = jwtDecode(localStorage.getItem("token"));
+        const { registrationNumber, role } = jwtDecode(
+            localStorage.getItem("token")
+        );
         let nextStatus = null;
-    
-        if (role === "Administrator" && requestStatus === "Pendiente de aprobación (Jefe de departamento)") {
+
+        if (
+            role === "Administrator" &&
+            requestStatus === "Pendiente de aprobación (Jefe de departamento)"
+        ) {
             nextStatus = "Pendiente de aprobación (Técnico)";
-        } else if (role === "tech" && requestStatus === "Pendiente de aprobación (Técnico)") {
+        } else if (
+            role === "tech" &&
+            requestStatus === "Pendiente de aprobación (Técnico)"
+        ) {
             nextStatus = "Aprobada por técnico";
-        } else if (role === "Administrator" && requestStatus === "Aprobada por técnico") {
+        } else if (
+            role === "Administrator" &&
+            requestStatus === "Aprobada por técnico"
+        ) {
+            nextStatus = "Aprobada y notificada";
+        } else if (
+            role === "Administrator" &&
+            requestStatus === "Rechazada por Técnico"
+        ) {
             nextStatus = "Aprobada y notificada";
         } else {
             console.warn("No se puede aprobar en este estado con este rol.");
             return;
         }
-    
+
         try {
-            const response = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/request/admin-action/${request.id}`, 
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    registrationNumber,
-                    requestStatus: nextStatus,
-                    observations: getObservationText(),
-                }),
-            });
+            const response = await fetch(
+                `http://${import.meta.env.VITE_SERVER_IP}:${
+                    import.meta.env.VITE_SERVER_PORT
+                }/v1/request/admin-action/${request.id}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        registrationNumber,
+                        requestStatus: nextStatus,
+                        observations: getObservationText(),
+                    }),
+                }
+            );
 
             if (!response.ok) {
                 throw new Error("Error approving request");
             }
-            setReload(prev => !prev);
+            setReload((prev) => !prev);
         } catch (error) {
             console.error("Error approving request:", error);
         }
-    };    
+    };
 
     const handleReject = async () => {
-        const { registrationNumber, role } = jwtDecode(localStorage.getItem("token"));
+        const { registrationNumber, role } = jwtDecode(
+            localStorage.getItem("token")
+        );
         let nextStatus = null;
-    
-        if (role === "Administrator" && (requestStatus === "Pendiente de aprobación (Jefe de departamento)" || requestStatus === "Aprobada por técnico")) {
+
+        if (
+            role === "Administrator" &&
+            (requestStatus ===
+                "Pendiente de aprobación (Jefe de departamento)" ||
+                requestStatus === "Aprobada por técnico")
+        ) {
             nextStatus = "Rechazada y notificada";
-        } else if (role === "tech" && requestStatus === "Pendiente de aprobación (Técnico)") {
+        } else if (
+            role === "tech" &&
+            requestStatus === "Pendiente de aprobación (Técnico)"
+        ) {
             nextStatus = "Rechazada por Técnico";
+        } else if (
+            role === "Administrator" &&
+            requestStatus === "Rechazada por Técnico"
+        ) {
+            nextStatus = "Rechazada y notificada";
         } else {
             console.warn("No se puede rechazar en este estado con este rol.");
             return;
         }
-    
+
         try {
-            const response = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/request/admin-action/${request.id}`, 
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    registrationNumber,
-                    requestStatus: nextStatus,
-                    observations: getObservationText(),
-                }),
-            });
+            const response = await fetch(
+                `http://${import.meta.env.VITE_SERVER_IP}:${
+                    import.meta.env.VITE_SERVER_PORT
+                }/v1/request/admin-action/${request.id}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        registrationNumber,
+                        requestStatus: nextStatus,
+                        observations: getObservationText(),
+                    }),
+                }
+            );
 
             if (!response.ok) {
                 throw new Error("Error rejecting request");
             }
-            setReload(prev => !prev);
+            setReload((prev) => !prev);
         } catch (error) {
             console.error("Error rejecting request:", error);
         }
     };
+
+    const assignedTechnician = availableTechnicians.find(
+        (tech) => tech.name === assignedTechnicianName
+    );
 
     return (
         <>
@@ -135,13 +220,19 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                         setShowModal(false);
                         if (modalAction === "approve") {
                             await handleAprove();
-                            showToast("La solicitud se aprobó correctamente", "success");
+                            showToast(
+                                "La solicitud se aprobó correctamente",
+                                "success"
+                            );
                         } else {
                             await handleReject();
-                            showToast("La solicitud se rechazó correctamente", "success");
+                            showToast(
+                                "La solicitud se rechazó correctamente",
+                                "success"
+                            );
                         }
                         onClose();
-                    }}                    
+                    }}
                     action={modalAction}
                 />
             )}
@@ -197,39 +288,39 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                                         ? "Reactivo o Material"
                                         : "Asistencia técnica"}
                                 </p>
-                                <p><strong>Técnico asignado</strong></p>
-                                <SelectInput
-                                    className="-mt-0.5 w-auto text-xs font-montserrat"
-                                    value={assignedTechnician?.id || ""}
-                                    onChange={(e) => {
-                                        const selectedTechnicianId = e.target.value;
-                                        // Aquí guardar el nuevo ID seleccionado (state, post, etc.)
-                                        console.log(
-                                            "Técnico seleccionado:",
-                                            selectedTechnicianId
-                                        );
-                                        // Tal vez llamar a una función: handleTechnicianChange(selectedTechnicianId)
-                                    }}
-                                >
-                                    {/* Este sería el técnico asignado actualmente */}
-                                    {assignedTechnician && (
-                                        <option value={assignedTechnician.id}>
-                                            {assignedTechnician.name}
-                                        </option>
+                                <p className="mb-3">
+                                    <strong>Técnico asignado</strong>
+                                    <br />
+                                    {role === "tech" ? (
+                                        <>{request.assignedTechnician?.name}</>
+                                    ) : (
+                                        <>
+                                            <SelectInput
+                                                className="w-auto text-xs font-montserrat"
+                                                value={request.assignedTechnician?.name}
+                                                onChange={(e) => {
+                                                    const selectedTechnicianId =
+                                                        e.target.value;
+                                                    setSelectedTechnicianId(
+                                                        selectedTechnicianId
+                                                    );
+                                                    // Aquí guardar el nuevo ID seleccionado (state, post, etc.)
+                                                    console.log(
+                                                        "Técnico seleccionado:",
+                                                        selectedTechnicianId
+                                                    );
+                                                    // Tal vez llamar a una función: handleTechnicianChange(selectedTechnicianId)
+                                                }}
+                                                options={availableTechnicians.map(
+                                                    (tech) => ({
+                                                        label: tech.name,
+                                                        value: tech._id,
+                                                    })
+                                                )}
+                                            />
+                                        </>
                                     )}
-
-                                    {/* Técnicos disponibles (ejemplo hardcodeado, pero luego será del backend) */}
-                                    {/* {availableTechnicians
-                                        ?.filter(
-                                            (tech) =>
-                                                tech.id !== assignedTechnician?.id
-                                        )
-                                        .map((tech) => (
-                                            <option key={tech.id} value={tech.id}>
-                                                {tech.name}
-                                            </option>
-                                        ))} */}
-                                </SelectInput>
+                                </p>
                                 <p className="mb-3 mt-3">
                                     <strong>
                                         {typeOfRequest === "EQ"
@@ -243,8 +334,8 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                                         ? requestSubtype || "-"
                                         : occupiedMaterial?.length > 0
                                         ? occupiedMaterial
-                                            .map((mat) => mat.name)
-                                            .join(", ")
+                                              .map((mat) => mat.name)
+                                              .join(", ")
                                         : "-"}
                                 </p>
                                 <p>
@@ -293,7 +384,7 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                             </div>
                         </div>
                     </article>
-                    
+
                     {showActionButtons && (
                         <section className="mt-3 w-full max-w-2xl mx-auto bg-white border border-gray-200 rounded-xl shadow-md p-6 space-y-4">
                             <h2 className="text-base font-semibold font-poppins text-gray-800 border-b border-b-primary-blue pb-2">
@@ -340,15 +431,21 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                             </div>
 
                             <div className="flex justify-end gap-4 pt-1">
-                                <Button 
+                                <Button
                                     className="bg-reject-btn hover:bg-reject-btn-hover text-white text-base font-poppins font-semibold transition inline-flex items-center cursor-pointer px-6 py-2 w-32 "
-                                    onClick={() => { setModalAction("reject"); setShowModal(true); }}
+                                    onClick={() => {
+                                        setModalAction("reject");
+                                        setShowModal(true);
+                                    }}
                                 >
                                     Rechazar
                                 </Button>
-                                <Button 
+                                <Button
                                     className="bg-approve-btn hover:bg-approve-btn-hover text-white text-base font-poppins font-semibold transition inline-flex items-center cursor-pointer px-6 py-2 w-32"
-                                    onClick={() => { setModalAction("approve"); setShowModal(true); }}
+                                    onClick={() => {
+                                        setModalAction("approve");
+                                        setShowModal(true);
+                                    }}
                                 >
                                     Aprobar
                                 </Button>

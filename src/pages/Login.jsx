@@ -37,6 +37,12 @@ function Login() {
             navigate("/dashboard");
             return;
         }
+        if (matricula === "pepe" && password === "123") {
+            const token = import.meta.env.VITE_TECH_TOKEN;
+            localStorage.setItem("token", token);
+            navigate("/gestion/solicitudes");
+            return;
+        }
         if (matricula === "juan" && password === "123") {
             const token = import.meta.env.VITE_USER_TOKEN;
             localStorage.setItem("token", token);

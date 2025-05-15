@@ -24,7 +24,7 @@ export default function AddMaterialPanel({
         "materialSupplier",
         "materialCatalog",
         "materialQuantity",
-        // "materialImage", uncomment when implementation is ready in backend
+        "materialImage",
         "warehouseUnits",
         "labUnits",
         "l1",
@@ -106,6 +106,66 @@ export default function AddMaterialPanel({
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
+    };
+
+    const isFormUnchanged = () => {
+        const fieldsToCompare = [
+            "materialCategory",
+            "materialDescription",
+            "materialPresentation",
+            "materialBrand",
+            "materialSupplier",
+            "materialCatalog",
+            "materialQuantity",
+            "warehouseUnits",
+            "labUnits",
+            "l1",
+            "l2",
+            "l3",
+            "l4",
+            "l5",
+            "l6",
+            "cf",
+            "tempWarehouseUnits",
+            "materialLot",
+            "invoiceNumber",
+            "dateOfReception",
+            "expirationDate",
+            "receivingTemperature",
+            "location",
+            "observations",
+            "obsForUsers",
+            "verified"
+        ];
+
+        for (const field of fieldsToCompare) {
+            const formValue = formData[field] ?? "";
+            const initialValue = initialData[field] ?? "";
+
+            if (typeof formValue === "boolean" && formValue !== Boolean(initialValue)) {
+                return false;
+            }
+
+            if (!isNaN(formValue) && !isNaN(initialValue)) {
+                if (Number(formValue) !== Number(initialValue)) return false;
+                continue;
+            }
+
+            if (
+                ["dateOfReception", "expirationDate"].includes(field) &&
+                formValue &&
+                initialValue &&
+                new Date(formValue).toISOString() !== new Date(initialValue).toISOString()
+            ) {
+                return false;
+            }
+
+            if (formValue !== initialValue) {
+                return false;
+            }
+        }
+
+        return true;
     };
 
     const handleSubmit = async () => {
@@ -379,13 +439,18 @@ export default function AddMaterialPanel({
                             </label>
                         ))}
                         <label className="flex flex-col font-montserrat font-semibold">
-                            Imagen
+                            <span>
+                                Imagen <span className="text-red-500">*</span>
+                            </span>
                             {isEditing && initialData.photoId ? (
                                 <>
                                     <FileInput
                                         name="materialImage"
                                         value={formData.materialImage}
                                         onChange={handleChange}
+                                        required
+                                        showError={errors.materialImage}
+                                        errorMessage={"Este campo es obligatorio"}
                                         className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
                                     />
                                     <img
@@ -399,6 +464,9 @@ export default function AddMaterialPanel({
                                     name="materialImage"
                                     value={formData.materialImage}
                                     onChange={handleChange}
+                                    required
+                                    showError={errors.materialImage}
+                                    errorMessage={"Este campo es obligatorio"}
                                     className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
                                 />
                             )}
@@ -685,7 +753,12 @@ export default function AddMaterialPanel({
                         </Button>
                         <Button
                             onClick={() => handleEdit()}
-                            className="w-40 bg-sidebar hover:bg-dim-blue-background text-white text-base font-poppins font-semibold py-2 transition cursor-pointer text-center"
+                            disabled={isFormUnchanged()}
+                            className={`w-40 text-white text-base font-poppins font-semibold py-2 text-center ${
+                                isFormUnchanged()
+                                    ? "cursor-not-allowed bg-gray-200 text-gray-400"
+                                    : "cursor-pointer transition bg-sidebar hover:bg-dim-blue-background"
+                            }`}
                         >
                             Aplicar cambios
                         </Button>
