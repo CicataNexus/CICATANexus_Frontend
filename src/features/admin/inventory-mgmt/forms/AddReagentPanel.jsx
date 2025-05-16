@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
+import { showToast } from "@/utils/toastUtils";
 import ModalProductConfirmation from "@/components/ModalProductConfirmation";
 import FileInput from "@/components/ui/FileInput";
 import DateInput from "@/components/ui/DateInput";
@@ -12,6 +13,7 @@ export default function AddReagentPanel({
     onClose,
     initialData = {},
     isEditing = false,
+    setReload,
 }) {
     const [modalConfirming, setModalConfirming] = useState(true);
     const [showConfirmation, setShowConfirmation] = useState(false);
@@ -24,7 +26,7 @@ export default function AddReagentPanel({
         "reagentBrand",
         "reagentCatalog",
         "reagentSupplier",
-        // "reagentImage", Uncomment when implementation is ready in backend
+        "reagentImage",
         "reagentLot",
         "receivingTemperature",
         // "dateOpened", check data type
@@ -51,7 +53,6 @@ export default function AddReagentPanel({
     ];
 
     const [formData, setFormData] = useState({
-        _id: initialData._id || "",
         reagentCode: "",
         reagentName: "",
         reagentPresentation: "",
@@ -109,8 +110,9 @@ export default function AddReagentPanel({
         } else if (type === "file") {
             setFormData((prev) => ({ ...prev, [name]: files[0] }));
         } else {
-            const newValue = name === "barcode" ? value.replace(/\s/g, "") : value;
-            
+            const newValue =
+                name === "barcode" ? value.replace(/\s/g, "") : value;
+
             setFormData((prev) => ({ ...prev, [name]: newValue }));
 
             setErrors((prevErrors) => ({
@@ -136,6 +138,76 @@ export default function AddReagentPanel({
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
+    };
+
+    const isFormUnchanged = () => {
+        const fieldsToCompare = [
+            "reagentCode",
+            "reagentName",
+            "reagentPresentation",
+            "reagentWeightVolume",
+            "reagentBrand",
+            "reagentCatalog",
+            "reagentSupplier",
+            "reagentLot",
+            "dateOfReception",
+            "receivingTemperature",
+            "dateOpened",
+            "dateFinished",
+            "expirationDate",
+            "invoiceNumber",
+            "vinculatedStrategicProject",
+            "nfpaName",
+            "storageClass",
+            "casNumber",
+            "safetyDataSheet",
+            "sdsLink",
+            "verified",
+            "explosive",
+            "oxidizing",
+            "flammable",
+            "corrosive",
+            "toxic",
+            "mutagenicOrCarcinogenic",
+            "irritation",
+            "compressedGases",
+            "healthHazard",
+            "flammability",
+            "reactivity",
+            "contact",
+            "location",
+            "reagentSticker",
+            "observations",
+        ];
+
+        for (const field of fieldsToCompare) {
+            const formValue = formData[field] ?? "";
+            const initialValue = initialData[field] ?? "";
+
+            if (typeof formValue === "boolean" && formValue !== Boolean(initialValue)) {
+                return false;
+            }
+
+            if (!isNaN(formValue) && !isNaN(initialValue)) {
+                if (Number(formValue) !== Number(initialValue)) return false;
+                continue;
+            }
+
+            if (
+                ["dateOfReception", "dateOpened", "dateFinished", "expirationDate"].includes(field) && 
+                formValue &&
+                initialValue &&
+                new Date(formValue).toISOString() !== new Date(initialValue).toISOString()
+            ) {
+                return false;
+            }
+
+            if (formValue !== initialValue) {
+                return false;
+            }
+        }
+
+        return true;
     };
 
     const handleSubmit = async () => {
@@ -165,7 +237,9 @@ export default function AddReagentPanel({
                 ? new Date(formData.expirationDate).toISOString()
                 : null,
             invoiceNumber: String(formData.invoiceNumber),
-            vinculatedStrategicProject: String(formData.vinculatedStrategicProject),
+            vinculatedStrategicProject: String(
+                formData.vinculatedStrategicProject
+            ),
             barcode: String(formData.barcode),
             nfpaName: String(formData.nfpaName),
             storageClass: String(formData.storageClass),
@@ -179,7 +253,10 @@ export default function AddReagentPanel({
             flammable: parseInt(formData.flammable, 10),
             corrosive: parseInt(formData.corrosive, 10),
             toxic: parseInt(formData.toxic, 10),
-            mutagenicOrCarcinogenic: parseInt(formData.mutagenicOrCarcinogenic, 10),
+            mutagenicOrCarcinogenic: parseInt(
+                formData.mutagenicOrCarcinogenic,
+                10
+            ),
             irritation: parseInt(formData.irritation, 10),
             compressedGases: parseInt(formData.compressedGases, 10),
             healthHazard: parseInt(formData.healthHazard, 10),
@@ -199,7 +276,9 @@ export default function AddReagentPanel({
 
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/reagent`,
+                `http://${import.meta.env.VITE_SERVER_IP}:${
+                    import.meta.env.VITE_SERVER_PORT
+                }/v1/reagent`,
                 {
                     method: "POST",
                     body: reagentFormData,
@@ -207,8 +286,10 @@ export default function AddReagentPanel({
             );
 
             if (!response.ok) {
-                const errorData = await response.json();
-                console.error("Error:", errorData);
+                showToast(
+                    "El código de barras ya está registrado, inténtelo de nuevo",
+                    "error"
+                );
                 throw new Error("Error al agregar el reactivo");
             }
             // If product was added successfully, set confirmation
@@ -248,7 +329,9 @@ export default function AddReagentPanel({
                 ? new Date(formData.expirationDate).toISOString()
                 : null,
             invoiceNumber: String(formData.invoiceNumber),
-            vinculatedStrategicProject: String(formData.vinculatedStrategicProject),
+            vinculatedStrategicProject: String(
+                formData.vinculatedStrategicProject
+            ),
             barcode: String(formData.barcode),
             nfpaName: String(formData.nfpaName),
             storageClass: String(formData.storageClass),
@@ -262,7 +345,10 @@ export default function AddReagentPanel({
             flammable: parseInt(formData.flammable, 10),
             corrosive: parseInt(formData.corrosive, 10),
             toxic: parseInt(formData.toxic, 10),
-            mutagenicOrCarcinogenic: parseInt(formData.mutagenicOrCarcinogenic, 10),
+            mutagenicOrCarcinogenic: parseInt(
+                formData.mutagenicOrCarcinogenic,
+                10
+            ),
             irritation: parseInt(formData.irritation, 10),
             compressedGases: parseInt(formData.compressedGases, 10),
             healthHazard: parseInt(formData.healthHazard, 10),
@@ -276,7 +362,9 @@ export default function AddReagentPanel({
 
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/reagent/${formData._id}`,
+                `http://${import.meta.env.VITE_SERVER_IP}:${
+                    import.meta.env.VITE_SERVER_PORT
+                }/v1/reagent/${formData._id}`,
                 {
                     method: "PUT",
                     headers: {
@@ -291,7 +379,11 @@ export default function AddReagentPanel({
                 console.error("Error:", errorData);
                 throw new Error("Error al editar el reactivo");
             } else {
-                alert("Reactivo editado correctamente");
+                showToast("Reactivo editado exitosamente", "success");
+                onClose();
+                setTimeout(() => {
+                    setReload((prev) => !prev);
+                }, 0);
             }
         } catch (error) {
             console.error("Error:", error);
@@ -301,7 +393,9 @@ export default function AddReagentPanel({
     const handleDelete = async () => {
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/reagent/barcode/${formData.barcode}`,
+                `http://${import.meta.env.VITE_SERVER_IP}:${
+                    import.meta.env.VITE_SERVER_PORT
+                }/v1/reagent/barcode/${formData.barcode}`,
                 {
                     method: "DELETE",
                 }
@@ -309,6 +403,12 @@ export default function AddReagentPanel({
 
             if (!response.ok) {
                 throw new Error("Error al eliminar el reactivo");
+            } else {
+                showToast("Reactivo eliminado exitosamente", "success");
+                onClose();
+                setTimeout(() => {
+                    setReload((prev) => !prev);
+                }, 0);
             }
         } catch (error) {
             console.error("Error:", error);
@@ -319,7 +419,7 @@ export default function AddReagentPanel({
         <>
             {showConfirmation && (
                 <ModalProductConfirmation
-                    onClose={onClose}
+                    onClose={() => setShowConfirmation(false)}
                     onDelete={handleDelete}
                     isConfirming={modalConfirming}
                 />
@@ -384,26 +484,38 @@ export default function AddReagentPanel({
                             </label>
                         ))}
                         <label className="flex flex-col font-montserrat font-semibold">
-                            Imagen
+                            <span>
+                                Imagen <span className="text-red-500">*</span>
+                            </span>
                             {isEditing && initialData.photoId ? (
-                                <div className="flex gap-4 items-start">
+                                <>
                                     <FileInput
                                         name="reagentImage"
                                         value={formData.reagentImage}
                                         onChange={handleChange}
+                                        required
+                                        showError={errors.reagentImage}
+                                        errorMessage={"Este campo es obligatorio"}
                                         className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
                                     />
                                     <img
-                                        src={`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/photo/${initialData.photoId}`}
+                                        src={`http://${
+                                            import.meta.env.VITE_SERVER_IP
+                                        }:${
+                                            import.meta.env.VITE_SERVER_PORT
+                                        }/v1/photo/${initialData.photoId}`}
                                         alt="Imagen del reactivo"
-                                        className="mt-2 w-200 h-50 object-cover rounded-md"
+                                        className="mt-2 mx-auto w-[50%] h-40 object-cover"
                                     />
-                                </div>
+                                </>
                             ) : (
                                 <FileInput
                                     name="reagentImage"
                                     value={formData.reagentImage}
                                     onChange={handleChange}
+                                    required
+                                    showError={errors.reagentImage}
+                                    errorMessage={"Este campo es obligatorio"}
                                     className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
                                 />
                             )}
@@ -480,16 +592,12 @@ export default function AddReagentPanel({
                         </label>
                         <label className="flex flex-col font-montserrat font-semibold">
                             <span>
-                                Fecha de caducidad{" "}
-                                <span className="text-red-500">*</span>
+                                Fecha de caducidad
                             </span>
                             <DateInput
                                 name="expirationDate"
                                 value={formData.expirationDate}
                                 onChange={handleChange}
-                                required
-                                showError={errors.expirationDate}
-                                errorMessage={"Este campo es obligatorio"}
                                 placeholder="Ingrese la fecha de caducidad"
                                 className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                             />
@@ -543,7 +651,9 @@ export default function AddReagentPanel({
                                         placeholder="Haga clic y escanee"
                                         required
                                         showError={errors.barcode}
-                                        errorMessage={"Este campo es obligatorio"}
+                                        errorMessage={
+                                            "Este campo es obligatorio"
+                                        }
                                         className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                                     />
                                 </>
@@ -841,7 +951,12 @@ export default function AddReagentPanel({
                         </Button>
                         <Button
                             onClick={() => handleEdit()}
-                            className="w-40 bg-sidebar hover:bg-dim-blue-background text-white text-base font-poppins font-semibold py-2 transition cursor-pointer text-center"
+                            disabled={isFormUnchanged()}
+                            className={`w-40 text-white text-base font-poppins font-semibold py-2 text-center ${
+                                isFormUnchanged()
+                                    ? "cursor-not-allowed bg-gray-200 text-gray-400"
+                                    : "cursor-pointer transition bg-sidebar hover:bg-dim-blue-background"
+                            }`}
                         >
                             Aplicar cambios
                         </Button>

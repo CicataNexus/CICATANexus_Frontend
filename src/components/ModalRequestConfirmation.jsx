@@ -1,12 +1,8 @@
 import { useEffect, useRef } from "react";
-import { Button } from "@/components/ui/Button";
 import { Icon } from "@iconify/react";
 
-export default function ModalDeclineReqConfirmation({
+export default function ModalCancelReqConfirmation({
     onClose,
-    onConfirm,
-    isVisible = false,
-    action = "approve",
 }) {
     const panelRef = useRef(null);
 
@@ -31,13 +27,6 @@ export default function ModalDeclineReqConfirmation({
         };
     }, []);
 
-    if (!isVisible) return null;
-
-    const message =
-        action === "approve"
-            ? "¿Seguro que desea aprobar la solicitud?"
-            : "¿Seguro que desea rechazar la solicitud?";
-
     return (
         <div className="fixed inset-0 bg-gray backdrop-blur-xs flex items-center justify-center z-50">
             <div
@@ -55,24 +44,8 @@ export default function ModalDeclineReqConfirmation({
                 {/* Message */}
                 <div className="flex-grow flex items-center justify-center">
                     <h2 className="text-center text-2xl font-poppins font-semibold text-neutral-800 leading-snug">
-                        {message}
+                        Solicitud enviada correctamente
                     </h2>
-                </div>
-
-                {/* Buttons */}
-                <div className="flex flex-col sm:flex-row justify-center gap-4 w-full">
-                    <Button
-                        onClick={onClose}
-                        className="w-full sm:w-40 bg-gray-300 text-gray-600 hover:opacity-85 font-poppins font-semibold text-lg"
-                    >
-                        Cancelar
-                    </Button>
-                    <Button
-                        onClick={onConfirm}
-                        className="w-full sm:w-40 bg-sidebar hover:bg-dim-blue-background text-white font-poppins font-semibold text-lg"
-                    >
-                        Confirmar
-                    </Button>
                 </div>
             </div>
         </div>

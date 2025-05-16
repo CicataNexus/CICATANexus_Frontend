@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 import DatePicker from "./DatePicker";
 import SearchSelect from "./SearchSelect";
 import TimePicker from "./TimePicker";
-import { IoMdClose } from "react-icons/io";
 import { Button } from "@/components/ui/button";
+import ModalRequestConfirmation from "@/components/ModalRequestConfirmation";
 
 const areas = [
   "Laboratorio de Biología Molecular",
   "Laboratorio de Cultivo Celular y Microscopía",
   "Anexo de Cultivo Celular",
   "Laboratorio de Microbiología",
-  "Laboratorio de Cromatografia y Espectrofotometría",
+  "Laboratorio de Cromatografía y Espectrofotometría",
   "Laboratorio de Bioprocesos",
   "Laboratorio de Acondicionamiento",
   "Cámara Fría",
@@ -43,7 +44,7 @@ const RequestEquipment = () => {
   const [observations, setObservations] = useState("");
   const [equipments, setEquipments] = useState([]);
 
-  const matricula = localStorage.getItem("matricula");
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,50 +52,13 @@ const RequestEquipment = () => {
         const response = await fetch(
           `http://${import.meta.env.VITE_SERVER_IP}:${
             import.meta.env.VITE_SERVER_PORT
-          }/v1/equipment`
+          }/v1/equipment/basic`
         );
-
         if (!response.ok) {
           throw new Error("Error fetching data");
         }
-
-        const equipmentList = await response.json();
-
-        const enrichedEquipment = await Promise.all(
-          equipmentList.map(async (equipment) => {
-            try {
-              const photoResponse = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${
-                  import.meta.env.VITE_SERVER_PORT
-                }/v1/photo/${equipment.photoId}`
-              );
-
-              if (!photoResponse.ok) {
-                throw new Error("Failed to fetch photo");
-              }
-
-              const blob = await photoResponse.blob();
-
-              const photoUrl = URL.createObjectURL(blob);
-
-              return {
-                ...equipment,
-                photo: photoUrl,
-              };
-            } catch (error) {
-              console.error(
-                `Error fetching photo for ${equipment.barcode}:`,
-                error
-              );
-              return {
-                ...equipment,
-                photo: null,
-              };
-            }
-          })
-        );
-
-        setEquipments(enrichedEquipment);
+        const result = await response.json();
+        setEquipments(result);
       } catch (err) {
         setError(err);
       }
@@ -247,32 +211,30 @@ const RequestEquipment = () => {
   };
 
   const handleSubmit = async () => {
-    const isValid =
-      !!dateRange.startDate &&
-      !!dateRange.endDate &&
-      selectedItems.length > 0 &&
-      typeof timeRange.startTime === "string" &&
-      typeof timeRange.endTime === "string" &&
-      timeRange.startTime.length > 0 &&
-      timeRange.endTime.length > 0 &&
-      selectedAreas.length > 0;
+    const newErrors = {
+      dateRange: !dateRange.startDate || !dateRange.endDate,
+      timeRange:
+        !timeRange.startTime ||
+        !timeRange.endTime ||
+        (timeRange.reservedHours === 0 && timeRange.reservedMinutes === 0),
+      selectedItems: selectedItems.length === 0,
+      selectedAreas: selectedAreas.length === 0,
+    };
+    setErrors(newErrors);
 
-    if (!isValid) {
-      alert("Por favor complete todos los campos requeridos.");
-      return;
-    }
+    const hasErrors = Object.values(newErrors).some((error) => error);
+    if (hasErrors) return;
 
     const { reservedHours, reservedMinutes } = calculateTimeDifference(
       timeRange.startTime,
       timeRange.endTime
     );
-
     const formattedRequest = {
       typeOfRequest: "EQ",
       occupiedMaterial: selectedItems.map((item) => ({
         barcode: item.barcode,
       })),
-      workArea: selectedAreas,
+      workArea: selectedAreas[0], // Por ahora, solo se permite un área en el backend, para arreglarlo solo se quita el [0]
       requestDate: {
         startingDate: new Date(dateRange.startDate).toISOString(),
         finishingDate: new Date(dateRange.endDate).toISOString(),
@@ -282,7 +244,8 @@ const RequestEquipment = () => {
         reservedHours,
         reservedMinutes,
       },
-      registrationNumber: matricula,
+      registrationNumber: jwtDecode(localStorage.getItem("token"))
+        .registrationNumber, // placeholder
       observations: observations,
     };
 
@@ -317,6 +280,7 @@ const RequestEquipment = () => {
       });
       setSelectedAreas([]);
       setObservations("");
+      setErrors({});
     } catch (error) {
       alert("Ocurrió un error al enviar la solicitud. Intente de nuevo.");
       console.error(error);
@@ -335,28 +299,11 @@ const RequestEquipment = () => {
         </div>
         <div className="grid grid-cols-2 gap-4 mt-5">
           <div className="flex flex-col">
-            <div className="p-2 flex flex-col">
-              <p className="mb-2 font-montserrat font-semibold">
-                Equipo(s) que utilizará *
-              </p>
-              <SearchSelect
-                options={equipments.map((eq) => ({
-                  barcode: eq.barcode,
-                  name: eq.equipmentName,
-                  brand: eq.equipmentBrand,
-                  location: eq.location,
-                  image: eq.photo,
-                }))}
-                selectedItems={selectedItems}
-                onSelectedItemsChange={handleSelectedItemsChange}
-                className="font-montserrat text-sm"
-                placeholder="Buscar con el nombre"
-              />
-            </div>
             <div className="p-2">
-              <p className="mb-2 font-montserrat font-semibold">
-                Fecha en la que se requiere *
-              </p>
+              <span className="inline-block mb-2 font-montserrat font-semibold">
+                Fecha en la que se requiere{" "}
+                <span className="text-red-500">*</span>
+              </span>
               <DatePicker
                 startDate={dateRange.startDate}
                 endDate={dateRange.endDate}
@@ -364,15 +311,45 @@ const RequestEquipment = () => {
                 mode={datePickerMode}
                 occupiedDates={occupiedDates}
               />
+              {errors.dateRange && (
+                <p className="mt-1 text-red-500 text-xs font-montserrat font-semibold">
+                  Este campo es obligatorio
+                </p>
+              )}
             </div>
-
+            <div className="p-2 flex flex-col">
+              <span className="inline-block mb-2 font-montserrat font-semibold">
+                Equipo(s) que utilizará <span className="text-red-500">*</span>
+              </span>
+              <SearchSelect
+                options={equipments.map((eq) => ({
+                  barcode: eq.barcode,
+                  photoId: eq.photoId,
+                  name: eq.name,
+                  brand: eq.brand,
+                  location: eq.location,
+                }))}
+                selectedItems={selectedItems}
+                onSelectedItemsChange={handleSelectedItemsChange}
+                className="font-montserrat text-sm"
+                placeholder="Buscar con el nombre"
+              />
+              {errors.selectedItems && (
+                <p className="text-red-500 text-xs font-montserrat font-semibold mt-1">
+                  Este campo es obligatorio
+                </p>
+              )}
+            </div>
             <div className="p-2 flex flex-col font-montserrat">
-              <p className="mb-2 font-semibold">
-                Horario en el que se requiere *
-              </p>
+              <span className="inline-block mb-2 font-semibold">
+                Horario en el que se requiere{" "}
+                <span className="text-red-500">*</span>
+              </span>
               <div className="flex gap-2">
                 <div className="font-monot">
-                  <div className="bg-white flex select-none">Desde</div>
+                  <div className="bg-white flex select-none font-medium">
+                    Desde
+                  </div>
                   <TimePicker
                     timeRange={timeRange}
                     setTimeRange={setTimeRange}
@@ -383,7 +360,9 @@ const RequestEquipment = () => {
                   />
                 </div>
                 <div className="font-montserrat">
-                  <div className="bg-white flex select-none">Hasta</div>
+                  <div className="bg-white flex select-none font-medium">
+                    Hasta
+                  </div>
                   <TimePicker
                     timeRange={timeRange}
                     setTimeRange={setTimeRange}
@@ -394,13 +373,18 @@ const RequestEquipment = () => {
                   />
                 </div>
               </div>
+              {errors.timeRange && (
+                <p className="text-red-500 text-xs font-montserrat font-semibold mt-1">
+                  Este campo es obligatorio
+                </p>
+              )}
             </div>
           </div>
           <div className="flex flex-col">
             <div className="p-2">
-              <p className="mb-2 font-montserrat font-semibold">
-                Áreas de Trabajo *
-              </p>
+              <span className="inline-block mb-1 font-montserrat font-semibold">
+                Áreas de Trabajo <span className="text-red-500">*</span>
+              </span>
               <ul className="font-montserrat">
                 {areas.map((option) => {
                   return (
@@ -434,45 +418,43 @@ const RequestEquipment = () => {
                   );
                 })}
               </ul>
+              {errors.selectedAreas && (
+                <p className="text-red-500 text-xs font-montserrat font-semibold">
+                  Este campo es obligatorio
+                </p>
+              )}
             </div>
-            <div className="flex flex-col w-full h-full">
+            <div className="flex flex-col w-full">
               <label
                 htmlFor="observaciones"
-                className="mb-2 select-none font-montserrat font-semibold "
+                className="mb-2 select-none font-montserrat font-semibold"
               >
                 Observaciones
               </label>
               <textarea
                 id="observaciones"
-                className="border border-primary-blue rounded-lg p-2 font-montserrat focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-transparent focus:bg-input-background placeholder:text-sm text-sm h-full"
+                className="border-2 border-primary-blue rounded-lg p-2 font-montserrat focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-transparent focus:bg-input-background placeholder:text-sm text-sm"
                 placeholder="Escriba aquí sus observaciones."
                 value={observations}
                 onChange={handleObservationsChange}
               ></textarea>
             </div>
-            <div className="flex justify-center mt-4">
-              <Button
-                className="bg-deep-blue hover:bg-dark-blue text-white text-xl font-poppins font-semibold tracking-wide py-5 w-auto px-15"
-                onClick={handleSubmit}
-              >
-                Enviar
-              </Button>
-            </div>
           </div>
+        </div>
+        <div className="flex justify-center mt-8">
+          <Button
+            className="bg-deep-blue hover:bg-dark-blue text-white text-xl font-poppins font-semibold tracking-wide py-5 w-auto px-15"
+            onClick={handleSubmit}
+          >
+            Enviar
+          </Button>
         </div>
       </div>
       {message && (
-        <div className="h-full w-full absolute backdrop-blur-sm bg-black/50 flex text-center justify-center items-center">
-          <div className="relative bg-white p-30 text-2xl rounded-3xl">
-            Solicitud enviada con éxito
-            <button
-              className="absolute right-4 top-4"
-              onClick={handleCloseMessage}
-            >
-              <IoMdClose size={30} />
-            </button>
-          </div>
-        </div>
+        <ModalRequestConfirmation
+          onClose={handleCloseMessage}
+          isConfirming={false}
+        />
       )}
     </div>
   );

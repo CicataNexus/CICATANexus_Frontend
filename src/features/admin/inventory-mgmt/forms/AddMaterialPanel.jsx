@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
+import { showToast } from '@/utils/toastUtils';
 import ModalProductConfirmation from "@/components/ModalProductConfirmation";
 import FileInput from "@/components/ui/FileInput";
 import DateInput from "@/components/ui/DateInput";
@@ -11,6 +12,7 @@ export default function AddMaterialPanel({
     onClose,
     initialData = {},
     isEditing = false,
+    setReload,
 }) {
     const [modalConfirming, setModalConfirming] = useState(true);
     const [showConfirmation, setShowConfirmation] = useState(false);
@@ -22,7 +24,7 @@ export default function AddMaterialPanel({
         "materialSupplier",
         "materialCatalog",
         "materialQuantity",
-        // "materialImage", uncomment when implementation is ready in backend
+        "materialImage",
         "warehouseUnits",
         "labUnits",
         "l1",
@@ -39,7 +41,6 @@ export default function AddMaterialPanel({
     ];
 
     const [formData, setFormData] = useState({
-        _id: initialData._id || "",
         materialCategory: "",
         materialDescription: "",
         materialPresentation: "",
@@ -107,6 +108,66 @@ export default function AddMaterialPanel({
         return Object.keys(newErrors).length === 0;
     };
 
+    const isFormUnchanged = () => {
+        const fieldsToCompare = [
+            "materialCategory",
+            "materialDescription",
+            "materialPresentation",
+            "materialBrand",
+            "materialSupplier",
+            "materialCatalog",
+            "materialQuantity",
+            "warehouseUnits",
+            "labUnits",
+            "l1",
+            "l2",
+            "l3",
+            "l4",
+            "l5",
+            "l6",
+            "cf",
+            "tempWarehouseUnits",
+            "materialLot",
+            "invoiceNumber",
+            "dateOfReception",
+            "expirationDate",
+            "receivingTemperature",
+            "location",
+            "observations",
+            "obsForUsers",
+            "verified"
+        ];
+
+        for (const field of fieldsToCompare) {
+            const formValue = formData[field] ?? "";
+            const initialValue = initialData[field] ?? "";
+
+            if (typeof formValue === "boolean" && formValue !== Boolean(initialValue)) {
+                return false;
+            }
+
+            if (!isNaN(formValue) && !isNaN(initialValue)) {
+                if (Number(formValue) !== Number(initialValue)) return false;
+                continue;
+            }
+
+            if (
+                ["dateOfReception", "expirationDate"].includes(field) &&
+                formValue &&
+                initialValue &&
+                new Date(formValue).toISOString() !== new Date(initialValue).toISOString()
+            ) {
+                return false;
+            }
+
+            if (formValue !== initialValue) {
+                return false;
+            }
+        }
+
+        return true;
+    };
+
     const handleSubmit = async () => {
         if (!validateForm()) {
             return; // Stop submission if validation fails
@@ -161,8 +222,7 @@ export default function AddMaterialPanel({
             );
 
             if (!response.ok) {
-                const errorData = await response.json();
-                console.error("Error:", errorData);
+                showToast("El código de barras ya está registrado, inténtelo de nuevo", "error");
                 throw new Error("Error al agregar el material");
             }
             // If product was added successfully, set confirmation
@@ -230,7 +290,11 @@ export default function AddMaterialPanel({
                 console.error("Error:", errorData);
                 throw new Error("Error al editar el material");
             } else {
-                alert("Material editado correctamente");
+                showToast("Material editado exitosamente", "success");
+                onClose();
+                setTimeout(() => {
+                    setReload(prev => !prev);
+                }, 0);
             }
         } catch (error) {
             console.error("Error:", error);
@@ -248,6 +312,12 @@ export default function AddMaterialPanel({
 
             if (!response.ok) {
                 throw new Error("Error al eliminar el material");
+            } else {
+                showToast("Material eliminado exitosamente", "success");
+                onClose();
+                setTimeout(() => {
+                    setReload(prev => !prev);
+                }, 0);
             }
         } catch (error) {
             console.error("Error:", error);
@@ -258,7 +328,7 @@ export default function AddMaterialPanel({
         <>
             {showConfirmation && (
                 <ModalProductConfirmation
-                    onClose={onClose}
+                    onClose={() => setShowConfirmation(false)}
                     onDelete={handleDelete}
                     isConfirming={modalConfirming}
                 />
@@ -369,26 +439,34 @@ export default function AddMaterialPanel({
                             </label>
                         ))}
                         <label className="flex flex-col font-montserrat font-semibold">
-                            Imagen
+                            <span>
+                                Imagen <span className="text-red-500">*</span>
+                            </span>
                             {isEditing && initialData.photoId ? (
-                                <div className="flex gap-4 items-start">
+                                <>
                                     <FileInput
                                         name="materialImage"
                                         value={formData.materialImage}
                                         onChange={handleChange}
+                                        required
+                                        showError={errors.materialImage}
+                                        errorMessage={"Este campo es obligatorio"}
                                         className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
                                     />
                                     <img
                                         src={`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/photo/${initialData.photoId}`}
                                         alt="Imagen del material"
-                                        className="mt-2 w-200 h-50 object-cover rounded-md"
+                                        className="mt-2 mx-auto w-[50%] h-40 object-cover"
                                     />
-                                </div>
+                                </>
                             ) : (
                                 <FileInput
                                     name="materialImage"
                                     value={formData.materialImage}
                                     onChange={handleChange}
+                                    required
+                                    showError={errors.materialImage}
+                                    errorMessage={"Este campo es obligatorio"}
                                     className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
                                 />
                             )}
@@ -675,7 +753,12 @@ export default function AddMaterialPanel({
                         </Button>
                         <Button
                             onClick={() => handleEdit()}
-                            className="w-40 bg-sidebar hover:bg-dim-blue-background text-white text-base font-poppins font-semibold py-2 transition cursor-pointer text-center"
+                            disabled={isFormUnchanged()}
+                            className={`w-40 text-white text-base font-poppins font-semibold py-2 text-center ${
+                                isFormUnchanged()
+                                    ? "cursor-not-allowed bg-gray-200 text-gray-400"
+                                    : "cursor-pointer transition bg-sidebar hover:bg-dim-blue-background"
+                            }`}
                         >
                             Aplicar cambios
                         </Button>

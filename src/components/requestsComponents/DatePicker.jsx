@@ -213,6 +213,7 @@ const DateRangePicker = ({
       {" "}
       <div className="w-full p-4 bg-white border border-primary-blue rounded-lg z-10 font-montserrat">
         {" "}
+      <div className="w-full p-4 bg-white border-2 border-primary-blue rounded-lg z-10 font-montserrat">
         <div className="flex justify-between items-center pb-4">
           {" "}
           <span className="p-2 text-base font-semibold">
@@ -227,13 +228,13 @@ const DateRangePicker = ({
             {" "}
             <button
               onClick={handlePreviousMonth}
-              className="text-gray-600 hover:text-primary-blue p-2"
+              className="text-gray-600 hover:text-primary-blue p-2 cursor-pointer"
             >
               &lt;
             </button>
             <button
               onClick={handleNextMonth}
-              className="text-gray-600 hover:text-primary-blue p-2"
+              className="text-gray-600 hover:text-primary-blue p-2 cursor-pointer"
             >
               &gt;
             </button>

@@ -9,8 +9,12 @@ export const EquipmentColumns = (handleEdit, selectedProduct) => [
     { header: "Ubicación", accessorKey: "location" },
     {
         header: "Estado",
-        accessorKey: "status",
-        cell: ({ getValue }) => <ProductStatusBadge status={getValue()} />,
+        accessorFn: (row) => row.status,
+        id: "status",
+        cell: ({ getValue }) => {
+            const status = getValue();
+            return <ProductStatusBadge status={status} />;
+        },
     },
     {
         header: "",

@@ -1,10 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
 
 function Login() {
   const navigate = useNavigate();
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const { role } = jwtDecode(token);
+        const roleHomeRoutes = {
+          Administrator: "/dashboard",
+          tech: "/gestion/solicitudes",
+          user: "/solicitud/equipo",
+        };
+        navigate(roleHomeRoutes[role] || "/", { replace: true });
+      } catch (error) {
+        console.error("Token inválido:", error);
+        localStorage.removeItem("token");
+      }
+    }
+  }, []);
   const [matricula, setMatricula] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -20,10 +37,16 @@ function Login() {
       navigate("/dashboard");
       return;
     }
+    if (matricula === "pepe" && password === "123") {
+      const token = import.meta.env.VITE_TECH_TOKEN;
+      localStorage.setItem("token", token);
+      navigate("/gestion/solicitudes");
+      return;
+    }
     if (matricula === "juan" && password === "123") {
       const token = import.meta.env.VITE_USER_TOKEN;
       localStorage.setItem("token", token);
-      navigate("/request/equipment");
+      navigate("/solicitud/equipo");
       return;
     }
 
@@ -68,11 +91,11 @@ function Login() {
           case "Administrator":
             navigate("/dashboard");
             break;
-          case "Tech":
-            navigate("/dashboard");
+          case "tech":
+            navigate("/gestion/solicitudes");
             break;
           case "user":
-            navigate("/request/equipment");
+            navigate("/solicitud/equipo");
             break;
           default:
             setError("Usuario con rol no reconocido");
@@ -148,6 +171,17 @@ function Login() {
                     </span>
                   </button>
                 </div>
+                <span className="mt-1 text-[15px] font-montserrat font-medium">
+                  ¿No tiene una cuenta?{" "}
+                  <button
+                    className="cursor-pointer text-dark-blue font-semibold hover:underline"
+                    onClick={() => {
+                      navigate("/registro");
+                    }}
+                  >
+                    Regístrese
+                  </button>
+                </span>
                 {/* Mensaje de error */}
                 {error && (
                   <span className="font-montserrat font-semibold text-red-500 text-sm mt-1 text-center">
@@ -156,7 +190,7 @@ function Login() {
                 )}
               </div>
               <button
-                className="rounded-md p-2 min-w-[30vw] max-w-[40vw] items-center justify-center bg-primary-green text-white text-lg font-bold font-poppins transition-all duration-200 hover:bg-login-btn-hover hover:scale-102 active:scale-95 cursor-pointer"
+                className="rounded-md p-2 min-w-[30vw] max-w-[40vw] items-center justify-center bg-primary-green text-white text-lg font-semibold font-poppins transition-all duration-200 hover:bg-login-btn-hover hover:scale-102 active:scale-95 cursor-pointer"
                 onClick={handleLogin}
               >
                 Ingresar

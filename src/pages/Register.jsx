@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
+import { showToast } from '@/utils/toastUtils';
 
 function Register() {
     const navigate = useNavigate();
@@ -12,7 +13,9 @@ function Register() {
         role: "user",
     });
     const [showPassword, setShowPassword] = useState(false);
-    const [error, setError] = useState("");
+    const [errors, setErrors] = useState({});
+    const [globalError, setGlobalError] = useState("");
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -20,28 +23,50 @@ function Register() {
             ...prev,
             [name]: value,
         }));
+        setErrors((prev) => ({ ...prev, [name]: false }));
     };
 
     const handleRegister = async () => {
-        setError(""); // Limpiar el error
-    
+        setGlobalError(""); // Limpiar el error
+
         // Validaciones previas
-        if (!formData.name || !formData.registrationNumber || !formData.email || !formData.password) {
-            setError("Todos los campos son requeridos.");
-            return;
-        }
-        if (formData.password.length < 6) {
-            setError("La contraseña debe tener al menos 6 caracteres.");
-            return;
-        }
-        if (!/\S+@\S+\.\S+/.test(formData.email)) {
-            setError("Por favor ingresa un correo electrónico válido.");
-            return;
-        }
-    
+        // if (!formData.name || !formData.registrationNumber || !formData.email || !formData.password) {
+        //     setError("Todos los campos son requeridos.");
+        //     return;
+        // }
+        // if (formData.password.length < 6) {
+        //     setError("La contraseña debe tener al menos 6 caracteres.");
+        //     return;
+        // }
+        // if (!/\S+@\S+\.\S+/.test(formData.email)) {
+        //     setError("Por favor ingresa un correo electrónico válido.");
+        //     return;
+        // }
+
+        const newErrors = {
+            name: !formData.name.trim(),
+            registrationNumber: !formData.registrationNumber.trim(),
+            email: (() => {
+                if (formData.email.trim() === "") return "Este campo es obligatorio";
+                if (!/\S+@\S+\.\S+/.test(formData.email)) return "Correo no válido: example@ipn.mx";
+                return "";
+            })(),
+            password: !formData.password.trim()
+                ? "Este campo es obligatorio"
+                : formData.password.length < 6
+                ? "La contraseña debe tener al menos 6 caracteres"
+                : "",
+        };
+        setErrors(newErrors);
+
+        const hasErrors = Object.values(newErrors).some((error) => error);
+        if (hasErrors) return;
+
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/auth/register`,
+                `http://${import.meta.env.VITE_SERVER_IP}:${
+                    import.meta.env.VITE_SERVER_PORT
+                }/v1/auth/register`,
                 {
                     method: "POST",
                     headers: {
@@ -52,17 +77,23 @@ function Register() {
             );
             if (response.ok) {
                 navigate("/");
+                showToast("Usuario registrado correctamente", "success");
+            } else {
+                const errorData = await response.json();
+                setGlobalError(
+                    errorData.message || "Hubo un error al registrar."
+                );
             }
         } catch (error) {
-            // Manejo de error en la solicitud
-            setError(error.message || "Hubo un error al registrar. Intente de nuevo.");
+            setGlobalError("Hubo un error al registrar, Intente de nuevo.");
+            console.error("Error:", error);
         }
-    };      
+    };
 
     return (
         <>
-            <div className="w-full h-screen flex items-center justify-center bg-gradient-to-b from-blue-bg-gradient to-dim-blue-background overflow-hidden">
-                <header className="fixed top-0 w-full flex items-center justify-between px-15 py-3">
+        <div className="w-full min-h-screen bg-gradient-to-b from-blue-bg-gradient to-dim-blue-background flex flex-col items-center">
+            <header className="w-full flex items-center justify-between px-15 py-3 z-50">
                     <img
                         src="/SepWhite.png"
                         alt="Logo SEP"
@@ -79,20 +110,20 @@ function Register() {
                         className="h-12 w-auto"
                     />
                 </header>
-
                 {/* Spheres for background */}
                 <div className="fixed bottom-20 left-3 w-65 h-65 bg-sphere-blue opacity-50 blur-[100px] rounded-full"></div>
                 <div className="fixed top-10 right-3 w-65 h-65 bg-sphere-blue opacity-50 blur-[100px] rounded-full"></div>
 
-                <div className="fixed rounded-2xl min-w-[42vw] max-w-[42vw] min-h-[70vh] max-h-[75vh]">
+                <div className="rounded-2xl w-full max-w-[42vw] bg-white my-10 shadow-md">
                     <div className="flex flex-col w-full h-full items-center justify-center text-center p-15 gap-10 bg-white rounded-2xl">
                         <h1 className="text-3xl text-black font-semibold font-poppins">
                             Crear una cuenta
                         </h1>
-                        <div className="flex flex-col items-center justify-center text-center gap-5 flex-grow">
+                        <div className="flex flex-col items-center justify-center text-center gap-3 flex-grow">
                             <div className="flex flex-col min-w-[30vw] max-w-[40vw] text-1xl text-left gap-1 font-montserrat">
                                 <span className="font-semibold">
-                                    Nombre completo
+                                    Nombre completo{" "}
+                                    <span className="text-red-500">*</span>
                                 </span>
                                 <input
                                     type="text"
@@ -101,11 +132,15 @@ function Register() {
                                     onChange={handleChange}
                                     className="rounded-md p-1 border-2 border-gray-200 outline-none focus:border-input-focus focus:bg-input-background placeholder:text-sm placeholder:text-placeholder-text"
                                     placeholder="Ingrese su nombre completo"
-                                ></input>
+                                />
+                                {errors.name && (
+                                    <span className="font-montserrat font-semibold text-red-500 text-sm">Este campo es obligatorio</span>
+                                )}
                             </div>
                             <div className="flex flex-col min-w-[30vw] max-w-[40vw] text-1xl text-left gap-1 font-montserrat">
                                 <span className="font-semibold">
-                                    Clave de usuario
+                                    Clave de usuario{" "}
+                                    <span className="text-red-500">*</span>
                                 </span>
                                 <input
                                     type="text"
@@ -114,11 +149,15 @@ function Register() {
                                     onChange={handleChange}
                                     className="rounded-md p-1 border-2 border-gray-200 outline-none focus:border-input-focus focus:bg-input-background placeholder:text-sm placeholder:text-placeholder-text"
                                     placeholder="Ingrese su clave de usuario"
-                                ></input>
+                                />
+                                {errors.registrationNumber && (
+                                    <span className="font-montserrat font-semibold text-red-500 text-sm">Este campo es obligatorio</span>
+                                )}
                             </div>
                             <div className="flex flex-col min-w-[30vw] max-w-[40vw] text-1xl text-left gap-1 font-montserrat">
                                 <span className="font-semibold">
-                                    Correo electrónico
+                                    Correo electrónico{" "}
+                                    <span className="text-red-500">*</span>
                                 </span>
                                 <input
                                     type="email"
@@ -127,15 +166,21 @@ function Register() {
                                     onChange={handleChange}
                                     className="rounded-md p-1 border-2 border-gray-200 outline-none focus:border-input-focus focus:bg-input-background placeholder:text-sm placeholder:text-placeholder-text"
                                     placeholder="Ingrese su correo electrónico"
-                                ></input>
+                                />
+                                {errors.email && (
+                                    <span className="font-montserrat font-semibold text-red-500 text-sm">{errors.email}</span>
+                                )}
                             </div>
                             <div className="flex flex-col min-w-[30vw] max-w-[40vw] text-1xl text-left gap-1 font-montserrat">
                                 <span className="font-semibold">
-                                    Contraseña
+                                    Contraseña{" "}
+                                    <span className="text-red-500">*</span>
                                 </span>
                                 <div className="relative">
                                     <input
-                                        type={showPassword ? "text" : "password"}
+                                        type={
+                                            showPassword ? "text" : "password"
+                                        }
                                         name="password"
                                         value={formData.password}
                                         onChange={handleChange}
@@ -144,18 +189,29 @@ function Register() {
                                     />
                                     <button
                                         type="button"
-                                        onClick={() => setShowPassword(!showPassword)}
+                                        onClick={() =>
+                                            setShowPassword(!showPassword)
+                                        }
                                         className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-black focus:outline-none cursor-pointer"
                                     >
                                         <Icon
-                                            icon={showPassword ? "mdi:eye-off-outline" : "mdi:eye-outline"}
+                                            icon={
+                                                showPassword
+                                                    ? "mdi:eye-off-outline"
+                                                    : "mdi:eye-outline"
+                                            }
                                             className="text-lg"
                                         />
-                                        <span className="sr-only">Mostrar u ocultar contraseña</span>
+                                        <span className="sr-only">
+                                            Mostrar u ocultar contraseña
+                                        </span>
                                     </button>
                                 </div>
+                                {errors.password && (
+                                    <span className="font-montserrat font-semibold text-red-500 text-sm">{errors.password}</span>
+                                )}
                                 <span className="mt-1 text-[15px] font-montserrat font-medium">
-                                    ¿Ya tienes cuenta?{" "}
+                                    ¿Ya tiene una cuenta?{" "}
                                     <button
                                         className="cursor-pointer text-dark-blue font-semibold hover:underline"
                                         onClick={() => {
@@ -166,14 +222,14 @@ function Register() {
                                     </button>
                                 </span>
                                 {/* Mensaje de error */}
-                                {error && (
+                                {globalError && (
                                     <span className="font-montserrat font-semibold text-red-500 text-sm mt-1 text-center">
-                                        {error}
+                                        {globalError}
                                     </span>
                                 )}
                             </div>
                             <button
-                                className="rounded-md p-2 min-w-[30vw] max-w-[40vw] items-center justify-center bg-primary-green text-white text-lg font-bold font-poppins transition-all duration-200 hover:bg-login-btn-hover hover:scale-102 active:scale-95 cursor-pointer"
+                                className="rounded-md p-2 min-w-[30vw] max-w-[40vw] items-center justify-center bg-primary-green text-white text-lg font-semibold font-poppins transition-all duration-200 hover:bg-login-btn-hover hover:scale-102 active:scale-95 cursor-pointer"
                                 onClick={handleRegister}
                             >
                                 Crear cuenta

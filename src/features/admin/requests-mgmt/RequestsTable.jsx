@@ -12,6 +12,7 @@ export default function RequestsTable({
     selectedRequest,
     onCloseDetails,
     onCancelRequest,
+    setReload,
 }) {
     const table = useReactTable({
         data,
@@ -65,6 +66,7 @@ export default function RequestsTable({
                                         <RequestDetailsPanel
                                             request={selectedRequest}
                                             onClose={onCloseDetails}
+                                            setReload={setReload}
                                             onCancel={() => onCancelRequest(selectedRequest)}
                                         />
                                     </td>

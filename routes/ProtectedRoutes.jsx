@@ -21,8 +21,8 @@ export default function ProtectedRoutes({ allowedRoles }) {
 
     const roleHomeRoutes = {
         Administrator: "/dashboard",
-        Tech: "/dashboard",
-        user: "/request/equipment",
+        tech: "/gestion/solicitudes",
+        user: "/solicitud/equipo",
     };
 
     // Redirects to the home route of the role if the role is not in the allowed roles
