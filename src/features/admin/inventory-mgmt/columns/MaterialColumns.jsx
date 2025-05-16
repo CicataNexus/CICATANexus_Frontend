@@ -23,11 +23,6 @@ export const MaterialColumns = (handleEdit, selectedProduct) => [
     { header: "Ubicación", accessorKey: "location" },
     { header: "Cantidad", accessorKey: "materialQuantity" },
     {
-        header: "Estado",
-        accessorKey: "status",
-        cell: ({ getValue }) => <ProductStatusBadge status={getValue()} />,
-    },
-    {
         header: "",
         id: "actions",
         cell: ({ row }) => {

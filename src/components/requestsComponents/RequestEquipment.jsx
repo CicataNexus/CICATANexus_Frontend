@@ -3,15 +3,15 @@ import { jwtDecode } from "jwt-decode";
 import DatePicker from "./DatePicker";
 import SearchSelect from "./SearchSelect";
 import TimePicker from "./TimePicker";
-import { IoMdClose } from "react-icons/io";
 import { Button } from "@/components/ui/button";
+import ModalRequestConfirmation from "@/components/ModalRequestConfirmation";
 
 const areas = [
     "Laboratorio de Biología Molecular",
     "Laboratorio de Cultivo Celular y Microscopía",
     "Anexo de Cultivo Celular",
     "Laboratorio de Microbiología",
-    "Laboratorio de Cromatografia y Espectrofotometría",
+    "Laboratorio de Cromatografía y Espectrofotometría",
     "Laboratorio de Bioprocesos",
     "Laboratorio de Acondicionamiento",
     "Cámara Fría",
@@ -40,11 +40,7 @@ const RequestEquipment = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(
-                    `http://${import.meta.env.VITE_SERVER_IP}:${
-                        import.meta.env.VITE_SERVER_PORT
-                    }/v1/equipment`
-                );
+                const response = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/equipment/basic`);
                 if (!response.ok) {
                     throw new Error("Error fetching data");
                 }
@@ -184,8 +180,9 @@ const RequestEquipment = () => {
                             <SearchSelect
                                 options={equipments.map((eq) => ({
                                     barcode: eq.barcode,
-                                    name: eq.equipmentName,
-                                    brand: eq.equipmentBrand,
+                                    photoId: eq.photoId,
+                                    name: eq.name,
+                                    brand: eq.brand,
                                     location: eq.location,
                                 }))}
                                 selectedItems={selectedItems}
@@ -317,17 +314,10 @@ const RequestEquipment = () => {
                 </div>
             </div>
             {message && (
-                <div className="h-full w-full absolute backdrop-blur-sm bg-black/50 flex text-center justify-center items-center">
-                    <div className="relative bg-white p-30 text-2xl rounded-3xl">
-                        Solicitud enviada con éxito
-                        <button
-                            className="absolute right-4 top-4"
-                            onClick={handleCloseMessage}
-                        >
-                            <IoMdClose size={30} />
-                        </button>
-                    </div>
-                </div>
+                <ModalRequestConfirmation
+                    onClose={handleCloseMessage}
+                    isConfirming={false}
+                />
             )}
         </div>
     );

@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
+import { showToast } from "@/utils/toastUtils";
 import ModalProductConfirmation from "@/components/ModalProductConfirmation";
 import FileInput from "@/components/ui/FileInput";
 import DateInput from "@/components/ui/DateInput";
@@ -12,6 +13,7 @@ export default function AddEquipmentPanel({
     onClose,
     initialData = {},
     isEditing = false,
+    setReload,
 }) {
     const [modalConfirming, setModalConfirming] = useState(true);
     const [showConfirmation, setShowConfirmation] = useState(false);
@@ -22,7 +24,7 @@ export default function AddEquipmentPanel({
         "equipmentModel",
         "equipmentSerialNumber",
         "equipmentSupplier",
-        //"equipmentImage", Uncomment when implementation is ready in backend
+        "equipmentImage",
         "vinculatedStrategicProject",
         "barcode",
         "reservationType",
@@ -30,7 +32,6 @@ export default function AddEquipmentPanel({
     ];
 
     const [formData, setFormData] = useState({
-        _id: initialData._id || "",
         inventoryNumber: "",
         equipmentName: "",
         equipmentBrand: "",
@@ -54,8 +55,9 @@ export default function AddEquipmentPanel({
         if (type === "file") {
             setFormData((prev) => ({ ...prev, [name]: files[0] }));
         } else {
-            const newValue = name === "barcode" ? value.replace(/\s/g, "") : value;
-            
+            const newValue =
+                name === "barcode" ? value.replace(/\s/g, "") : value;
+
             setFormData((prev) => ({ ...prev, [name]: newValue }));
 
             setErrors((prevErrors) => ({
@@ -78,6 +80,46 @@ export default function AddEquipmentPanel({
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0; // True if no errors
     };
+
+    const isFormUnchanged = () => {
+        const fieldsToCompare = [
+            "inventoryNumber",
+            "equipmentName",
+            "equipmentBrand",
+            "equipmentModel",
+            "equipmentSerialNumber",
+            "equipmentSupplier",
+            "invoiceNumber",
+            "dateOfReception",
+            "SICPatRegistered",
+            "vinculatedStrategicProject",
+            "reservationType",
+            "location",
+            "observations"
+        ];
+
+        for (const field of fieldsToCompare) {
+            const formValue = formData[field] ?? "";
+            const initialValue = initialData[field] ?? "";
+
+            if (
+                field === "dateOfReception" &&
+                formValue &&
+                initialValue &&
+                new Date(formValue).toISOString() !==
+                    new Date(initialValue).toISOString()
+            ) {
+                return false;
+            }
+
+            if (formValue !== initialValue) {
+                return false;
+            }
+        }
+
+        return true;
+    };
+
 
     const handleSubmit = async () => {
         if (!validateForm()) {
@@ -112,7 +154,9 @@ export default function AddEquipmentPanel({
 
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/equipment`,
+                `http://${import.meta.env.VITE_SERVER_IP}:${
+                    import.meta.env.VITE_SERVER_PORT
+                }/v1/equipment`,
                 {
                     method: "POST",
                     body: equipmentFormData,
@@ -120,8 +164,10 @@ export default function AddEquipmentPanel({
             );
 
             if (!response.ok) {
-                const errorData = await response.json();
-                console.error("Error:", errorData);
+                showToast(
+                    "El código de barras ya está registrado, inténtelo de nuevo",
+                    "error"
+                );
                 throw new Error("Error al agregar el equipo");
             }
             // If product was added successfully, set confirmation
@@ -149,7 +195,9 @@ export default function AddEquipmentPanel({
                 ? new Date(formData.dateOfReception).toISOString()
                 : null,
             SICPatRegistered: String(formData.SICPatRegistered),
-            vinculatedStrategicProject: String(formData.vinculatedStrategicProject),
+            vinculatedStrategicProject: String(
+                formData.vinculatedStrategicProject
+            ),
             barcode: String(formData.barcode),
             reservationType: String(formData.reservationType),
             location: String(formData.location),
@@ -158,7 +206,9 @@ export default function AddEquipmentPanel({
 
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/equipment/barcode/${initialData.barcode}`,
+                `http://${import.meta.env.VITE_SERVER_IP}:${
+                    import.meta.env.VITE_SERVER_PORT
+                }/v1/equipment/barcode/${initialData.barcode}`,
                 {
                     method: "PUT",
                     headers: {
@@ -173,7 +223,11 @@ export default function AddEquipmentPanel({
                 console.error("Error:", errorData);
                 throw new Error("Error al editar el equipo");
             } else {
-                alert("Equipo editado correctamente");
+                showToast("Equipo editado exitosamente", "success");
+                onClose();
+                setTimeout(() => {
+                    setReload((prev) => !prev);
+                }, 0);
             }
         } catch (error) {
             console.error("Error:", error);
@@ -183,7 +237,9 @@ export default function AddEquipmentPanel({
     const handleDelete = async () => {
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/equipment/barcode/${formData.barcode}`,
+                `http://${import.meta.env.VITE_SERVER_IP}:${
+                    import.meta.env.VITE_SERVER_PORT
+                }/v1/equipment/barcode/${formData.barcode}`,
                 {
                     method: "DELETE",
                 }
@@ -191,6 +247,12 @@ export default function AddEquipmentPanel({
 
             if (!response.ok) {
                 throw new Error("Error al eliminar el equipo");
+            } else {
+                showToast("Equipo eliminado exitosamente", "success");
+                onClose();
+                setTimeout(() => {
+                    setReload((prev) => !prev);
+                }, 0);
             }
         } catch (error) {
             console.error("Error:", error);
@@ -201,7 +263,7 @@ export default function AddEquipmentPanel({
         <>
             {showConfirmation && (
                 <ModalProductConfirmation
-                    onClose={onClose}
+                    onClose={() => setShowConfirmation(false)}
                     onDelete={handleDelete}
                     isConfirming={modalConfirming}
                 />
@@ -270,26 +332,38 @@ export default function AddEquipmentPanel({
                             </label>
                         ))}
                         <label className="flex flex-col font-montserrat font-semibold">
-                            Imagen
+                            <span>
+                                Imagen <span className="text-red-500">*</span>
+                            </span>
                             {isEditing && initialData.photoId ? (
-                                <div className="flex gap-4 items-start">
+                                <>
                                     <FileInput
                                         name="equipmentImage"
                                         value={formData.equipmentImage}
                                         onChange={handleChange}
+                                        required
+                                        showError={errors.equipmentImage}
+                                        errorMessage={"Este campo es obligatorio"}
                                         className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
                                     />
                                     <img
-                                        src={`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/photo/${initialData.photoId}`}
+                                        src={`http://${
+                                            import.meta.env.VITE_SERVER_IP
+                                        }:${
+                                            import.meta.env.VITE_SERVER_PORT
+                                        }/v1/photo/${initialData.photoId}`}
                                         alt="Imagen del equipo"
-                                        className="mt-2 w-200 h-50 object-cover rounded-md"
+                                        className="mt-2 mx-auto w-[50%] h-40 object-cover"
                                     />
-                                </div>
+                                </>
                             ) : (
                                 <FileInput
                                     name="equipmentImage"
                                     value={formData.equipmentImage}
                                     onChange={handleChange}
+                                    required
+                                    showError={errors.equipmentImage}
+                                    errorMessage={"Este campo es obligatorio"}
                                     className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
                                 />
                             )}
@@ -367,7 +441,9 @@ export default function AddEquipmentPanel({
                                         placeholder="Haga clic y escanee"
                                         required
                                         showError={errors.barcode}
-                                        errorMessage={"Este campo es obligatorio"}
+                                        errorMessage={
+                                            "Este campo es obligatorio"
+                                        }
                                         className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                                     />
                                 </>
@@ -458,7 +534,12 @@ export default function AddEquipmentPanel({
                         </Button>
                         <Button
                             onClick={() => handleEdit()}
-                            className="w-40 bg-sidebar hover:bg-dim-blue-background text-white text-base font-poppins font-semibold py-2 transition cursor-pointer text-center"
+                            disabled={isFormUnchanged()}
+                            className={`w-40 text-white text-base font-poppins font-semibold py-2 text-center ${
+                                isFormUnchanged()
+                                    ? "cursor-not-allowed bg-gray-200 text-gray-400"
+                                    : "cursor-pointer transition bg-sidebar hover:bg-dim-blue-background"
+                            }`}
                         >
                             Aplicar cambios
                         </Button>

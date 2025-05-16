@@ -3,15 +3,15 @@ import { jwtDecode } from "jwt-decode";
 import DatePicker from "./DatePicker";
 import SearchSelect from "./SearchSelect";
 import TimePicker from "./TimePicker";
-import { IoMdClose } from "react-icons/io";
 import { Button } from "@/components/ui/Button";
+import ModalRequestConfirmation from "@/components/ModalRequestConfirmation";
 
 const areas = [
     "Laboratorio de Biología Molecular",
     "Laboratorio de Cultivo Celular y Microscopía",
     "Anexo de Cultivo Celular",
     "Laboratorio de Microbiología",
-    "Laboratorio de Cromatografia y Espectrofotometría",
+    "Laboratorio de Cromatografía y Espectrofotometría",
     "Laboratorio de Bioprocesos",
     "Laboratorio de Acondicionamiento",
     "Cámara Fría",
@@ -36,36 +36,23 @@ const RequestMaterial = () => {
     const [observations, setObservations] = useState("");
     const [materials, setMaterials] = useState([]);
     const [errors, setErrors] = useState({});
+    const [combinedItems, setCombinedItems] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [materialsResponse, reagentsResponse] = await Promise.all(
-                    [
-                        fetch(
-                            `http://${import.meta.env.VITE_SERVER_IP}:${
-                                import.meta.env.VITE_SERVER_PORT
-                            }/v1/materials`
-                        ),
-                        fetch(
-                            `http://${import.meta.env.VITE_SERVER_IP}:${
-                                import.meta.env.VITE_SERVER_PORT
-                            }/v1/reagent`
-                        ),
-                    ]
+                const res = await fetch(
+                    `http://${import.meta.env.VITE_SERVER_IP}:${
+                        import.meta.env.VITE_SERVER_PORT
+                    }/v1/combined/basic`
                 );
-
-                if (!materialsResponse.ok || !reagentsResponse.ok) {
-                    throw new Error("Error fetching data");
+                if (!res.ok) {
+                    throw new Error("Error fetching combined items");
                 }
-
-                const materialsData = await materialsResponse.json();
-                const reagentsData = await reagentsResponse.json();
-
-                setMaterials(materialsData);
-                setReagents(reagentsData);
+                const data = await res.json();
+                setCombinedItems(data);
             } catch (err) {
-                setError(err);
+                console.error(err);
             }
         };
 
@@ -93,10 +80,7 @@ const RequestMaterial = () => {
     const handleSubmit = async () => {
         const newErrors = {
             dateRange: !dateRange.startDate,
-            timeRange:
-                !timeRange.startTime ||
-                (timeRange.reservedHours === 0 &&
-                    timeRange.reservedMinutes === 0),
+            timeRange: !timeRange.startTime,
             selectedItems: selectedItems.length === 0,
             selectedAreas: selectedAreas.length === 0,
         };
@@ -115,7 +99,8 @@ const RequestMaterial = () => {
                 startingDate: new Date(dateRange.startDate).toISOString(),
                 startingTime: timeRange.startTime,
             },
-            registrationNumber: jwtDecode(localStorage.getItem("token")).registrationNumber, 
+            registrationNumber: jwtDecode(localStorage.getItem("token"))
+                .registrationNumber,
             observations: observations,
         };
         console.log(formattedRequest);
@@ -189,20 +174,13 @@ const RequestMaterial = () => {
                                 <span className="text-red-500">*</span>
                             </span>
                             <SearchSelect
-                                options={[
-                                    ...materials.map((eq) => ({
-                                        barcode: eq.barcode,
-                                        name: eq.materialDescription,
-                                        brand: eq.materialBrand,
-                                        location: eq.location,
-                                    })),
-                                    ...reagents.map((eq) => ({
-                                        barcode: eq.barcode,
-                                        name: eq.reagentName,
-                                        brand: eq.reagentBrand,
-                                        location: eq.location,
-                                    })),
-                                ]}
+                                options={combinedItems.map((item) => ({
+                                    barcode: item.barcode,
+                                    name: item.name,
+                                    brand: item.brand,
+                                    location: item.location,
+                                    photoId: item.photoId,
+                                }))}
                                 selectedItems={selectedItems}
                                 onSelectedItemsChange={
                                     handleSelectedItemsChange
@@ -289,7 +267,9 @@ const RequestMaterial = () => {
                                 })}
                             </ul>
                             {errors.selectedAreas && (
-                                <p className="mt-1 text-red-500 text-xs font-montserrat font-semibold">Este campo es obligatorio</p>
+                                <p className="mt-1 text-red-500 text-xs font-montserrat font-semibold">
+                                    Este campo es obligatorio
+                                </p>
                             )}
                         </div>
                         <div className="flex flex-col w-full">
@@ -319,17 +299,10 @@ const RequestMaterial = () => {
                 </div>
             </div>
             {message && (
-                <div className="h-full w-full absolute backdrop-blur-sm bg-black/50 flex text-center justify-center items-center">
-                    <div className="relative bg-green-100 p-30 text-2xl rounded-3xl">
-                        Solicitud enviada con éxito
-                        <button
-                            className="absolute right-4 top-4"
-                            onClick={handleCloseMessage}
-                        >
-                            <IoMdClose size={30} />
-                        </button>
-                    </div>
-                </div>
+                <ModalRequestConfirmation
+                    onClose={handleCloseMessage}
+                    isConfirming={false}
+                />
             )}
         </div>
     );

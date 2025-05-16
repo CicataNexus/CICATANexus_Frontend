@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { jwtDecode } from "jwt-decode";
-import { IoMdClose } from "react-icons/io";
 import DatePicker from "./DatePicker";
 import TimePicker from "./TimePicker";
 import { Button } from "@/components/ui/Button";
+import ModalRequestConfirmation from "@/components/ModalRequestConfirmation";
 
 const areas = [
     "Laboratorio de Biología Molecular",
     "Laboratorio de Cultivo Celular y Microscopía",
     "Anexo de Cultivo Celular",
     "Laboratorio de Microbiología",
-    "Laboratorio de Cromatografia y Espectrofotometría",
+    "Laboratorio de Cromatografía y Espectrofotometría",
     "Laboratorio de Bioprocesos",
     "Laboratorio de Acondicionamiento",
     "Cámara Fría",
@@ -309,17 +309,10 @@ const RequestSupport = () => {
                 </div>
             </div>
             {message && (
-                <div className="h-full w-full absolute backdrop-blur-sm bg-black/50 flex text-center justify-center items-center">
-                    <div className="relative bg-green-100 p-30 text-2xl rounded-3xl">
-                        Solicitud enviada con éxito
-                        <button
-                            className="absolute right-4 top-4"
-                            onClick={handleCloseMessage}
-                        >
-                            <IoMdClose size={30} />
-                        </button>
-                    </div>
-                </div>
+                <ModalRequestConfirmation
+                    onClose={handleCloseMessage}
+                    isConfirming={false}
+                />
             )}
         </div>
     );
