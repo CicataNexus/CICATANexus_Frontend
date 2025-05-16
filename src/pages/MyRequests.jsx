@@ -10,7 +10,9 @@ const MyRequests = () => {
   const [requestToCancel, setRequestToCancel] = useState(null);
   const [page, setPage] = useState(1);
   const [requests, setRequests] = useState([]);
-  const matricula = localStorage.getItem("matricula");
+  const registrationNumber = jwtDecode(
+    localStorage.getItem("token")
+  ).registrationNumber;
 
   const mapApiResponseToRequiredFormat = (apiResponse) => {
     return apiResponse.map((item) => {
@@ -47,7 +49,7 @@ const MyRequests = () => {
         const response = await fetch(
           `http://${import.meta.env.VITE_SERVER_IP}:${
             import.meta.env.VITE_SERVER_PORT
-          }/v1/request/user/${matricula}?page=${page}&limit=5`
+          }/v1/request/user/${registrationNumber}?page=${page}&limit=5`
         );
 
         if (!response.ok) {
@@ -63,7 +65,7 @@ const MyRequests = () => {
       }
     };
     fetchData();
-  }, [matricula, page]);
+  }, [page]);
 
   const handleToggleDetails = (request) => {
     if (selectedRequest?.id === request.id) {
