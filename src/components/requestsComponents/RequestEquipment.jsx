@@ -186,28 +186,44 @@ const RequestEquipment = () => {
       }
     });
   };
+  useEffect(() => {
+    const { startTime, endTime } = timeRange;
+
+    if (!startTime || !endTime) return; // Don't calculate if times are incomplete
+
+    const calculateTimeDifference = (startTime, endTime) => {
+      const [startHour, startMinute] = startTime.split(":").map(Number);
+      const [endHour, endMinute] = endTime.split(":").map(Number);
+
+      const start = new Date(0, 0, 0, startHour, startMinute);
+      const end = new Date(0, 0, 0, endHour, endMinute);
+
+      let diff = (end - start) / (1000 * 60); // difference in minutes
+
+      if (diff < 0) {
+        diff += 24 * 60; // handle overnight
+      }
+
+      const reservedHours = Math.floor(diff / 60);
+      const reservedMinutes = diff % 60;
+
+      return { reservedHours, reservedMinutes };
+    };
+
+    const { reservedHours, reservedMinutes } = calculateTimeDifference(
+      startTime,
+      endTime
+    );
+
+    setTimeRange((prev) => ({
+      ...prev,
+      reservedHours,
+      reservedMinutes,
+    }));
+  }, [timeRange.startTime, timeRange.endTime]);
 
   const handleObservationsChange = (event) => {
     setObservations(event.target.value);
-  };
-
-  const calculateTimeDifference = (startTime, endTime) => {
-    const [startHour, startMinute] = startTime.split(":").map(Number);
-    const [endHour, endMinute] = endTime.split(":").map(Number);
-
-    const start = new Date(0, 0, 0, startHour, startMinute);
-    const end = new Date(0, 0, 0, endHour, endMinute);
-
-    let diff = (end - start) / (1000 * 60);
-
-    if (diff < 0) {
-      diff += 24 * 60;
-    }
-
-    const reservedHours = Math.floor(diff / 60);
-    const reservedMinutes = diff % 60;
-
-    return { reservedHours, reservedMinutes };
   };
 
   const handleSubmit = async () => {
@@ -225,10 +241,6 @@ const RequestEquipment = () => {
     const hasErrors = Object.values(newErrors).some((error) => error);
     if (hasErrors) return;
 
-    const { reservedHours, reservedMinutes } = calculateTimeDifference(
-      timeRange.startTime,
-      timeRange.endTime
-    );
     const formattedRequest = {
       typeOfRequest: "EQ",
       occupiedMaterial: selectedItems.map((item) => ({
@@ -241,8 +253,8 @@ const RequestEquipment = () => {
         startingTime: timeRange.startTime,
         finishingTime: timeRange.endTime,
         reservedDays: dateRange.reservedDays,
-        reservedHours,
-        reservedMinutes,
+        reservedHours: timeRange.reservedHours,
+        reservedMinutes: timeRange.reservedMinutes,
       },
       registrationNumber: jwtDecode(localStorage.getItem("token"))
         .registrationNumber, // placeholder
@@ -299,24 +311,6 @@ const RequestEquipment = () => {
         </div>
         <div className="grid grid-cols-2 gap-4 mt-5">
           <div className="flex flex-col">
-            <div className="p-2">
-              <span className="inline-block mb-2 font-montserrat font-semibold">
-                Fecha en la que se requiere{" "}
-                <span className="text-red-500">*</span>
-              </span>
-              <DatePicker
-                startDate={dateRange.startDate}
-                endDate={dateRange.endDate}
-                onChange={setDateRange}
-                mode={datePickerMode}
-                occupiedDates={occupiedDates}
-              />
-              {errors.dateRange && (
-                <p className="mt-1 text-red-500 text-xs font-montserrat font-semibold">
-                  Este campo es obligatorio
-                </p>
-              )}
-            </div>
             <div className="p-2 flex flex-col">
               <span className="inline-block mb-2 font-montserrat font-semibold">
                 Equipo(s) que utilizará <span className="text-red-500">*</span>
@@ -340,6 +334,25 @@ const RequestEquipment = () => {
                 </p>
               )}
             </div>
+            <div className="p-2">
+              <span className="inline-block mb-2 font-montserrat font-semibold">
+                Fecha en la que se requiere{" "}
+                <span className="text-red-500">*</span>
+              </span>
+              <DatePicker
+                startDate={dateRange.startDate}
+                endDate={dateRange.endDate}
+                onChange={setDateRange}
+                mode={datePickerMode}
+                occupiedDates={occupiedDates}
+              />
+              {errors.dateRange && (
+                <p className="mt-1 text-red-500 text-xs font-montserrat font-semibold">
+                  Este campo es obligatorio
+                </p>
+              )}
+            </div>
+
             <div className="p-2 flex flex-col font-montserrat">
               <span className="inline-block mb-2 font-semibold">
                 Horario en el que se requiere{" "}
@@ -424,7 +437,7 @@ const RequestEquipment = () => {
                 </p>
               )}
             </div>
-            <div className="flex flex-col w-full">
+            <div className="flex flex-col w-full h-full">
               <label
                 htmlFor="observaciones"
                 className="mb-2 select-none font-montserrat font-semibold"
@@ -433,21 +446,21 @@ const RequestEquipment = () => {
               </label>
               <textarea
                 id="observaciones"
-                className="border-2 border-primary-blue rounded-lg p-2 font-montserrat focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-transparent focus:bg-input-background placeholder:text-sm text-sm"
+                className="border-2 border-primary-blue rounded-lg p-2 font-montserrat focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-transparent focus:bg-input-background placeholder:text-sm text-sm h-full"
                 placeholder="Escriba aquí sus observaciones."
                 value={observations}
                 onChange={handleObservationsChange}
               ></textarea>
+              <div className="flex justify-center mt-4">
+                <Button
+                  className="bg-deep-blue hover:bg-dark-blue text-white text-xl font-poppins font-semibold tracking-wide py-5 w-auto px-15"
+                  onClick={handleSubmit}
+                >
+                  Enviar
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="flex justify-center mt-8">
-          <Button
-            className="bg-deep-blue hover:bg-dark-blue text-white text-xl font-poppins font-semibold tracking-wide py-5 w-auto px-15"
-            onClick={handleSubmit}
-          >
-            Enviar
-          </Button>
         </div>
       </div>
       {message && (

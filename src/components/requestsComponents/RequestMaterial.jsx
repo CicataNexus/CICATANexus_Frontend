@@ -44,7 +44,7 @@ const RequestMaterial = () => {
         const res = await fetch(
           `http://${import.meta.env.VITE_SERVER_IP}:${
             import.meta.env.VITE_SERVER_PORT
-          }/v1/combined/basic`
+          }/v1/combined/basic-info`
         );
         if (!res.ok) {
           throw new Error("Error fetching combined items");
@@ -151,23 +151,6 @@ const RequestMaterial = () => {
         </div>
         <div className="grid grid-cols-2 gap-4 mt-5">
           <div className="flex flex-col">
-            <div className="p-2">
-              <span className="inline-block mb-2 font-montserrat font-semibold">
-                Fecha en la que se requiere{" "}
-                <span className="text-red-500">*</span>
-              </span>
-              <DatePicker
-                startDate={dateRange.startDate}
-                endDate={dateRange.endDate}
-                onChange={setDateRange}
-                mode="single"
-              />
-              {errors.dateRange && (
-                <p className="mt-1 text-red-500 text-xs font-montserrat font-semibold">
-                  Este campo es obligatorio
-                </p>
-              )}
-            </div>
             <div className="p-2 flex flex-col">
               <span className="mb-2 font-montserrat font-semibold">
                 Reactivo(s) y/o material(es) que utilizará{" "}
@@ -192,6 +175,24 @@ const RequestMaterial = () => {
                 </p>
               )}
             </div>
+            <div className="p-2">
+              <span className="inline-block mb-2 font-montserrat font-semibold">
+                Fecha en la que se requiere{" "}
+                <span className="text-red-500">*</span>
+              </span>
+              <DatePicker
+                startDate={dateRange.startDate}
+                endDate={dateRange.endDate}
+                onChange={setDateRange}
+                mode="single"
+              />
+              {errors.dateRange && (
+                <p className="mt-1 text-red-500 text-xs font-montserrat font-semibold">
+                  Este campo es obligatorio
+                </p>
+              )}
+            </div>
+
             <div className="p-2 flex flex-col">
               <p className="mb-2 font-montserrat font-semibold">
                 Horario en el que se requiere{" "}
@@ -261,7 +262,7 @@ const RequestMaterial = () => {
                 </p>
               )}
             </div>
-            <div className="flex flex-col w-full">
+            <div className="flex flex-col w-full h-full">
               <label
                 htmlFor="observaciones"
                 className="mb-2 select-none font-montserrat font-semibold"
@@ -270,21 +271,21 @@ const RequestMaterial = () => {
               </label>
               <textarea
                 id="observaciones"
-                className="border-2 border-primary-blue rounded-lg p-2 font-montserrat focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-transparent focus:bg-input-background placeholder:text-sm text-sm"
+                className="border-2 border-primary-blue rounded-lg p-2 font-montserrat focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-transparent focus:bg-input-background placeholder:text-sm text-sm h-full"
                 placeholder="Escriba aquí sus observaciones."
                 value={observations}
                 onChange={handleObservationsChange}
               ></textarea>
+              <div className="flex justify-center mt-4">
+                <Button
+                  className="bg-deep-blue hover:bg-dark-blue text-white text-xl font-poppins font-semibold tracking-wide py-5 w-auto px-15"
+                  onClick={handleSubmit}
+                >
+                  Enviar
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="flex justify-center mt-8">
-          <Button
-            className="bg-deep-blue hover:bg-dark-blue text-white text-xl font-poppins font-semibold tracking-wide py-5 w-auto px-15"
-            onClick={handleSubmit}
-          >
-            Enviar
-          </Button>
         </div>
       </div>
       {message && (
