@@ -319,8 +319,8 @@ const RequestEquipment = () => {
                 options={equipments.map((eq) => ({
                   barcode: eq.barcode,
                   photoId: eq.photoId,
-                  name: eq.name,
-                  brand: eq.brand,
+                  name: eq.equipmentName,
+                  brand: eq.equipmentBrand,
                   location: eq.location,
                 }))}
                 selectedItems={selectedItems}
