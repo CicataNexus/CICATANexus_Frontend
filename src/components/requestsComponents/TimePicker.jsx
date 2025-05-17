@@ -1,114 +1,101 @@
 import React, { useEffect } from "react";
 
-const TimePicker = ({ timeRange, setTimeRange, type }) => {
-    const hours = Array.from({ length: 24 }, (_, index) =>
-		String(index).padStart(2, "0")
-    );
+const TimePicker = ({
+  timeRange,
+  setTimeRange,
+  type = "start",
+  className,
+  limitTime = null,
+  limitDirection = null,
+}) => {
+  const hours = Array.from({ length: 24 }, (_, i) =>
+    String(i).padStart(2, "0")
+  );
+  const minutes = Array.from({ length: 60 }, (_, i) =>
+    String(i).padStart(2, "0")
+  );
 
-    // Get current time values for the selected start or end time
-    const currentHour = timeRange[type + "Time"]?.split(":")[0] || "";
-    const currentMinute = timeRange[type + "Time"]?.split(":")[1] || "";
+  const handleChange = (unit, value) => {
+    const key = type === "start" ? "startTime" : "endTime";
+    const existingTime = timeRange[key] || ":";
+    const [existingHour = "", existingMinute = ""] = existingTime.split(":");
 
-    const availableMinutes = (() => {
-        const hour = parseInt(currentHour);
-        if (hour === 17) {
-            return ["00"]; // only allow 17:00
-        }
-        return Array.from({ length: 60 }, (_, i) => String(i).padStart(2, "0"));
-    })();
+    const newTime =
+      unit === "hour"
+        ? `${value}:${existingMinute || "00"}`
+        : `${existingHour || "00"}:${value}`;
 
-    const handleHourChange = (e) => {
-        const hour = e.target.value;
-        setTimeRange((prev) => ({
-            ...prev,
-            [type + "Time"]: `${hour}:${
-                prev[type + "Time"]?.split(":")[1] || "00"
-            }`,
-        }));
-    };
+    setTimeRange((prev) => ({
+      ...prev,
+      [key]: newTime,
+    }));
+  };
 
-    const handleMinuteChange = (e) => {
-        const minute = e.target.value;
-        setTimeRange((prev) => ({
-            ...prev,
-            [type + "Time"]: `${
-                prev[type + "Time"]?.split(":")[0] || "00"
-            }:${minute}`,
-        }));
-    };
+  const currentTime =
+    timeRange[type === "start" ? "startTime" : "endTime"] || "";
+  const [selectedHour = "", selectedMinute = ""] = currentTime.split(":");
 
-    // Effect for calculating the reserved time (hours and minutes)
-    useEffect(() => {
-        const { startTime, endTime } = timeRange;
+  const [limitHour, limitMinute] = limitTime
+    ? limitTime.split(":").map(Number)
+    : [null, null];
 
-        if (!startTime || !endTime) return;
+  const limitTotalMinutes =
+    limitHour !== null && limitMinute !== null
+      ? limitHour * 60 + limitMinute
+      : null;
 
-        const [startHour, startMinute] = startTime.split(":").map(Number);
-        const [endHour, endMinute] = endTime.split(":").map(Number);
+  const isAllowed = (h, m) => {
+    if (limitTotalMinutes === null) return true;
+    const total = parseInt(h) * 60 + parseInt(m);
+    if (limitDirection === "before") return total < limitTotalMinutes;
+    if (limitDirection === "after") return total > limitTotalMinutes;
+    return true; // default allow
+  };
 
-        const start = new Date();
-        const end = new Date();
+  const getValidHours = () =>
+    hours.filter((h) => minutes.some((m) => isAllowed(h, m)));
 
-        start.setHours(startHour, startMinute, 0);
-        end.setHours(endHour, endMinute, 0);
+  const getValidMinutes = () =>
+    minutes.map((m) => ({
+      value: m,
+      disabled: !selectedHour || !isAllowed(selectedHour, m),
+    }));
 
-        if (end <= start) {
-            setTimeRange((prev) => ({
-                ...prev,
-                reservedHours: 0,
-                reservedMinutes: 0,
-            }));
-            return;
-        }
+  const validHours = getValidHours();
+  const validMinutes = getValidMinutes();
 
-        const diffMs = end - start;
-        const totalMinutes = Math.floor(diffMs / 60000);
-        const hours = Math.floor(totalMinutes / 60);
-        const minutes = totalMinutes % 60;
+  return (
+    <div className={`flex gap-2 ${className}`}>
+      <select
+        value={selectedHour}
+        onChange={(e) => handleChange("hour", e.target.value)}
+        className="bg-white border border-primary-blue rounded-md shadow-sm p-2"
+      >
+        <option value="">HH</option>
+        {validHours.map((h) => (
+          <option key={h} value={h}>
+            {h}
+          </option>
+        ))}
+      </select>
 
-        setTimeRange((prev) => ({
-            ...prev,
-            reservedHours: hours,
-            reservedMinutes: minutes,
-        }));
-    }, [timeRange.startTime, timeRange.endTime]);
-
-    return (
-        <div className="flex">
-            <div className="flex flex-col items-center overflow-hidden max-h-32 pr-2 font-montserrat">
-                <select
-                    value={currentHour}
-                    onChange={handleHourChange}
-                    className="bg-white border border-primary-blue rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue p-2"
-                >
-                    <option value="" disabled>
-                        HH
-                    </option>
-                    {hours.map((h) => (
-                        <option key={h} value={h}>
-                            {h}
-                        </option>
-                    ))}
-                </select>
-            </div>
-            <div className="flex flex-col items-center overflow-hidden max-h-32 font-montserrat">
-                <select
-                    value={currentMinute}
-                    onChange={handleMinuteChange}
-                    className="bg-white border border-primary-blue rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue p-2"
-                >
-                    <option value="" disabled>
-                        MM
-                    </option>
-                    {availableMinutes.map((m) => (
-                        <option key={m} value={m}>
-                            {m}
-                        </option>
-                    ))}
-                </select>
-            </div>
-        </div>
-    );
+      <select
+        value={selectedMinute}
+        onChange={(e) => handleChange("minute", e.target.value)}
+        className={`bg-white border border-primary-blue rounded-md shadow-sm p-2 ${
+          !selectedHour && ""
+        }`}
+        disabled={!selectedHour}
+      >
+        <option value="">MM</option>
+        {validMinutes.map(({ value, disabled }) => (
+          <option key={value} value={value} disabled={disabled}>
+            {value}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
 };
 
 export default TimePicker;

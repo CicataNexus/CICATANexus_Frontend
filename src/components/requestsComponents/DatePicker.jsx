@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 
-const DateRangePicker = ({ startDate, endDate, onChange, mode }) => {
+const DateRangePicker = ({
+  startDate,
+  endDate,
+  onChange,
+  mode,
+  occupiedDates = [],
+}) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selecting, setSelecting] = useState("start");
   const [hoverDate, setHoverDate] = useState(null);
@@ -16,12 +22,65 @@ const DateRangePicker = ({ startDate, endDate, onChange, mode }) => {
         end: new Date(endDate),
       });
     } else {
-      setDateRange({
-        start: null,
-        end: null,
-      });
+      setDateRange({ start: null, end: null });
     }
   }, [startDate, endDate]);
+
+  const parseLocalDate = (isoString) => {
+    const [year, month, day] = isoString.split("T")[0].split("-");
+    return new Date(Number(year), Number(month) - 1, Number(day));
+  };
+
+  const blockedRanges = occupiedDates.map(
+    ({ startingDate, finishingDate }) => ({
+      start: parseLocalDate(startingDate),
+      end: parseLocalDate(finishingDate),
+    })
+  );
+
+  const isBlocked = (date) => {
+    return blockedRanges.some(({ start, end }) => {
+      const day = new Date(date);
+      day.setHours(0, 0, 0, 0);
+      start = new Date(start);
+      end = new Date(end);
+      start.setHours(0, 0, 0, 0);
+      end.setHours(0, 0, 0, 0);
+      return day >= start && day <= end;
+    });
+  };
+
+  const isBlockedStart = (date) => {
+    return blockedRanges.some(({ start }) => {
+      const day = new Date(date);
+      day.setHours(0, 0, 0, 0);
+      start = new Date(start);
+      start.setHours(0, 0, 0, 0);
+      return day.getTime() === start.getTime();
+    });
+  };
+
+  const isBlockedEnd = (date) => {
+    return blockedRanges.some(({ end }) => {
+      const day = new Date(date);
+      day.setHours(0, 0, 0, 0);
+      end = new Date(end);
+      end.setHours(0, 0, 0, 0);
+      return day.getTime() === end.getTime();
+    });
+  };
+
+  const isBlockedInRange = (start, end) => {
+    let currentDate = new Date(start);
+    currentDate.setDate(currentDate.getDate() + 1);
+    while (currentDate < end) {
+      if (isBlocked(currentDate)) {
+        return true;
+      }
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    return false;
+  };
 
   const generateCalendarDays = (month, year) => {
     const firstDayOfMonth = new Date(year, month, 1);
@@ -42,7 +101,6 @@ const DateRangePicker = ({ startDate, endDate, onChange, mode }) => {
 
     const totalCells = 42;
     const remainingCells = totalCells - days.length;
-
     for (let i = 1; i <= remainingCells; i++) {
       days.push(new Date(year, month + 1, i));
     }
@@ -58,14 +116,19 @@ const DateRangePicker = ({ startDate, endDate, onChange, mode }) => {
   const isInHoverRange = (date) => {
     if (!dateRange.start || !hoverDate || dateRange.end) return false;
     return (
-      dateRange.start &&
-      hoverDate &&
-      ((date > dateRange.start && date < hoverDate) ||
-        (date < dateRange.start && date > hoverDate))
+      (date > dateRange.start && date < hoverDate) ||
+      (date < dateRange.start && date > hoverDate)
     );
   };
 
   const handleDateSelect = (selectedDate) => {
+    if (
+      isBlocked(selectedDate) &&
+      !isBlockedStart(selectedDate) &&
+      !isBlockedEnd(selectedDate)
+    )
+      return;
+
     const newDateRange = { ...dateRange };
 
     if (mode === "single") {
@@ -87,6 +150,11 @@ const DateRangePicker = ({ startDate, endDate, onChange, mode }) => {
           newDateRange.start = selectedDate;
         } else {
           newDateRange.end = selectedDate;
+        }
+
+        if (isBlockedInRange(newDateRange.start, newDateRange.end)) {
+          alert("Rango de fecha invalido");
+          return;
         }
         setSelecting("start");
 
@@ -114,20 +182,20 @@ const DateRangePicker = ({ startDate, endDate, onChange, mode }) => {
     }
   };
 
-  const handlePreviousMonth = (event) => {
-    event.stopPropagation();
-    setCurrentDate((prevDate) => {
-      const newDate = new Date(prevDate);
-      newDate.setMonth(prevDate.getMonth() - 1);
+  const handlePreviousMonth = (e) => {
+    e.stopPropagation();
+    setCurrentDate((prev) => {
+      const newDate = new Date(prev);
+      newDate.setMonth(prev.getMonth() - 1);
       return newDate;
     });
   };
 
-  const handleNextMonth = (event) => {
-    event.stopPropagation();
-    setCurrentDate((prevDate) => {
-      const newDate = new Date(prevDate);
-      newDate.setMonth(prevDate.getMonth() + 1);
+  const handleNextMonth = (e) => {
+    e.stopPropagation();
+    setCurrentDate((prev) => {
+      const newDate = new Date(prev);
+      newDate.setMonth(prev.getMonth() + 1);
       return newDate;
     });
   };
@@ -138,30 +206,32 @@ const DateRangePicker = ({ startDate, endDate, onChange, mode }) => {
   };
 
   const days = generateCalendarDays(month, year);
-
   const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
-
 
   return (
     <div className="relative">
-      <div className="w-full p-4 bg-white border-2 border-primary-blue rounded-lg z-10 font-montserrat">
+      {" "}
+      <div className="w-full p-4 bg-white border border-primary-blue rounded-lg z-10 font-montserrat">
+        {" "}
         <div className="flex justify-between items-center pb-4">
+          {" "}
           <span className="p-2 text-base font-semibold">
-            {capitalize(new Date(year, month).toLocaleString("es-MX", {
-              month: "long"})
+            {capitalize(
+              new Date(year, month).toLocaleString("es-MX", {
+                month: "long",
+              })
             )}{" "}
             {year}
           </span>
           <div>
+            {" "}
             <button
-              type="button"
               onClick={handlePreviousMonth}
               className="text-gray-600 hover:text-primary-blue p-2 cursor-pointer"
             >
               &lt;
             </button>
             <button
-              type="button"
               onClick={handleNextMonth}
               className="text-gray-600 hover:text-primary-blue p-2 cursor-pointer"
             >
@@ -169,14 +239,14 @@ const DateRangePicker = ({ startDate, endDate, onChange, mode }) => {
             </button>
           </div>
         </div>
-
-        <div className="grid grid-cols-7 text-sm text-gray-700">
+        <div className="grid grid-cols-7 gap-0.5 text-sm text-gray-700">
+          {" "}
+          {/* Day of week headers */}
           {["D", "L", "M", "M", "J", "V", "S"].map((day, index) => (
             <div key={index} className="flex justify-center items-start mb-2">
               {day}
             </div>
           ))}
-
           {days.map((day, index) => {
             const isStart =
               dateRange.start &&
@@ -186,20 +256,31 @@ const DateRangePicker = ({ startDate, endDate, onChange, mode }) => {
               day.toDateString() === dateRange.end.toDateString();
             const isRangeDay = isInRange(day);
             const isHoverDay = isInHoverRange(day);
+            const isDisabled = isBlocked(day);
+            const isBlockedStartDay = isBlockedStart(day);
+            const isBlockedEndDay = isBlockedEnd(day);
 
             return (
               <div
                 key={index}
                 onClick={() => handleDateSelect(day)}
                 onMouseEnter={() => handleDateHover(day)}
-                className={`p-2 flex items-center justify-center rounded-lg cursor-pointer 
-                  ${isStart || isEnd ? "bg-primary-blue text-white" : ""}
-                  ${isRangeDay ? "bg-indigo-100" : ""}
-                  ${isHoverDay ? "bg-indigo-50" : ""}
+                className={`py-4 flex items-center justify-center rounded-lg cursor-pointer
                   ${
-                    day.getMonth() !== month ? "text-gray-400" : "text-gray-700"
-                  }
-                  hover:bg-indigo-100`}
+                    isHoverDay ? "bg-indigo-50 text-black" : ""
+                  }  // Hover style for dates in hover range
+                  ${isBlockedStartDay ? "bg-deep-blue/75 text-white" : ""} 
+                  ${isBlockedEndDay ? "bg-deep-blue/75 text-white" : ""} 
+                  ${
+                    isDisabled && !isBlockedStartDay && !isBlockedEndDay
+                      ? "bg-deep-blue text-white"
+                      : ""
+                  } 
+                  ${isStart || isEnd ? "bg-primary-blue text-white" : ""} 
+                  ${isRangeDay ? "bg-indigo-100" : ""} 
+                  ${day.getMonth() !== month ? "text-gray-400" : ""} 
+                  ${!isDisabled ? "hover:bg-indigo-100" : ""} 
+                `}
               >
                 {day.getDate()}
               </div>
