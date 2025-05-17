@@ -29,7 +29,7 @@ export default function RequestsTable({
                             {headerGroup.headers.map((header) => (
                                 <th
                                     key={header.id}
-                                    className="py-5 text-center font-semibold break-words whitespace-normal min-w-[100px] max-w-[180px]"
+                                    className="px-4 py-5 text-left font-semibold break-words whitespace-normal min-w-[90px] max-w-[180px]"
                                 >
                                     {flexRender(
                                         header.column.columnDef.header,
@@ -50,7 +50,7 @@ export default function RequestsTable({
                                 {row.getVisibleCells().map((cell) => (
                                     <td
                                         key={cell.id}
-                                        className="p-3 text-black text-center text-sm"
+                                        className="px-4 py-3 text-black text-left text-sm whitespace-normal break-words break-all min-w-[90px] max-w-[180px]"
                                     >
                                         {flexRender(
                                             cell.column.columnDef.cell,
