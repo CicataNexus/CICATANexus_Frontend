@@ -232,7 +232,7 @@ export default function Filter({ type, onClose, onChange, data = [] }) {
                                             <label className = 'block text-montserrat font-bold mb-2'>
                                                 {option.label}
                                             </label>
-                                            <div className = 'grid grid-cols-2 gap-x-15 gap-y-1'>
+                                            <div className = 'grid grid-cols-2 gap-x-3 gap-y-1'>
                                                 {filterValues[
                                                     option.value
                                                 ]?.map((val) => {
