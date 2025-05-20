@@ -19,6 +19,8 @@ export default function TableToolbar({
         placeholder = "Escriba el nombre o clave de usuario";
     } else if (type === "requests") {
         placeholder = "Escriba algún dato del solicitante";
+    } else if (type === "movements") {
+        placeholder = "Escriba un detalle del equipo o solicitud";
     } else {
         placeholder = "Escriba el nombre o escanee el código";
     }
@@ -57,7 +59,7 @@ export default function TableToolbar({
             </div>
 
             {/* Add button */}
-            {type !== "requests" && (
+            {type !== "requests" && type !== "movements" && (
                 <Button
                     onClick={onAddClick}
                     className="bg-deep-blue hover:bg-dark-blue text-white text-sm font-poppins font-semibold py-2 px-4 rounded-md transition inline-flex items-center"

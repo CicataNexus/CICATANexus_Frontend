@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { Icon } from '@iconify/react';
 
 const TimePicker = ({
   timeRange,
@@ -65,11 +66,15 @@ const TimePicker = ({
   const validMinutes = getValidMinutes();
 
   return (
-    <div className={`flex gap-2 ${className}`}>
+    <div className={`flex gap-2 items-center ${className}`}>
+      <Icon
+        icon="tabler:clock"
+        className="text-2xl"
+      />
       <select
         value={selectedHour}
         onChange={(e) => handleChange("hour", e.target.value)}
-        className="bg-white border border-primary-blue rounded-md shadow-sm p-2"
+        className="bg-white border border-primary-blue rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-primary-blue p-2 cursor-pointer"
       >
         <option value="">HH</option>
         {validHours.map((h) => (
@@ -78,12 +83,12 @@ const TimePicker = ({
           </option>
         ))}
       </select>
-
+        :
       <select
         value={selectedMinute}
         onChange={(e) => handleChange("minute", e.target.value)}
-        className={`bg-white border border-primary-blue rounded-md shadow-sm p-2 ${
-          !selectedHour && ""
+        className={`bg-white border border-primary-blue rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue p-2 ${
+          !selectedHour ? "opacity-50 cursor-not-allowed" : ""
         }`}
         disabled={!selectedHour}
       >

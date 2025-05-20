@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import { ROLES } from "@/constants/roles";
 
 export default function ProtectedRoutes({ allowedRoles }) {
     const token = localStorage.getItem("token");
@@ -12,17 +13,16 @@ export default function ProtectedRoutes({ allowedRoles }) {
     // Declare role before try
     let role = null;
     try {
-        const decoded = jwtDecode(token);
-        role = decoded.role;
+        ({ role } = jwtDecode(token));
     } catch (error) {
         console.error("Error decoding token:", error);
         return <Navigate to="/" replace />;
     }    
 
     const roleHomeRoutes = {
-        Administrator: "/dashboard",
-        tech: "/gestion/solicitudes",
-        user: "/solicitud/equipo",
+        [ROLES.ADMIN]: "/dashboard",
+        [ROLES.TECH]: "/gestion/solicitudes",
+        [ROLES.USER]: "/solicitud/equipo",
     };
 
     // Redirects to the home route of the role if the role is not in the allowed roles

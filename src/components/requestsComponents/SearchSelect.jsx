@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Icon } from "@iconify/react";
+import { Button } from "../ui/button";
 
 const SearchSelect = ({
   options,
@@ -79,11 +80,11 @@ const SearchSelect = ({
             </div>
           ) : (
             filteredOptions.map((option, index) => {
+              // For para ir enseñando el endpoint de la imagen
               return (
                 <div
                   key={index}
-                  className="border-2 border-primary-blue flex flex-col items-center rounded-lg cursor-pointer bg-white"
-                  onClick={() => handleSelect(option)}
+                  className="border-2 border-primary-blue flex flex-col items-center rounded-lg bg-white"
                 >
                   {option.photoId && (
                     <>
@@ -98,7 +99,7 @@ const SearchSelect = ({
                     </>
                   )}
 
-                  <div className="p-2 w-full">
+                  <div className="p-2 w-full flex flex-col justify-between h-full">
                     <p className="text-base font-montserrat font-semibold">
                       {option.name}
                     </p>
@@ -112,6 +113,16 @@ const SearchSelect = ({
                       <br />
                       <span className="font-normal">{option.location}</span>
                     </p>
+                    <div className="mt-auto pt-3 flex justify-center">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        className="rounded-md font-poppins font-semibold text-sm bg-deep-blue hover:bg-dark-blue text-white transition inline-flex items-center"
+                        onClick={() => handleSelect(option)}
+                      >
+                        Agregar
+                      </Button>
+                    </div>
                   </div>
                 </div>
               );

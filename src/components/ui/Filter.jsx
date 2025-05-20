@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@iconify/react';
+import { ROLES } from "@/constants/roles";
 
 const filterOptions = {
     requests: [
@@ -24,7 +25,7 @@ const filterOptions = {
         {
             label: 'Área de trabajo',
             value: 'workArea',
-            dependsOn: { field: 'role', value: 'tech' },
+            dependsOn: { field: 'role', value: ROLES.TECH },
         },
     ],
 };
@@ -125,9 +126,9 @@ const filterValues = {
 
     // User
     role: [
-        { label: 'Administrador', value: 'Administrator' },
-        { label: 'Técnico', value: 'tech' },
-        { label: 'Usuario', value: 'user' },
+        { label: "Usuario", value: ROLES.USER },
+        { label: "Técnico", value: ROLES.TECH },
+        { label: "Administrador", value: ROLES.ADMIN },
     ],
 };
 

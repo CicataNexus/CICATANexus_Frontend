@@ -25,6 +25,26 @@ export const MyRequestsColumns = (handleToggleDetails, selectedRequest) => [
         }
     },    
     {
+        header: "Horario",
+        accessorFn: (row) => {
+            const start = row.requestDate?.startingTime;
+            const end = row.requestDate?.finishingTime;
+            if (start && end) return `${start} - ${end}`;
+            if (start) return start;
+            return "-";
+        },
+        cell: ({ getValue }) => getValue() || "-",
+    },
+    {
+        header: "Técnico",
+        accessorKey: "assignedTechnician",
+        cell: ({ getValue }) => {
+            const value = getValue();
+            if (value?.name) return value.name;
+            return "-";
+        },
+    },
+    {
         header: "Estado",
         accessorKey: "requestStatus",
         cell: ({ getValue }) => {

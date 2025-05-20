@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
+import { ROLES } from "@/constants/roles";
 
 function Login() {
   const navigate = useNavigate();
@@ -11,9 +12,9 @@ function Login() {
       try {
         const { role } = jwtDecode(token);
         const roleHomeRoutes = {
-          Administrator: "/dashboard",
-          tech: "/gestion/solicitudes",
-          user: "/solicitud/equipo",
+          [ROLES.ADMIN]: "/dashboard",
+          [ROLES.TECH]: "/gestion/solicitudes",
+          [ROLES.USER]: "/solicitud/equipo",
         };
         navigate(roleHomeRoutes[role] || "/", { replace: true });
       } catch (error) {
@@ -88,13 +89,13 @@ function Login() {
 
         // Dependiendo del rol, se envía al usuario a su ruts
         switch (role) {
-          case "Administrator":
+          case ROLES.ADMIN:
             navigate("/dashboard");
             break;
-          case "tech":
+          case ROLES.TECH:
             navigate("/gestion/solicitudes");
             break;
-          case "user":
+          case ROLES.USER:
             navigate("/solicitud/equipo");
             break;
           default:

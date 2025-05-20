@@ -1,6 +1,9 @@
 import { useState, useEffect, useMemo } from "react";
+import { jwtDecode } from "jwt-decode";
+import { ROLES } from "@/constants/roles";
 import TableToolbar from "../components/ui/TableToolbar";
 import RequestsTable from "@/features/admin/requests-mgmt/RequestsTable";
+import PaginationControls from "@/components/PaginationControls";
 import { RequestsColumns } from "@/features/admin/requests-mgmt/RequestsColumns";
 import ModalCancelReqConfirmation from "@/components/ModalCancelReqConfirmation";
 
@@ -8,6 +11,10 @@ const Requests = () => {
     const [reload, setReload] = useState(false);
     const [search, setSearch] = useState("");
     const [activeFilters, setActiveFilters] = useState({});
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(5);
+    const [totalItems, setTotalItems] = useState(0);
+    const [type, setType] = useState("");
     const [requestsData, setRequestsData] = useState([]);
     const [selectedRequest, setSelectedRequest] = useState(null);
     const [showCancelModal, setShowCancelModal] = useState(false);
@@ -16,13 +23,16 @@ const Requests = () => {
     useEffect(() => {
         const fetchRequests = async () => {
             try {
-                const response = await fetch(
-                    `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/request`
-                );
+                const { role, registrationNumber } = jwtDecode(localStorage.getItem("token"));
+                const endpoint = role === ROLES.TECH
+                    ? `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/request/technician/${registrationNumber}`
+                    : `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/request`;
+                const response = await fetch(endpoint);
                 if (!response.ok) throw new Error("Error fetching requests");
                 const data = await response.json();
 
-                const mapped = data.map((req) => {
+                const requestsArray = data.requests || data;
+                const mapped = requestsArray.map((req) => {
                     const startDate = new Date(req.requestDate?.startingDate);
                     const endDate = req.requestDate?.finishingDate ? new Date(req.requestDate.finishingDate) : null;
                     const reservedDays = endDate
@@ -71,6 +81,7 @@ const Requests = () => {
                 });
 
                 setRequestsData(mapped);
+                setTotalItems(data.total || mapped.length);
             } catch (err) {
                 console.error("Error fetching requests:", err);
             }
@@ -165,17 +176,36 @@ const Requests = () => {
                     </div>
                 ) : filteredData.length === 0 ? (
                     <div className="flex items-center justify-center h-[60vh] text-gray-500 font-montserrat text-4xl font-semibold text-center">
-                        No se encontraron usuarios para "{search}"
+                        {search
+                            ? `No se encontraron solicitudes para "${search}"`
+                            : Object.values(activeFilters).some((arr) => Array.isArray(arr) && arr.length > 0)
+                                ? "No se encontraron solicitudes con los filtros aplicados"
+                                : "No hay resultados disponibles"
+                        }
                     </div>
                 ) : (
-                    <RequestsTable
-                        data={filteredData}
-                        columns={columns}
-                        selectedRequest={selectedRequest}
-                        onCloseDetails={() => setSelectedRequest(null)}
-                        onCancelRequest={handleCancelRequest}
-                        setReload={setReload}
-                    />
+                    <>
+                        <div className="min-h-[500px] flex flex-col justify-between">
+                            <RequestsTable
+                                data={filteredData}
+                                columns={columns}
+                                selectedRequest={selectedRequest}
+                                onCloseDetails={() => setSelectedRequest(null)}
+                                onCancelRequest={handleCancelRequest}
+                                setReload={setReload}
+                            />
+                        </div>
+                        <div className="mt-17">
+                            <PaginationControls
+                                page={page}
+                                setPage={setPage}
+                                pageSize={pageSize}
+                                setPageSize={setPageSize}
+                                totalItems={totalItems}
+                                type="solicitud"
+                            />
+                        </div>
+                    </>
                 )}
             </section>
             {showCancelModal && (

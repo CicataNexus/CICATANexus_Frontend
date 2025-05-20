@@ -446,12 +446,16 @@ const RequestEquipment = () => {
               </label>
               <textarea
                 id="observaciones"
-                className="border-2 border-primary-blue rounded-lg p-2 font-montserrat focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-transparent focus:bg-input-background placeholder:text-sm text-sm h-full"
-                placeholder="Escriba aquí sus observaciones."
+                className="w-full h-24 rounded-md border-2 border-primary-blue p-3 placeholder:text-sm placeholder:font-montserrat font-montserrat font-normal focus:outline-none focus:ring-primary-blue focus:border-transparent focus:bg-input-background focus:ring-2"
+                placeholder="Escriba aquí sus observaciones." 
                 value={observations}
                 onChange={handleObservationsChange}
               ></textarea>
-              <div className="flex justify-center mt-4">
+              
+            </div>
+          </div>
+        </div>
+        <div className="flex justify-center mt-4">
                 <Button
                   className="bg-deep-blue hover:bg-dark-blue text-white text-xl font-poppins font-semibold tracking-wide py-5 w-auto px-15"
                   onClick={handleSubmit}
@@ -459,9 +463,6 @@ const RequestEquipment = () => {
                   Enviar
                 </Button>
               </div>
-            </div>
-          </div>
-        </div>
       </div>
       {message && (
         <ModalRequestConfirmation
