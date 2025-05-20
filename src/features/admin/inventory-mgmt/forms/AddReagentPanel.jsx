@@ -30,7 +30,7 @@ export default function AddReagentPanel({
         "reagentLot",
         "receivingTemperature",
         // "dateOpened", check data type
-        "expirationDate",
+        // "expirationDate",
         "vinculatedStrategicProject",
         "barcode",
         "nfpaName",
@@ -286,6 +286,8 @@ export default function AddReagentPanel({
             );
 
             if (!response.ok) {
+                const errorData = await response.json();
+                console.error("Error:", errorData);
                 showToast(
                     "El código de barras ya está registrado, inténtelo de nuevo",
                     "error"

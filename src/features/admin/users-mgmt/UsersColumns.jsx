@@ -1,4 +1,5 @@
 import { Icon } from "@iconify/react";
+import { ROLES } from "@/constants/roles";
 
 export const UsersColumns = (handleEdit, selectedUser) => [
   { header: "Nombre", accessorKey: "name" },
@@ -8,9 +9,9 @@ export const UsersColumns = (handleEdit, selectedUser) => [
     accessorFn: (row => row.role),
     cell: ({ getValue }) => {
       const value = getValue();
-      if (value === "Administrator") return "Administrador";
-      if (value === "tech") return "Técnico";
-      if (value === "user") return "Usuario";
+      if (value === ROLES.ADMIN) return "Administrador";
+      if (value === ROLES.TECH) return "Técnico";
+      if (value === ROLES.USER) return "Usuario";
       return "Desconocido";
     }
   },

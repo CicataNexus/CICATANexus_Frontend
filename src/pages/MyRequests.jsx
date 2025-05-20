@@ -1,6 +1,8 @@
 import { useState, useMemo, useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
 import Header from "@/components/requestsComponents/Header";
 import MyRequestsTable from "@/features/user/my-requests/MyRequestsTable";
+import PaginationControls from "@/components/PaginationControls";
 import { MyRequestsColumns } from "@/features/user/my-requests/MyRequestsColumns";
 import ModalCancelReqConfirmation from "@/components/ModalCancelReqConfirmation";
 
@@ -9,6 +11,9 @@ const MyRequests = () => {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [requestToCancel, setRequestToCancel] = useState(null);
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const [totalItems, setTotalItems] = useState(0);
+  const [type, setType] = useState("");
   const [requests, setRequests] = useState([]);
   const registrationNumber = jwtDecode(
     localStorage.getItem("token")
@@ -56,6 +61,7 @@ const MyRequests = () => {
           throw new Error("Error fetching data");
         }
         const result = await response.json();
+        setTotalItems(result.totalItems || result.total || transformedData.length);
 
         // Transform the data to match the required format
         const transformedData = mapApiResponseToRequiredFormat(result.requests);
@@ -114,27 +120,14 @@ const MyRequests = () => {
           onCloseDetails={() => setSelectedRequest(null)}
           onCancelRequest={handleCancelRequest}
         />
-        <div className="flex w-full justify-between gap-4 pt-5">
-          <div className="text-sm">Mostrando 1 a 5 de 40 solicitudes</div>
-          <div>
-            <button
-              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-              disabled={page === 1}
-              className="px-4 py-2 rounded disabled:opacity-50"
-            >
-              &lt;
-            </button>
-            <span className="self-center px-4 py-3 bg-white rounded-full">
-              {page}
-            </span>
-            <button
-              onClick={() => setPage((prev) => prev + 1)}
-              className="px-4 py-2 rounded"
-            >
-              &gt;
-            </button>
-          </div>
-        </div>
+        <PaginationControls
+          page={page}
+          setPage={setPage}
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+          totalItems={totalItems}
+          type="solicitud"
+        />
       </section>
       {showCancelModal && (
         <ModalCancelReqConfirmation

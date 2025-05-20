@@ -206,31 +206,40 @@ export default function GenericInventory() {
                 </div>
             ) : filteredData.length === 0 ? (
                 <div className="flex items-center justify-center h-[60vh] text-gray-500 font-montserrat text-4xl font-semibold text-center">
-                    No se encontraron resultados para "{search}"
+                    {search
+                        ? `No se encontraron ${type} para "${search}"`
+                        : Object.values(activeFilters).some((arr) => Array.isArray(arr) && arr.length > 0)
+                            ? `No se encontraron ${type} con los filtros aplicados`
+                            : "No hay resultados disponibles"
+                    }
                 </div>
             ) : (
-                <div className="min-h-[500px] flex flex-col justify-between">
-                    <InventoryTable
-                        data={filteredData}
-                        columns={columns}
-                        selectedProduct={selectedProduct} // Pass selected product to the table
-                        type={type} // Pass the type to the table
-                        onCloseEdit={() => setSelectedProduct(null)}
-                        page={page}
-                        setPage={setPage}
-                        pageSize={pageSize}
-                        setPageSize={setPageSize}
-                        totalItems={totalItems}
-                    />
-                    <PaginationControls
-                        page={page}
-                        setPage={setPage}
-                        pageSize={pageSize}
-                        setPageSize={setPageSize}
-                        totalItems={totalItems}
-                        type={type}
-                    />
-                </div>
+                <>
+                    <div className="min-h-[500px] flex flex-col justify-between">
+                        <InventoryTable
+                            data={filteredData}
+                            columns={columns}
+                            selectedProduct={selectedProduct} // Pass selected product to the table
+                            type={type} // Pass the type to the table
+                            onCloseEdit={() => setSelectedProduct(null)}
+                            page={page}
+                            setPage={setPage}
+                            pageSize={pageSize}
+                            setPageSize={setPageSize}
+                            totalItems={totalItems}
+                        />
+                    </div>
+                    <div className="mt-17">
+                        <PaginationControls
+                            page={page}
+                            setPage={setPage}
+                            pageSize={pageSize}
+                            setPageSize={setPageSize}
+                            totalItems={totalItems}
+                            type={type}
+                        />
+                    </div>
+                </>
             )}
             {isAddingMode && (
                 <AddProductPanel

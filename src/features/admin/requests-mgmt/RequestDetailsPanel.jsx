@@ -9,6 +9,7 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { ROLES } from "@/constants/roles";
 import SelectInput from "@/components/ui/SelectInput";
 
 export default function RequestDetailsPanel({ request, onClose, setReload }) {
@@ -27,7 +28,7 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
 
                 const data = await response.json();
                 const filtered = data.users.filter(
-                    (user) => user.role === "tech"
+                    (user) => user.role === ROLES.TECH
                 );
                 setAvailableTechnicians(filtered);
             } catch (err) {
@@ -82,12 +83,12 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
     const { role } = jwtDecode(localStorage.getItem("token"));
 
     const visibleStatesByRole = {
-        Administrator: [
+        [ROLES.ADMIN]: [
             "Pendiente de aprobación (Jefe de departamento)",
             "Aprobada por técnico",
             "Rechazada por Técnico",
         ],
-        tech: ["Pendiente de aprobación (Técnico)"],
+        [ROLES.TECH]: ["Pendiente de aprobación (Técnico)"],
     };
 
     const showActionButtons =
@@ -100,22 +101,22 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
         let nextStatus = null;
 
         if (
-            role === "Administrator" &&
+            role === ROLES.ADMIN &&
             requestStatus === "Pendiente de aprobación (Jefe de departamento)"
         ) {
             nextStatus = "Pendiente de aprobación (Técnico)";
         } else if (
-            role === "tech" &&
+            role === ROLES.TECH &&
             requestStatus === "Pendiente de aprobación (Técnico)"
         ) {
             nextStatus = "Aprobada por técnico";
         } else if (
-            role === "Administrator" &&
+            role === ROLES.ADMIN &&
             requestStatus === "Aprobada por técnico"
         ) {
             nextStatus = "Aprobada y notificada";
         } else if (
-            role === "Administrator" &&
+            role === ROLES.ADMIN &&
             requestStatus === "Rechazada por Técnico"
         ) {
             nextStatus = "Aprobada y notificada";
@@ -158,19 +159,19 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
         let nextStatus = null;
 
         if (
-            role === "Administrator" &&
+            role === ROLES.ADMIN &&
             (requestStatus ===
                 "Pendiente de aprobación (Jefe de departamento)" ||
                 requestStatus === "Aprobada por técnico")
         ) {
             nextStatus = "Rechazada y notificada";
         } else if (
-            role === "tech" &&
+            role === ROLES.TECH &&
             requestStatus === "Pendiente de aprobación (Técnico)"
         ) {
             nextStatus = "Rechazada por Técnico";
         } else if (
-            role === "Administrator" &&
+            role === ROLES.ADMIN &&
             requestStatus === "Rechazada por Técnico"
         ) {
             nextStatus = "Rechazada y notificada";
@@ -291,7 +292,7 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                                 <p className="mb-3">
                                     <strong>Técnico asignado</strong>
                                     <br />
-                                    {role === "tech" ? (
+                                    {role === ROLES.TECH ? (
                                         <>{request.assignedTechnician?.name}</>
                                     ) : (
                                         <>
