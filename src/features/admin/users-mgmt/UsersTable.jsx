@@ -48,7 +48,7 @@ export default function UsersTable({
                                 {row.getVisibleCells().map((cell) => (
                                     <td
                                         key={cell.id}
-                                        className="px-4 py-3 text-black text-left text-sm"
+                                        className="px-4 py-3 text-black text-left text-sm whitespace-normal break-words break-all min-w-[90px] max-w-[180px]"
                                     >
                                         {flexRender(
                                             cell.column.columnDef.cell,
