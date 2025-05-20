@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
+import { ROLES } from "@/constants/roles";
 import ProtectedRoutes from "./ProtectedRoutes";
 import Layout from "../src/components/Layout";
 import Login from "../src/pages/Login";
@@ -23,7 +24,7 @@ export default function AppRoutes() {
             	<Route path="/" element={<Login />} />
                 <Route path="/registro" element={<Register />} />
                 {/* Routes for Authorized Personnel */}
-                <Route element={<ProtectedRoutes allowedRoles={["Administrator", "tech"]} />}>
+                <Route element={<ProtectedRoutes allowedRoles={[ROLES.ADMIN, ROLES.TECH] } />}>
                     <Route element={<Layout />}>
                         <Route path="/gestion/solicitudes" element={<Solicitudes />} />
                         <Route path="/inventario/:type" element={<InventarioGenerico />} />
@@ -31,7 +32,7 @@ export default function AppRoutes() {
                 </Route>
 
                 {/* Routes for Administrators */}
-                <Route element={<ProtectedRoutes allowedRoles={["Administrator"]} />}>
+                <Route element={<ProtectedRoutes allowedRoles={[ROLES.ADMIN] } />}>
                     <Route element={<Layout />}>
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/gestion/usuarios" element={<Usuarios />} />
@@ -39,14 +40,14 @@ export default function AppRoutes() {
                 </Route>
 
                 {/* Routes for Technicians */}
-                <Route element={<ProtectedRoutes allowedRoles={["tech"]} />}>
+                <Route element={<ProtectedRoutes allowedRoles={[ROLES.TECH] } />}>
                     <Route element={<Layout />}>
                         <Route path="/movimientos" element={<Movimientos />} />
                     </Route>
                 </Route>
 
                 {/* Routes for Users */}
-                <Route element={<ProtectedRoutes allowedRoles={["user"]} />}>
+                <Route element={<ProtectedRoutes allowedRoles={[ROLES.USER] } />}>
                     <Route path="/solicitud" element={<RequestsLayout />}>
                         <Route index path="equipo" element={<RequestEquipment />} />
                         <Route path="material" element={<RequestMaterial />} />

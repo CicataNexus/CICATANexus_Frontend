@@ -1,4 +1,5 @@
 import * as React from "react"
+import { ROLES } from "@/constants/roles";
 import { jwtDecode } from "jwt-decode";
 import { NavMain } from "@/components/NavMain"
 import { Logout } from "@/components/LogoutFooter"
@@ -12,7 +13,7 @@ import {
 } from "@/components/ui/Sidebar"
 
 const data = {
-  Administrator: [
+  [ROLES.ADMIN]: [
     {
       title: "Dashboard",
       url: "/dashboard",
@@ -49,7 +50,7 @@ const data = {
       icon: "la:users-cog",
     },
   ],
-  tech: [
+  [ROLES.TECH]: [
     {
       title: "Solicitudes",
       url: "/gestion/solicitudes",
@@ -85,7 +86,8 @@ const data = {
 export function AppSidebar({
   ...props
 }) {
-  const navItems = data[jwtDecode(localStorage.getItem("token")).role];
+  const { role } = jwtDecode(localStorage.getItem("token"));
+  const navItems = data[role];
 
   return (
     <Sidebar collapsible="icon" className="flex flex-col h-full" {...props}>

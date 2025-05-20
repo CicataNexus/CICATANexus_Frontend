@@ -117,31 +117,40 @@ export default function UsersManagement() {
                 </div>
             ) : filteredData.length === 0 ? (
                 <div className="flex items-center justify-center h-[60vh] text-gray-500 font-montserrat text-4xl font-semibold text-center">
-                    No se encontraron usuarios para "{search}"
+                    {search
+                        ? `No se encontraron usuarios para "${search}"`
+                        : Object.values(activeFilters).some((arr) => Array.isArray(arr) && arr.length > 0)
+                            ? "No se encontraron usuarios con los filtros aplicados"
+                            : "No hay resultados disponibles"
+                    }
                 </div>
             ) : (
-                <div className="min-h-[500px] flex flex-col justify-between">
-                    <UsersTable
-                        data={filteredData}
-                        columns={columns}
-                        selectedUser={selectedUser}
-                        onCloseEdit={() => setSelectedUser(null)}
-                        setReload={setReload}
-                        page={page}
-                        setPage={setPage}
-                        pageSize={pageSize}
-                        setPageSize={setPageSize}
-                        totalItems={totalItems}
-                    />
-                    <PaginationControls
-                        page={page}
-                        setPage={setPage}
-                        pageSize={pageSize}
-                        setPageSize={setPageSize}
-                        totalItems={totalItems}
-                        type="usuario"
-                    />
-                </div>
+                <>
+                    <div className="min-h-[500px] flex flex-col justify-between">
+                        <UsersTable
+                            data={filteredData}
+                            columns={columns}
+                            selectedUser={selectedUser}
+                            onCloseEdit={() => setSelectedUser(null)}
+                            setReload={setReload}
+                            page={page}
+                            setPage={setPage}
+                            pageSize={pageSize}
+                            setPageSize={setPageSize}
+                            totalItems={totalItems}
+                        />
+                    </div>
+                    <div className="mt-17">
+                        <PaginationControls
+                            page={page}
+                            setPage={setPage}
+                            pageSize={pageSize}
+                            setPageSize={setPageSize}
+                            totalItems={totalItems}
+                            type="usuario"
+                        />
+                    </div>
+                </>
             )}
             {isAddingMode && (
                 <AddUserModalPanel

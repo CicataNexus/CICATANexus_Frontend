@@ -21,14 +21,14 @@ export default function MyRequestsTable({
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full h-full table-auto rounded-xl overflow-hidden font-poppins border-separate border-spacing-y-1.5">
-        <thead className="bg-dark-blue text-white text-lg">
+      <table className="w-full table-auto rounded-lg overflow-hidden font-poppins border-collapse">
+        <thead className="bg-dark-blue text-white text-lg border-b-6 border-background">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="py-5 text-center font-semibold break-words whitespace-normal min-w-[100px] max-w-[180px]"
+                  className="px-4 py-5 text-left font-semibold break-words whitespace-normal min-w-[60px] max-w-[90px]"
                 >
                   {flexRender(
                     header.column.columnDef.header,
@@ -49,7 +49,7 @@ export default function MyRequestsTable({
                 {row.getVisibleCells().map((cell) => (
                   <td
                     key={cell.id}
-                    className="p-3 text-black text-center text-sm"
+                    className="px-4 py-3 text-black text-left text-sm whitespace-normal break-words break-all min-w-[60px] max-w-[90px]"
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
 import { showToast } from '@/utils/toastUtils';
+import { ROLES } from "@/constants/roles";
 
 function Register() {
     const navigate = useNavigate();
@@ -10,7 +11,7 @@ function Register() {
         registrationNumber: "",
         email: "",
         password: "",
-        role: "user",
+        role: ROLES.USER,
     });
     const [showPassword, setShowPassword] = useState(false);
     const [errors, setErrors] = useState({});
@@ -80,12 +81,18 @@ function Register() {
                 showToast("Usuario registrado correctamente", "success");
             } else {
                 const errorData = await response.json();
-                setGlobalError(
-                    errorData.message || "Hubo un error al registrar."
-                );
+                if (errorData.error === "Failed to create user: registrationNumber already exists") {
+                    showToast("La clave de usuario ya existe", "error");
+                }
+                else if (errorData.error === "Failed to create user: Email already in use") {
+                    showToast("El correo electrónico ya existe", "error");
+                }
+                else {
+                    showToast("Error al agregar usuario", "error");
+                }
+                throw new Error("Error al agregar usuario");
             }
         } catch (error) {
-            setGlobalError("Hubo un error al registrar, Intente de nuevo.");
             console.error("Error:", error);
         }
     };

@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@iconify/react";
 import { showToast } from '@/utils/toastUtils';
+import { ROLES } from "@/constants/roles";
 import ModalUserConfirmation from "@/components/ModalUserConfirmation";
 import SelectInput from "@/components/ui/SelectInput";
 
@@ -95,14 +96,14 @@ export default function AddUserPanel({
             role: String(formData.role),
         };
 
-        if (formData.role === "tech") {
+        if (formData.role === ROLES.TECH) {
             payload.workArea = String(formData.workArea);
         }
         try {
             const response = await fetch(
                 `http://${import.meta.env.VITE_SERVER_IP}:${
                     import.meta.env.VITE_SERVER_PORT
-                }/v1/user`,
+                }/v1/auth/register`,
                 {
                     method: "POST",
                     headers: {
@@ -114,10 +115,10 @@ export default function AddUserPanel({
 
             if (!response.ok) {
                 const errorData = await response.json();
-                if (errorData.error === "registrationNumber already exists") {
+                if (errorData.error === "Failed to create user: registrationNumber already exists") {
                     showToast("La clave de usuario ya existe", "error");
                 }
-                else if (errorData.error === "Email already in use") {
+                else if (errorData.error === "Failed to create user: Email already in use") {
                     showToast("El correo electrónico ya existe", "error");
                 }
                 else {
@@ -151,7 +152,7 @@ export default function AddUserPanel({
             role: String(formData.role),
         };
 
-        if (formData.role === "tech") {
+        if (formData.role === ROLES.TECH) {
             payload.workArea = String(formData.workArea);
         }
 
@@ -260,12 +261,9 @@ export default function AddUserPanel({
                                     errorMessage={"Este campo es obligatorio"}
                                     className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal font-montserrat h-8 focus:text-sm"
                                     options={[
-                                        { value: "user", label: "Usuario" },
-                                        { value: "tech", label: "Técnico" },
-                                        {
-                                            value: "Administrator",
-                                            label: "Administrador",
-                                        },
+                                        { value: ROLES.USER, label: "Usuario" },
+                                        { value: ROLES.TECH, label: "Técnico" },
+                                        { value: ROLES.ADMIN, label: "Administrador" },
                                     ]}
                                 />
                             </label>
@@ -365,7 +363,7 @@ export default function AddUserPanel({
                                     className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                                 />
                             </label>
-                            {formData.role === "tech" && (
+                            {formData.role === ROLES.TECH && (
                                 <label
                                     key="workArea"
                                     className="flex flex-col font-montserrat font-semibold"

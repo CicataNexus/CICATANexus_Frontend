@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Icon } from '@iconify/react';
 
 const DateRangePicker = ({
   startDate,
@@ -211,7 +212,7 @@ const DateRangePicker = ({
   return (
     <div className="relative">
       {" "}
-      <div className="w-full p-4 bg-white border border-primary-blue rounded-lg z-10 font-montserrat">
+      <div className="w-full p-5 bg-white border-2 border-primary-blue rounded-lg z-10 font-montserrat">
         {" "}
         <div className="flex justify-between items-center pb-4">
           {" "}
@@ -226,16 +227,23 @@ const DateRangePicker = ({
           <div>
             {" "}
             <button
+              type="button"
               onClick={handlePreviousMonth}
-              className="text-gray-600 hover:text-primary-blue p-2 cursor-pointer"
+              className="text-gray-600 hover:text-primary-blue transition cursor-pointer"
             >
-              &lt;
+              <Icon
+                icon="iconamoon:arrow-left-2-light"
+                className="text-2xl"
+              />
             </button>
             <button
               onClick={handleNextMonth}
-              className="text-gray-600 hover:text-primary-blue p-2 cursor-pointer"
+              className="text-gray-600 hover:text-primary-blue transition p-2 cursor-pointer"
             >
-              &gt;
+              <Icon
+                icon="iconamoon:arrow-right-2-light"
+                className="text-2xl"
+              />
             </button>
           </div>
         </div>
@@ -243,7 +251,7 @@ const DateRangePicker = ({
           {" "}
           {/* Day of week headers */}
           {["D", "L", "M", "M", "J", "V", "S"].map((day, index) => (
-            <div key={index} className="flex justify-center items-start mb-2">
+            <div key={index} className="w-10 h-10 flex justify-center items-start">
               {day}
             </div>
           ))}
@@ -265,21 +273,16 @@ const DateRangePicker = ({
                 key={index}
                 onClick={() => handleDateSelect(day)}
                 onMouseEnter={() => handleDateHover(day)}
-                className={`py-4 flex items-center justify-center rounded-lg cursor-pointer
-                  ${
-                    isHoverDay ? "bg-indigo-50 text-black" : ""
-                  }  // Hover style for dates in hover range
-                  ${isBlockedStartDay ? "bg-deep-blue/75 text-white" : ""} 
-                  ${isBlockedEndDay ? "bg-deep-blue/75 text-white" : ""} 
-                  ${
-                    isDisabled && !isBlockedStartDay && !isBlockedEndDay
-                      ? "bg-deep-blue text-white"
-                      : ""
-                  } 
-                  ${isStart || isEnd ? "bg-primary-blue text-white" : ""} 
-                  ${isRangeDay ? "bg-indigo-100" : ""} 
+                className={`w-10 h-10 flex items-center justify-center 
+                  ${isDisabled ? "cursor-not-allowed" : "cursor-pointer"}
+                  ${isHoverDay ? "bg-indigo-50 text-black rounded-full" : ""}
+                  ${isBlockedStartDay ? "bg-deep-blue/75 text-white rounded-full cursor-pointer" : ""} 
+                  ${isBlockedEndDay ? "bg-deep-blue/75 text-white rounded-full cursor-pointer" : ""} 
+                  ${isDisabled && !isBlockedStartDay && !isBlockedEndDay ? "bg-deep-blue text-white rounded-full" : ""} 
+                  ${isStart || isEnd ? "bg-primary-blue text-white rounded-full" : ""} 
+                  ${isRangeDay ? "bg-indigo-100 rounded-full" : ""} 
                   ${day.getMonth() !== month ? "text-gray-400" : ""} 
-                  ${!isDisabled ? "hover:bg-indigo-100" : ""} 
+                  ${!isDisabled ? "hover:bg-indigo-100 hover:rounded-full" : ""}
                 `}
               >
                 {day.getDate()}
