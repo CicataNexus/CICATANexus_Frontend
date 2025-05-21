@@ -1,11 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
-import { jwtDecode } from "jwt-decode";
-import { ROLES } from "@/constants/roles";
 import TableToolbar from "../components/ui/TableToolbar";
-import RequestsTable from "@/features/admin/requests-mgmt/RequestsTable";
+import MovementsTable from "@/features/technician/MovementsTable";
 import PaginationControls from "@/components/PaginationControls";
-import { RequestsColumns } from "@/features/admin/requests-mgmt/RequestsColumns";
-import ModalCancelReqConfirmation from "@/components/ModalCancelReqConfirmation";
+import { MovementsColumns } from "@/features/technician/MovementsColumns";
 
 const Movements = () => {
     const [reload, setReload] = useState(false);
@@ -14,77 +11,53 @@ const Movements = () => {
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(5);
     const [totalItems, setTotalItems] = useState(0);
-    const [type, setType] = useState("");
-    const [requestsData, setRequestsData] = useState([]);
-    const [selectedRequest, setSelectedRequest] = useState(null);
-    const [showCancelModal, setShowCancelModal] = useState(false);
-    const [requestToCancel, setRequestToCancel] = useState(null);
+    const [movementsData, setMovementsData] = useState([]);
+    const [selectedMovement, setSelectedMovement] = useState(null);
 
     useEffect(() => {
-        const fetchRequests = async () => {
+        const fetchData = async () => {
             try {
-                const { role, registrationNumber } = jwtDecode(localStorage.getItem("token"));
-                const response = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/request/technician/${registrationNumber}`);
-                if (!response.ok) throw new Error("Error fetching requests");
-                const data = await response.json();
+                const requestResponse = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/request`);
+                const equipmentResponse = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/equipment/basic`);
+                const requestData = await requestResponse.json();
+                const equipmentData = await equipmentResponse.json();
 
-                const requestsArray = data.requests || data;
-                const mapped = requestsArray.map((req) => {
-                    const startDate = new Date(req.requestDate?.startingDate);
-                    const endDate = req.requestDate?.finishingDate ? new Date(req.requestDate.finishingDate) : null;
-                    const reservedDays = endDate
-                        ? Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24))
-                        : null;
+                if (!requestResponse.ok || !equipmentResponse.ok) {
+                    throw new Error("Error al obtener los datos");
+                }
 
-                    let reservedHours = null;
-                    let reservedMinutes = null;
+                const data = (requestData.requests || requestData)
+                .filter((req) => req.typeOfRequest === "EQ")
+                .flatMap((req) => {
+                    return req.occupiedMaterial.map((mat) => {
+                        const equipment = equipmentData.find(eq => eq.barcode === mat.barcode);
 
-                    if (req.requestDate?.startingTime && req.requestDate?.finishingTime) {
-                        const [startHour, startMin] = req.requestDate.startingTime.split(":").map(Number);
-                        const [endHour, endMin] = req.requestDate.finishingTime.split(":").map(Number);
-                        const totalMinutes =
-                            endHour * 60 + endMin - (startHour * 60 + startMin);
-                        reservedHours = Math.floor(totalMinutes / 60);
-                        reservedMinutes = totalMinutes % 60;
-                    }
-
-                    return {
-                        id: req.requestId,
-                        typeOfRequest: req.typeOfRequest,
-                        requestSubtype: req.requestSubtype,
-                        requestStatus: req.requestStatus,
-                        workArea: req.workArea,
-                        requestDate: {
-                            startingDate: req.startingDate,
-                            finishingDate: req.finishingDate,
-                            startingTime: req.startingTime,
-                            finishingTime: req.finishingTime,
-                            reservedDays,
-                            reservedHours,
-                            reservedMinutes,
-                        },
-                        requestedBy: {
-                            name: req.bookerName,
-                            email: req.bookerEmail,
-                            registrationNumber: req.bookerRegistrationNumber,
-                        },
-                        assignedTechnician: {
-                            name: req.assignedTechnicianName,
-                            email: "", // aún no hay campo para email en el back
-                        },
-                        occupiedMaterial: req.occupiedMaterial,
-                        observations: req.observations,
-                    };
+                        return {
+                            bookerName: req.bookerName || "-",
+                            bookerRegistrationNumber: req.bookerRegistrationNumber || "-",
+                            startingDate: req.startingDate || "-",
+                            startingTime: req.startingTime || "-",
+                            workArea: req.workArea || "-",
+                            equipment: {
+                                name: equipment?.name || "-",
+                                brand: equipment?.brand || "-",
+                                model: equipment?.model || "-",
+                                location: equipment?.location || "-",
+                                barcode: equipment?.barcode || "-",
+                                status: equipment?.status || "-",
+                                photoID: equipment?.photoID || null,
+                            },
+                        };
+                    });
                 });
 
-                setRequestsData(mapped);
-                setTotalItems(data.total || mapped.length);
+                setMovementsData(data);
             } catch (err) {
-                console.error("Error fetching requests:", err);
+                console.error("Error al obtener los datos:", err);
             }
         };
 
-        fetchRequests();
+        fetchData();
     }, [reload]);
 
     const normalizeText = (text) =>
@@ -95,16 +68,15 @@ const Movements = () => {
 
     const searchedItem = normalizeText(search);
 
-    const filteredData = requestsData.filter((request) => {
+    const filteredData = movementsData.filter((request) => {
         const matchesSearch = (() => {
             if (!searchedItem) return true;
-        
-            const name = request.requestedBy?.name ?? "";
-            const regNumber = request.requestedBy?.registrationNumber ?? "";
-        
+            const bookerName = request.bookerName ?? "";
+            const bookerRegistrationNumber = request.bookerRegistrationNumber ?? "";
+
             return (
-                normalizeText(name).includes(searchedItem) ||
-                normalizeText(regNumber).includes(searchedItem)
+                normalizeText(bookerName).includes(searchedItem) ||
+                normalizeText(bookerRegistrationNumber).includes(searchedItem)
             );
         })();
 
@@ -118,33 +90,14 @@ const Movements = () => {
     
 
     const handleToggleDetails = (request) => {
-        if (selectedRequest?.id === request.id) {
-            setSelectedRequest(null);
-        } else {
-            setSelectedRequest(request);
-        }
-    };
-
-    const handleCancelRequest = (request) => {
-        setRequestToCancel(request);
-        setShowCancelModal(true);
-    };
-
-    const handleConfirmCancel = () => {
-        console.log("Request cancelled:", requestToCancel.id);
-        setShowCancelModal(false);
-        setRequestToCancel(null);
-        // Fetch
-    };
-
-    const handleCloseCancelModal = () => {
-        setShowCancelModal(false);
-        setRequestToCancel(null);
+        setSelectedMovement((prev) =>
+            prev === request ? null : request
+        );
     };
 
     const columns = useMemo(
-        () => RequestsColumns(handleToggleDetails, selectedRequest),
-        [selectedRequest]
+        () => MovementsColumns(handleToggleDetails, selectedMovement),
+        [selectedMovement]
     );
 
     return (
@@ -161,19 +114,18 @@ const Movements = () => {
                     searchTerm={search}
                     onSearchChange={setSearch}
                     onAddClick={() => {
-                        setSelectedRequest(null);
+                        setSelectedMovement(null);
                     }}
-                    data={requestsData}
+                    data={movementsData}
                     onFiltersChange={setActiveFilters}
                 />
                 <>
                     <div className="min-h-[500px] flex flex-col justify-between">
-                        <RequestsTable
+                        <MovementsTable
                             data={filteredData}
                             columns={columns}
-                            selectedRequest={selectedRequest}
-                            onCloseDetails={() => setSelectedRequest(null)}
-                            onCancelRequest={handleCancelRequest}
+                            selectedMovement={selectedMovement}
+                            onCloseDetails={() => setSelectedMovement(null)}
                             setReload={setReload}
                         />
                     </div>
