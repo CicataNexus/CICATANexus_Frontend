@@ -138,8 +138,6 @@ const RequestEquipment = () => {
 
       let newOccupiedTime = { startTime: "", endTime: "" };
 
-      console.log(occupiedDates);
-
       occupiedDates.forEach((occ) => {
         const occStart = parseLocalDate(occ.startingDate);
         const occEnd = parseLocalDate(occ.finishingDate);
@@ -152,22 +150,18 @@ const RequestEquipment = () => {
         if (startDateOnly === occStartDateOnly) {
           newOccupiedTime.startTime = occ.startingTime;
           newOccupiedTime.startDirection = "before";
-          console.log("1");
         }
         if (endDateOnly === occEndDateOnly) {
           newOccupiedTime.endTime = occ.finishingTime;
           newOccupiedTime.endDirection = "after";
-          console.log("2");
         }
         if (startDateOnly === occEndDateOnly) {
           newOccupiedTime.startTime = occ.finishingTime;
           newOccupiedTime.startDirection = "after";
-          console.log("3");
         }
         if (occStartDateOnly === endDateOnly) {
           newOccupiedTime.endTime = occ.startingTime;
           newOccupiedTime.endDirection = "before";
-          console.log("4");
         }
       });
 
@@ -447,22 +441,21 @@ const RequestEquipment = () => {
               <textarea
                 id="observaciones"
                 className="w-full h-24 rounded-md border-2 border-primary-blue p-3 placeholder:text-sm placeholder:font-montserrat font-montserrat font-normal focus:outline-none focus:ring-primary-blue focus:border-transparent focus:bg-input-background focus:ring-2"
-                placeholder="Escriba aquí sus observaciones." 
+                placeholder="Escriba aquí sus observaciones."
                 value={observations}
                 onChange={handleObservationsChange}
               ></textarea>
-              
             </div>
           </div>
         </div>
         <div className="flex justify-center mt-4">
-                <Button
-                  className="bg-deep-blue hover:bg-dark-blue text-white text-xl font-poppins font-semibold tracking-wide py-5 w-auto px-15"
-                  onClick={handleSubmit}
-                >
-                  Enviar
-                </Button>
-              </div>
+          <Button
+            className="bg-deep-blue hover:bg-dark-blue text-white text-xl font-poppins font-semibold tracking-wide py-5 w-auto px-15"
+            onClick={handleSubmit}
+          >
+            Enviar
+          </Button>
+        </div>
       </div>
       {message && (
         <ModalRequestConfirmation
