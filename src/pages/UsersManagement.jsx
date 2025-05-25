@@ -93,10 +93,10 @@ export default function UsersManagement() {
 
     return (
         <div className="p-4 -mt-1 w-full max-w-full overflow-x-hidden">
-            <h2 className="text-poppins text-2xl font-bold mb-2">
+            <h2 className="font-poppins text-2xl font-semibold mb-2">
                 Gestión de usuarios
             </h2>
-            <h3 className="text-montserrat text-base font-regular mb-4">
+            <h3 className="font-montserrat text-base font-normal mb-4">
                 Administre los usuarios: cree nuevos, edite información o
                 elimínelos según sea necesario.
             </h3>

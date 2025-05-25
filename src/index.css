@@ -49,6 +49,7 @@ body {
     --color-chart-axis-text: #838383;
     --color-chart-dashed-lines: #e5e5ef;
     --color-chart-light-blue: #89ceef;
+    --color-primary-green: #75bda7;
     --color-chart-light-green: #b3d7cd;
     --color-low-stock-element: #868686;
     --color-dark-gray: #807f89;
@@ -118,6 +119,12 @@ body {
     --sidebar-accent-foreground: hsl(199, 76%, 74%);
     --sidebar-border: hsl(199, 76%, 74%);
     --sidebar-ring: hsl(200, 82%, 45%);
+    --color-chart-axis-text: #838383;
+    --color-chart-dashed-lines: #e5e5ef;
+    --color-chart-light-blue: #89ceef;
+    --color-chart-light-green: #b3d7cd;
+    --color-low-stock-element: #868686;
+    --color-dark-gray: #807f89;
 }
 
 @theme inline {
