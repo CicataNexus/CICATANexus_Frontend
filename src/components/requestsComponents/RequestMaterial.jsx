@@ -44,7 +44,7 @@ const RequestMaterial = () => {
         const res = await fetch(
           `http://${import.meta.env.VITE_SERVER_IP}:${
             import.meta.env.VITE_SERVER_PORT
-          }/v1/combined/basic-info`
+          }/v1/combined/basic`
         );
         if (!res.ok) {
           throw new Error("Error fetching combined items");

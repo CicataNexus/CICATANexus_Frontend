@@ -312,9 +312,9 @@ const RequestEquipment = () => {
               <SearchSelect
                 options={equipments.map((eq) => ({
                   barcode: eq.barcode,
-                  photoId: eq.photoId,
-                  name: eq.equipmentName,
-                  brand: eq.equipmentBrand,
+                  photoId: eq.photoID,
+                  name: eq.name,
+                  brand: eq.brand,
                   location: eq.location,
                 }))}
                 selectedItems={selectedItems}
