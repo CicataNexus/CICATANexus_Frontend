@@ -106,28 +106,32 @@ const MyRequests = () => {
   return (
     <main className="flex flex-col min-h-screen">
       <Header />
-      <section className="p-15 w-full max-w-full overflow-x-hidden bg-background">
-        <h2 className="text-poppins text-2xl font-bold mb-2">
+      <section className="p-10 w-full max-w-full overflow-x-hidden bg-background">
+        <h2 className="font-poppins text-2xl font-semibold mb-2">
           Solicitudes de servicio
         </h2>
-        <h3 className="text-montserrat text-base font-regular mb-4">
+        <h3 className="font-montserrat text-base font-normal mb-4">
           Puede cancelar su solicitud en progreso si ya no la requiere.
         </h3>
-        <MyRequestsTable
-          data={requests}
-          columns={columns}
-          selectedRequest={selectedRequest}
-          onCloseDetails={() => setSelectedRequest(null)}
-          onCancelRequest={handleCancelRequest}
-        />
-        <PaginationControls
-          page={page}
-          setPage={setPage}
-          pageSize={pageSize}
-          setPageSize={setPageSize}
-          totalItems={totalItems}
-          type="solicitud"
-        />
+        <div className="min-h-[400px] flex flex-col justify-between">
+          <MyRequestsTable
+            data={requests}
+            columns={columns}
+            selectedRequest={selectedRequest}
+            onCloseDetails={() => setSelectedRequest(null)}
+            onCancelRequest={handleCancelRequest}
+          />
+        </div>
+        <div className="mt-15">
+          <PaginationControls
+            page={page}
+            setPage={setPage}
+            pageSize={pageSize}
+            setPageSize={setPageSize}
+            totalItems={totalItems}
+            type="solicitud"
+          />
+        </div>
       </section>
       {showCancelModal && (
         <ModalCancelReqConfirmation

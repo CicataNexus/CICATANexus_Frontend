@@ -120,7 +120,7 @@ const Movements = () => {
                     onFiltersChange={setActiveFilters}
                 />
                 <>
-                    <div className="min-h-[500px] flex flex-col justify-between">
+                    <div className="min-h-[400px] flex flex-col justify-between">
                         <MovementsTable
                             data={filteredData}
                             columns={columns}
@@ -129,7 +129,7 @@ const Movements = () => {
                             setReload={setReload}
                         />
                     </div>
-                    <div className="mt-17">
+                    <div className="mt-15">
                         <PaginationControls
                             page={page}
                             setPage={setPage}
