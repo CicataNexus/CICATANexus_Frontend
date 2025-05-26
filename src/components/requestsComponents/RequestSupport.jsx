@@ -66,6 +66,7 @@ const RequestSupport = () => {
     const newErrors = {
       dateRange: !dateRange.startDate || !dateRange.endDate,
       timeRange: !timeRange.startTime || !timeRange.endTime,
+      timeRangeStartEnd: timeRange.startTime >= timeRange.endTime,
       selectedOption: !selectedOption,
       selectedAreas: selectedAreas.length === 0,
     };
@@ -223,6 +224,11 @@ const RequestSupport = () => {
                   Este campo es obligatorio
                 </p>
               )}
+              {errors.timeRangeStartEnd && (
+                <p className="text-red-500 text-xs font-montserrat font-semibold mt-1">
+                  El tiempo final debe de ser mayor al de inicio
+                </p>
+              )}
             </div>
           </div>
           <div className="flex flex-col">
@@ -283,18 +289,17 @@ const RequestSupport = () => {
                 value={observations}
                 onChange={handleObservationsChange}
               ></textarea>
-              
             </div>
           </div>
         </div>
         <div className="flex justify-center mt-4">
-                <Button
-                  className="bg-deep-blue hover:bg-dark-blue text-white text-xl font-poppins font-semibold tracking-wide py-5 w-auto px-15"
-                  onClick={handleSubmit}
-                >
-                  Enviar
-                </Button>
-              </div>
+          <Button
+            className="bg-deep-blue hover:bg-dark-blue text-white text-xl font-poppins font-semibold tracking-wide py-5 w-auto px-15"
+            onClick={handleSubmit}
+          >
+            Enviar
+          </Button>
+        </div>
       </div>
       {message && (
         <ModalRequestConfirmation

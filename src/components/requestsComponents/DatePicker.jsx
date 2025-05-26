@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Icon } from '@iconify/react';
+import { Icon } from "@iconify/react";
 
 const DateRangePicker = ({
   startDate,
@@ -49,6 +49,16 @@ const DateRangePicker = ({
       end.setHours(0, 0, 0, 0);
       return day >= start && day <= end;
     });
+  };
+
+  const isPast = (date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const day = new Date(date);
+    day.setHours(0, 0, 0, 0);
+
+    return day < today;
   };
 
   const isBlockedStart = (date) => {
@@ -124,9 +134,10 @@ const DateRangePicker = ({
 
   const handleDateSelect = (selectedDate) => {
     if (
-      isBlocked(selectedDate) &&
-      !isBlockedStart(selectedDate) &&
-      !isBlockedEnd(selectedDate)
+      isPast(selectedDate) ||
+      (isBlocked(selectedDate) &&
+        !isBlockedStart(selectedDate) &&
+        !isBlockedEnd(selectedDate))
     )
       return;
 
@@ -173,7 +184,6 @@ const DateRangePicker = ({
         });
       }
     }
-
     setDateRange(newDateRange);
   };
 
@@ -209,8 +219,16 @@ const DateRangePicker = ({
   const days = generateCalendarDays(month, year);
   const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
+  const formatDate = (dateString) => {
+    const dateObj = new Date(dateString);
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const day = String(dateObj.getDate()).padStart(2, "0");
+    return `${day}/${month}/${year}`;
+  };
+
   return (
-    <div className="relative">
+    <div className="relative select-none">
       {" "}
       <div className="w-full p-5 bg-white border-2 border-primary-blue rounded-lg z-10 font-montserrat">
         {" "}
@@ -231,19 +249,13 @@ const DateRangePicker = ({
               onClick={handlePreviousMonth}
               className="text-gray-600 hover:text-primary-blue transition cursor-pointer"
             >
-              <Icon
-                icon="iconamoon:arrow-left-2-light"
-                className="text-2xl"
-              />
+              <Icon icon="iconamoon:arrow-left-2-light" className="text-2xl" />
             </button>
             <button
               onClick={handleNextMonth}
               className="text-gray-600 hover:text-primary-blue transition p-2 cursor-pointer"
             >
-              <Icon
-                icon="iconamoon:arrow-right-2-light"
-                className="text-2xl"
-              />
+              <Icon icon="iconamoon:arrow-right-2-light" className="text-2xl" />
             </button>
           </div>
         </div>
@@ -251,7 +263,10 @@ const DateRangePicker = ({
           {" "}
           {/* Day of week headers */}
           {["D", "L", "M", "M", "J", "V", "S"].map((day, index) => (
-            <div key={index} className="w-10 h-10 flex justify-center items-start">
+            <div
+              key={index}
+              className="w-10 h-10 flex justify-center items-start"
+            >
               {day}
             </div>
           ))}
@@ -267,6 +282,7 @@ const DateRangePicker = ({
             const isDisabled = isBlocked(day);
             const isBlockedStartDay = isBlockedStart(day);
             const isBlockedEndDay = isBlockedEnd(day);
+            const isPastDay = isPast(day);
 
             return (
               <div
@@ -274,15 +290,45 @@ const DateRangePicker = ({
                 onClick={() => handleDateSelect(day)}
                 onMouseEnter={() => handleDateHover(day)}
                 className={`w-10 h-10 flex items-center justify-center 
-                  ${isDisabled ? "cursor-not-allowed" : "cursor-pointer"}
+                  ${isDisabled ? "cursor-not-allowed" : ""}
                   ${isHoverDay ? "bg-indigo-50 text-black rounded-full" : ""}
-                  ${isBlockedStartDay ? "bg-deep-blue/75 text-white rounded-full cursor-pointer" : ""} 
-                  ${isBlockedEndDay ? "bg-deep-blue/75 text-white rounded-full cursor-pointer" : ""} 
-                  ${isDisabled && !isBlockedStartDay && !isBlockedEndDay ? "bg-deep-blue text-white rounded-full" : ""} 
-                  ${isStart || isEnd ? "bg-primary-blue text-white rounded-full" : ""} 
+                  ${
+                    isBlockedStartDay
+                      ? `bg-deep-blue/75 text-white rounded-full ${
+                          isPastDay ? "cursor-not-allowed" : "cursor-pointer"
+                        }`
+                      : ""
+                  } 
+                  ${
+                    isBlockedEndDay
+                      ? `bg-deep-blue/75 text-white rounded-full ${
+                          isPastDay ? "cursor-not-allowed" : "cursor-pointer"
+                        }`
+                      : ""
+                  } 
+                  ${
+                    isDisabled && !isBlockedStartDay && !isBlockedEndDay
+                      ? " text-gray-400 rounded-full line-through"
+                      : ""
+                  } 
+                  ${
+                    isStart || isEnd
+                      ? "bg-primary-blue text-white rounded-full"
+                      : ""
+                  } 
                   ${isRangeDay ? "bg-indigo-100 rounded-full" : ""} 
                   ${day.getMonth() !== month ? "text-gray-400" : ""} 
-                  ${!isDisabled ? "hover:bg-indigo-100 hover:rounded-full" : ""}
+                  ${
+                    !isDisabled && !isPastDay
+                      ? "hover:bg-indigo-100 hover:rounded-full"
+                      : ""
+                  }
+                  
+                  ${
+                    isPastDay
+                      ? "text-gray-400 cursor-not-allowed line-through"
+                      : ""
+                  }
                 `}
               >
                 {day.getDate()}
@@ -291,6 +337,15 @@ const DateRangePicker = ({
           })}
         </div>
       </div>
+      {dateRange.start !== null && dateRange.end !== null && (
+        <div className="font-montserrat pt-2">
+          {formatDate(dateRange.start) === formatDate(dateRange.end)
+            ? `Fecha seleccionada: ${formatDate(dateRange.start)}`
+            : `Fecha de inicio: ${formatDate(
+                dateRange.start
+              )} Fecha de fin: ${formatDate(dateRange.end)} `}
+        </div>
+      )}
     </div>
   );
 };

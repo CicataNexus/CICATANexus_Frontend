@@ -13,14 +13,14 @@ const SearchSelect = ({
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Filter the options based on the search term
   const filterOptions = (term) => {
     setSearchTerm(term);
-    setFilteredOptions(
-      options.filter((option) =>
-        option.name.toLowerCase().includes(term.toLowerCase())
-      )
+    const filtered = options.filter(
+      (option) =>
+        option.name.toLowerCase().includes(term.toLowerCase()) &&
+        !selectedItems.some((item) => item.name === option.name)
     );
+    setFilteredOptions(filtered);
   };
 
   const handleSelect = (option) => {
@@ -46,7 +46,12 @@ const SearchSelect = ({
   };
 
   useEffect(() => {
-    setFilteredOptions(options);
+    setFilteredOptions(
+      options.filter(
+        (option) => !selectedItems.some((item) => item.name === option.name)
+      )
+    );
+
     setSearchTerm("");
   }, [options]);
 
@@ -130,24 +135,26 @@ const SearchSelect = ({
           )}
         </div>
       )}
-      <div className="flex gap-2">
-        {selectedItems.map((item, index) => (
-          <div
-            key={index}
-            className="flex border-2 border-primary-blue p-2 mt-2 rounded-xl items-center space-x-2"
-          >
-            <span className="font-montserrat font-semibold text-sm">
-              {item.name}
-            </span>
-            <button
-              onClick={() => handleRemove(item)}
-              className="cursor-pointer"
+      {selectedItems.length > 0 && (
+        <div className="flex overflow-scroll gap-2 py-2">
+          {selectedItems.map((item, index) => (
+            <div
+              key={index}
+              className="flex border-2 border-primary-blue p-2 mt-2 rounded-xl items-center gap-2"
             >
-              &times;
-            </button>
-          </div>
-        ))}
-      </div>
+              <span className="font-montserrat font-semibold text-sm break-words whitespace-normal">
+                {item.name}
+              </span>
+              <button
+                onClick={() => handleRemove(item)}
+                className="cursor-pointer"
+              >
+                &times;
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
