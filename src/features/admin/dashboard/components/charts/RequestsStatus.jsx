@@ -74,7 +74,7 @@ export default function RequestsStatus() {
                     </RadialBarChart>
                 </ChartContainer>
             </CardContent>
-            <CardFooter className="flex justify-center gap-3 text-sm whitespace-nowrap overflow-x-hidden font-montserrat">
+            <CardFooter className="flex justify-center gap-2 text-sm whitespace-nowrap overflow-x-hidden font-montserrat">
                 <div className="flex items-center gap-1 font-medium leading-tight">
                     <div className="w-3 h-3 rounded-full bg-primary-green" />
                     Atendidas 65%

@@ -95,7 +95,6 @@ export default function RequestsByTech() {
                             dataKey="value"
                             layout="vertical"
                             radius={4}
-                            isAnimationActive={false}
                         >
                             {chartData.map((entry, index) => (
                                 <Cell key={`cell-${index}`} fill={entry.fill} />
@@ -119,7 +118,7 @@ export default function RequestsByTech() {
                 </ChartContainer>
             </CardContent>
 
-            <CardFooter className="flex-col items-center gap-2 text-sm">
+            <CardFooter className="flex-col items-center text-sm">
                 <div className="flex justify-center items-center gap-4 mt-2 text-sm font-semibold">
                     <Icon
                         icon="iconamoon:arrow-left-2-light"
