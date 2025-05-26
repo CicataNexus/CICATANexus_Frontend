@@ -184,7 +184,6 @@ const DateRangePicker = ({
         });
       }
     }
-
     setDateRange(newDateRange);
   };
 
@@ -219,6 +218,14 @@ const DateRangePicker = ({
 
   const days = generateCalendarDays(month, year);
   const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+
+  const formatDate = (dateString) => {
+    const dateObj = new Date(dateString);
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const day = String(dateObj.getDate()).padStart(2, "0");
+    return `${day}/${month}/${year}`;
+  };
 
   return (
     <div className="relative select-none">
@@ -301,7 +308,7 @@ const DateRangePicker = ({
                   } 
                   ${
                     isDisabled && !isBlockedStartDay && !isBlockedEndDay
-                      ? "bg-deep-blue text-white rounded-full"
+                      ? " text-gray-400 rounded-full line-through"
                       : ""
                   } 
                   ${
@@ -311,8 +318,17 @@ const DateRangePicker = ({
                   } 
                   ${isRangeDay ? "bg-indigo-100 rounded-full" : ""} 
                   ${day.getMonth() !== month ? "text-gray-400" : ""} 
-                  ${!isDisabled ? "hover:bg-indigo-100 hover:rounded-full" : ""}
-                  ${isPastDay ? "text-gray-400 cursor-not-allowed" : ""}
+                  ${
+                    !isDisabled && !isPastDay
+                      ? "hover:bg-indigo-100 hover:rounded-full"
+                      : ""
+                  }
+                  
+                  ${
+                    isPastDay
+                      ? "text-gray-400 cursor-not-allowed line-through"
+                      : ""
+                  }
                 `}
               >
                 {day.getDate()}
@@ -321,6 +337,15 @@ const DateRangePicker = ({
           })}
         </div>
       </div>
+      {dateRange.start !== null && dateRange.end !== null && (
+        <div className="font-montserrat pt-2">
+          {formatDate(dateRange.start) === formatDate(dateRange.end)
+            ? `Fecha seleccionada: ${formatDate(dateRange.start)}`
+            : `Fecha de inicio: ${formatDate(
+                dateRange.start
+              )} Fecha de fin: ${formatDate(dateRange.end)} `}
+        </div>
+      )}
     </div>
   );
 };

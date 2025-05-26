@@ -223,10 +223,8 @@ const RequestEquipment = () => {
   const handleSubmit = async () => {
     const newErrors = {
       dateRange: !dateRange.startDate || !dateRange.endDate,
-      timeRange:
-        !timeRange.startTime ||
-        !timeRange.endTime ||
-        (timeRange.reservedHours === 0 && timeRange.reservedMinutes === 0),
+      timeRange: !timeRange.startTime || !timeRange.endTime,
+      timeRangeStartEnd: timeRange.startTime >= timeRange.endTime,
       selectedItems: selectedItems.length === 0,
       selectedAreas: selectedAreas.length === 0,
     };
@@ -383,6 +381,11 @@ const RequestEquipment = () => {
               {errors.timeRange && (
                 <p className="text-red-500 text-xs font-montserrat font-semibold mt-1">
                   Este campo es obligatorio
+                </p>
+              )}
+              {errors.timeRangeStartEnd && (
+                <p className="text-red-500 text-xs font-montserrat font-semibold mt-1">
+                  El tiempo final debe de ser mayor al de inicio
                 </p>
               )}
             </div>
