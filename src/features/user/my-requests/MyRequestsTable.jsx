@@ -28,7 +28,7 @@ export default function MyRequestsTable({
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="px-4 py-5 text-left font-semibold break-words whitespace-normal min-w-[60px] max-w-[90px]"
+                  className="px-4 py-5 text-left font-semibold break-words whitespace-normal min-w-[90px] max-w-[180px]"
                 >
                   {flexRender(
                     header.column.columnDef.header,
@@ -44,12 +44,12 @@ export default function MyRequestsTable({
             <Fragment key={row.id}>
               <tr
                 key={row.id}
-                className="bg-table-row border-b border-sidebar-border hover:bg-table-row-hover transition"
+                className="bg-table-row border-b-4 border-background hover:bg-table-row-hover transition"
               >
                 {row.getVisibleCells().map((cell) => (
                   <td
                     key={cell.id}
-                    className="px-4 py-3 text-black text-left text-sm whitespace-normal break-words break-all min-w-[60px] max-w-[90px]"
+                    className="px-4 py-3 text-black text-left text-sm whitespace-normal break-words break-all min-w-[90px] max-w-[180px]"
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>

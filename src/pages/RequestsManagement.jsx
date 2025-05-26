@@ -153,10 +153,10 @@ const Requests = () => {
     return (
         <>
             <section className="p-4 -mt-1 w-full max-w-full overflow-x-hidden">
-                <h2 className="text-poppins text-2xl font-bold mb-2">
+                <h2 className="font-poppins text-2xl font-semibold mb-2">
                     Solicitudes de servicio
                 </h2>
-                <h3 className="text-montserrat text-base font-regular mb-4">
+                <h3 className="font-montserrat text-base font-normal mb-4">
                     Gestione las solicitudes: apruebe, rechace o agregue
                     observaciones según corresponda.
                 </h3>
@@ -185,7 +185,7 @@ const Requests = () => {
                     </div>
                 ) : (
                     <>
-                        <div className="min-h-[500px] flex flex-col justify-between">
+                        <div className="min-h-[400px] flex flex-col justify-between">
                             <RequestsTable
                                 data={filteredData}
                                 columns={columns}
@@ -195,7 +195,7 @@ const Requests = () => {
                                 setReload={setReload}
                             />
                         </div>
-                        <div className="mt-17">
+                        <div className="mt-15">
                             <PaginationControls
                                 page={page}
                                 setPage={setPage}

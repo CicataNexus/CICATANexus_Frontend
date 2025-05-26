@@ -11,7 +11,7 @@ export function showToast(message, type) {
                 type,
             }),
         {
-            duration: 4000,
+            duration: 3500,
             position: "top-right",
         }
     );

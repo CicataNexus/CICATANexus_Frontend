@@ -22,8 +22,8 @@ export default function RequestsTable({
 
     return (
         <div className="overflow-x-auto">
-            <table className="w-full table-auto rounded-xl overflow-hidden font-poppins border-separate border-spacing-y-1.5">
-                <thead className="bg-dark-blue text-white text-lg">
+            <table className="w-full table-auto rounded-lg overflow-hidden font-poppins border-collapse">
+                <thead className="bg-dark-blue text-white text-lg border-b-6 border-background">
                     {table.getHeaderGroups().map((headerGroup) => (
                         <tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
@@ -45,7 +45,7 @@ export default function RequestsTable({
                         <Fragment key={row.id}>
                             <tr
                                 key={row.id}
-                                className="bg-table-row border-b border-sidebar-border hover:bg-table-row-hover transition"
+                                className="bg-table-row border-b-4 border-background hover:bg-table-row-hover transition"
                             >
                                 {row.getVisibleCells().map((cell) => (
                                     <td
