@@ -136,6 +136,21 @@ export default function AddReagentPanel({
             }
         });
 
+        if (formData.safetyDataSheet) {
+            const isValidUrl = (string) => {
+                try {
+                    new URL(string);
+                    return true;
+                } catch (_) {
+                    return false;
+                }
+            };
+
+            if (!formData.sdsLink || !isValidUrl(formData.sdsLink)) {
+                newErrors.sdsLink = "Ingrese un enlace válido";
+            }
+        }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -184,7 +199,10 @@ export default function AddReagentPanel({
             const formValue = formData[field] ?? "";
             const initialValue = initialData[field] ?? "";
 
-            if (typeof formValue === "boolean" && formValue !== Boolean(initialValue)) {
+            if (
+                typeof formValue === "boolean" &&
+                formValue !== Boolean(initialValue)
+            ) {
                 return false;
             }
 
@@ -194,10 +212,16 @@ export default function AddReagentPanel({
             }
 
             if (
-                ["dateOfReception", "dateOpened", "dateFinished", "expirationDate"].includes(field) && 
+                [
+                    "dateOfReception",
+                    "dateOpened",
+                    "dateFinished",
+                    "expirationDate",
+                ].includes(field) &&
                 formValue &&
                 initialValue &&
-                new Date(formValue).toISOString() !== new Date(initialValue).toISOString()
+                new Date(formValue).toISOString() !==
+                    new Date(initialValue).toISOString()
             ) {
                 return false;
             }
@@ -497,7 +521,9 @@ export default function AddReagentPanel({
                                         onChange={handleChange}
                                         required
                                         showError={errors.reagentImage}
-                                        errorMessage={"Este campo es obligatorio"}
+                                        errorMessage={
+                                            "Este campo es obligatorio"
+                                        }
                                         className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
                                     />
                                     <img
@@ -593,9 +619,7 @@ export default function AddReagentPanel({
                             />
                         </label>
                         <label className="flex flex-col font-montserrat font-semibold">
-                            <span>
-                                Fecha de caducidad
-                            </span>
+                            <span>Fecha de caducidad</span>
                             <DateInput
                                 name="expirationDate"
                                 value={formData.expirationDate}
@@ -724,8 +748,15 @@ export default function AddReagentPanel({
                                     value={formData.sdsLink}
                                     placeholder="Ingrese el enlace"
                                     onChange={handleChange}
-                                    className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                                    className={`mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8 ${
+                                        errors.sdsLink ? "border-red-500" : ""
+                                    }`}
                                 />
+                                {errors.sdsLink && (
+                                    <span className="text-red-500 text-xs mt-1">
+                                        {errors.sdsLink}
+                                    </span>
+                                )}
                             </label>
                         )}
                         <label className="flex items-center font-montserrat font-semibold gap-2">
