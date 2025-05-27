@@ -269,7 +269,7 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                                     {requestedTime}
                                 </p>
                                 <p className="mb-3">
-                                    <strong>Área de trabajo</strong>
+                                    <strong>Área(s) de trabajo</strong>
                                     <br />
                                     {workArea}
                                 </p>
@@ -293,12 +293,12 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                                     <strong>Técnico asignado</strong>
                                     <br />
                                     {role === ROLES.TECH ? (
-                                        <>{request.assignedTechnician?.name}</>
+                                        <>{assignedTechnicianName}</>
                                     ) : (
                                         <>
                                             <SelectInput
-                                                className="w-auto text-xs font-montserrat"
-                                                value={request.assignedTechnician?.name}
+                                                className="w-auto text-xs font-montserrat mt-1.5"
+                                                value={selectedTechnicianId}
                                                 onChange={(e) => {
                                                     const selectedTechnicianId =
                                                         e.target.value;

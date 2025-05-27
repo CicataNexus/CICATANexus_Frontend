@@ -32,7 +32,7 @@ export default function MovementsDetailsPanel({ request, onClose, setReload, }) 
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({ status: newStatus }),
+                    body: JSON.stringify({ body: JSON.stringify({ status: newStatus }) })
                 }
             );
 
@@ -89,7 +89,7 @@ export default function MovementsDetailsPanel({ request, onClose, setReload, }) 
                                     {startingTime || "-"}
                                 </p>
                                 <p className="mb-3">
-                                    <strong>Área de trabajo</strong>
+                                    <strong>Área(s) de trabajo</strong>
                                     <br />
                                     {workArea || "-"}
                                 </p>

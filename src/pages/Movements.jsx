@@ -82,7 +82,11 @@ const Movements = () => {
 
         const matchesFilters = Object.entries(activeFilters).every(([key, values]) => {
             if (!values || values.length === 0) return true;
-            return values.includes(request[key]);
+            const field = request[key];
+            if (Array.isArray(field)) {
+                return values.some((val) => field.includes(val));
+            }
+            return values.includes(field);
         });
 
         return matchesSearch && matchesFilters;

@@ -78,7 +78,7 @@ const RequestSupport = () => {
     const formattedRequest = {
       typeOfRequest: "TA",
       requestSubtype: selectedOption,
-      workArea: selectedAreas[0], // Por ahora, solo se permite un área en el backend, para arreglarlo solo se quita el [0]
+      workArea: selectedAreas,
       requestDate: {
         startingDate: new Date(dateRange.startDate).toISOString(),
         finishingDate: new Date(dateRange.endDate).toISOString(),
