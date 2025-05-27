@@ -33,7 +33,7 @@ export default function ReagentsState() {
 
             <CardContent className="flex gap-4 h-[175px] overflow-hidden">
                 <div className="flex-1 overflow-y-auto pr-1 font-montserrat h-full">
-                    <div className="text-xs font-semibold text-red-600 mb-2 flex items-center gap-0.5 leading-none whitespace-nowrap">
+                    <div className="text-xs font-semibold text-red-600 mb-2 flex items-center gap-0.5 leading-none">
                         Baja disponibilidad
                     </div>
                     <ul className="space-y-1 text-xs font-medium mb-0">
