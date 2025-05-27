@@ -57,7 +57,7 @@ export default function MyRequestDetailsPanel({ request, onCancel }) {
               {horaRequiere}
             </p>
             <p>
-              <strong>Área de trabajo</strong>
+              <strong>Área(s) de trabajo</strong>
               <br />
               {workArea}
             </p>

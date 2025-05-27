@@ -31,7 +31,7 @@ export default function AddUserPanel({
         email: "",
         password: "",
         role: "",
-        workArea: "",
+        workArea: [],
         ...initialData,
     });
 
@@ -61,6 +61,10 @@ export default function AddUserPanel({
       if (formData.password && formData.password.length < 6) {
           newErrors.password = "La contraseña debe tener al menos 6 caracteres";
       }
+
+      if (formData.role === ROLES.TECH && (!formData.workArea || formData.workArea.length === 0)) {
+            newErrors.workArea = "El usuario debe de tener por lo menos un área de trabajo";
+        }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0; // True if no errors
@@ -97,7 +101,7 @@ export default function AddUserPanel({
         };
 
         if (formData.role === ROLES.TECH) {
-            payload.workArea = String(formData.workArea);
+            payload.workArea = formData.workArea;
         }
         try {
             const response = await fetch(
@@ -148,12 +152,12 @@ export default function AddUserPanel({
             name: String(formData.name),
             registrationNumber: String(cleanedRegistrationNumber),
             email: String(formData.email),
-            password: String(formData.password),
+            ...(formData.password ? { password: String(formData.password) } : {}),
             role: String(formData.role),
         };
 
         if (formData.role === ROLES.TECH) {
-            payload.workArea = String(formData.workArea);
+            payload.workArea = formData.workArea;
         }
 
         try {
@@ -369,14 +373,15 @@ export default function AddUserPanel({
                                     className="flex flex-col font-montserrat font-semibold"
                                 >
                                     <span>
-                                        Área de trabajo{" "}
+                                        Área(s) de trabajo{" "}
                                         <span className="text-red-500">*</span>
                                     </span>
                                     <SelectInput
                                         name="workArea"
-                                        value={formData["workArea"]}
+                                        value={formData.workArea}
                                         onChange={handleChange}
-                                        placeholder="Ingrese el área de trabajo"
+                                        isMulti={true}
+                                        placeholder="Seleccione una o varias áreas de trabajo"
                                         options={[
                                             {
                                                 value: "Laboratorio de Biología Molecular",
@@ -416,10 +421,8 @@ export default function AddUserPanel({
                                             },
                                         ]}
                                         required
-                                        showError={errors.name}
-                                        errorMessage={
-                                            "Este campo es obligatorio"
-                                        }
+                                        showError={errors.workArea}
+                                        errorMessage={errors.workArea}
                                         className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                                     />
                                 </label>

@@ -5,7 +5,7 @@ import { ROLES } from "@/constants/roles";
 
 const filterOptions = {
     requests: [
-        { label: 'Área de trabajo', value: 'workArea' },
+        { label: 'Área(s) de trabajo', value: 'workArea' },
         { label: 'Estado de solicitud', value: 'requestStatus' },
         { label: 'Tipo de solicitud', value: 'typeOfRequest' },
     ],
@@ -23,7 +23,7 @@ const filterOptions = {
     users: [
         { label: 'Rol de usuario', value: 'role' },
         {
-            label: 'Área de trabajo',
+            label: 'Área(s) de trabajo',
             value: 'workArea',
             dependsOn: { field: 'role', value: ROLES.TECH },
         },
@@ -237,12 +237,13 @@ export default function Filter({ type, onClose, onChange, data = [] }) {
                                                 {filterValues[
                                                     option.value
                                                 ]?.map((val) => {
-                                                    const count = data.filter(
-                                                        (item) =>
-                                                            item[
-                                                                option.value
-                                                            ] === val.value
-                                                    ).length;
+                                                    const count = data.filter((item) => {
+                                                        const field = item[option.value];
+                                                        if (Array.isArray(field)) {
+                                                            return field.includes(val.value);
+                                                        }
+                                                        return field === val.value;
+                                                    }).length;
 
                                                     return (
                                                         <label

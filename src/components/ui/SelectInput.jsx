@@ -1,40 +1,119 @@
-import { cn } from "@/lib/utils";
+import Select from "react-select";
 
 export default function SelectInput({
-  name,
-  value,
-  onChange,
-  options = [],
-  placeholder = "Seleccione una opción",
-  showError = false,
-  errorMessage = "Este campo es obligatorio",
-  className = "",
+    name,
+    value,
+    onChange,
+    options = [],
+    placeholder = "Seleccione una opción",
+    showError = false,
+    errorMessage = "Este campo es obligatorio",
+    className = "",
+    isMulti = false,
 }) {
-  return (
-    <div className="w-full">
-      <select
-        name={name}
-        value={value}
-        onChange={onChange}
-        className={cn(
-          "w-full h-8 mt-1 rounded-md border px-2 font-montserrat font-normal text-xs focus-visible:border-input-focus focus:bg-input-background focus-visible:ring-0 outline-none",
-          value === "" ? "text-placeholder-text" : "text-black",
-          showError ? "border-red-500" : "border-gray-500",
-          className
-        )}
-      >
-        <option value="">{placeholder}</option>
-        {options.map(({ label, value }) => (
-          <option key={value} value={value}>
-            {label}
-          </option>
-        ))}
-      </select>
-      {showError && (
-        <span className="text-red-500 text-xs mt-1 font-montserrat font-semibold">
-          {errorMessage}
-        </span>
-      )}
-    </div>
-  );
+    const handleChange = (selected) => {
+        const newValue = isMulti
+            ? selected?.map((opt) => opt.value) || []
+            : selected?.value || "";
+        onChange({ target: { name, value: newValue } });
+    };
+
+	const selectedValue = isMulti
+		? options.filter((opt) => value.includes(opt.value))
+		: options.find((opt) => opt.value === value);
+
+    return (
+        <div className="w-full">
+            <Select
+                isMulti={isMulti}
+				name={name}
+				options={options}
+				value={selectedValue}
+				onChange={handleChange}
+				placeholder={placeholder}
+				menuPortalTarget={document.body}
+				menuPosition="fixed"
+				className={className}
+				styles={{
+					control: (base, state) => ({
+						...base,
+						fontSize: "0.75rem",
+						fontFamily: "Montserrat, sans-serif",
+						borderColor: showError 
+							? "#ef4444"
+							: state.isFocused
+							? "#5cb7e6"
+							: "#6b7280",
+						borderRadius: "0.4rem",
+						height: isMulti && value.length > 1 ? "auto" : "2rem",
+						minHeight: "2rem",
+						boxShadow: "none",
+						padding: "0 0.5rem",
+						alignItems: "center",
+						"&:hover": {
+							borderColor: showError
+								? "#ef4444"
+								: state.isFocused
+								? "#5cb7e6"
+								: "#6b7280",
+						},
+					}),
+					option: (base, state) => ({
+						...base,
+						backgroundColor: state.isSelected
+							? "#1591d1"
+							: state.isFocused
+							? "#D0ECFF"
+							: "#ffffff",
+						color: state.isSelected
+							? "#ffffff"
+							: "#000000",
+						fontSize: "0.7rem",
+						fontFamily: "Montserrat, sans-serif",
+						cursor: "pointer",
+						paddingTop: "0.4rem",
+						paddingBottom: "0.4rem",
+						":active": {
+							backgroundColor: state.isSelected
+								? "transparent"
+								: "#transparent",
+						},
+					}),
+					valueContainer: (base) => ({
+						...base,
+						padding: "0",
+						margin: "0",
+						height: "100%",
+						display: "flex",
+						alignItems: "center",
+						paddingLeft: "0.25rem",
+					}),
+					input: (base) => ({
+						...base,
+						margin: "0",
+						padding: "0",
+					}),
+					placeholder: (base) => ({
+						...base,
+						margin: "0",
+						padding: "0",
+						lineHeight: "1.25rem",
+					}),
+					menuPortal: (base) => ({ 
+						...base, 
+						zIndex: 9999 
+					}),
+					indicatorsContainer: (base) => ({
+						...base,
+						height: "100%",
+					}),
+				}}
+            />
+            {showError && (
+                <span className="text-red-500 text-xs mt-1 font-montserrat font-semibold">
+                    {errorMessage}
+                </span>
+            )}
+        </div>
+    );
 }
