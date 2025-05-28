@@ -24,11 +24,11 @@ export default function AddEquipmentPanel({
         "equipmentModel",
         "equipmentSerialNumber",
         "equipmentSupplier",
-        "equipmentImage",
         "vinculatedStrategicProject",
         "barcode",
         "reservationType",
         "location",
+        ...(!isEditing ? ["equipmentImage"] : []),
     ];
 
     const [formData, setFormData] = useState({
@@ -89,6 +89,7 @@ export default function AddEquipmentPanel({
             "equipmentModel",
             "equipmentSerialNumber",
             "equipmentSupplier",
+            "equipmentImage",
             "invoiceNumber",
             "dateOfReception",
             "SICPatRegistered",
@@ -183,7 +184,8 @@ export default function AddEquipmentPanel({
             return;
         }
 
-        const payload = {
+        const equipmentData = {
+            inventoryNumber: String(formData.inventoryNumber),
             equipmentName: String(formData.equipmentName),
             equipmentBrand: String(formData.equipmentBrand),
             equipmentModel: String(formData.equipmentModel),
@@ -204,6 +206,12 @@ export default function AddEquipmentPanel({
             observations: String(formData.observations),
         };
 
+        const equipmentFormData = new FormData();
+        equipmentFormData.append("body", JSON.stringify(equipmentData));
+        if (formData.equipmentImage) {
+            equipmentFormData.append("thumbnail", formData.equipmentImage);
+        }
+
         try {
             const response = await fetch(
                 `http://${import.meta.env.VITE_SERVER_IP}:${
@@ -211,10 +219,7 @@ export default function AddEquipmentPanel({
                 }/v1/equipment/barcode/${initialData.barcode}`,
                 {
                     method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(payload),
+                    body: equipmentFormData,
                 }
             );
 
@@ -335,7 +340,7 @@ export default function AddEquipmentPanel({
                             <span>
                                 Imagen <span className="text-red-500">*</span>
                             </span>
-                            {isEditing && initialData.photoId ? (
+                            {isEditing ? (
                                 <>
                                     <FileInput
                                         name="equipmentImage"
@@ -346,15 +351,19 @@ export default function AddEquipmentPanel({
                                         errorMessage={"Este campo es obligatorio"}
                                         className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
                                     />
-                                    <img
-                                        src={`http://${
-                                            import.meta.env.VITE_SERVER_IP
-                                        }:${
-                                            import.meta.env.VITE_SERVER_PORT
-                                        }/v1/photo/${initialData.photoId}`}
-                                        alt="Imagen del equipo"
-                                        className="mt-2 mx-auto w-[50%] h-40 object-cover"
-                                    />
+                                    {formData.equipmentImage ? (
+                                        <img
+                                            src={URL.createObjectURL(formData.equipmentImage)}
+                                            alt="Imagen del equipo"
+                                            className="mt-2 mx-auto w-[50%] h-40 object-cover"
+                                        />
+                                    ) : initialData.photoId ? (
+                                        <img
+                                            src={`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/photo/${initialData.photoId}`}
+                                            alt="Imagen del equipo"
+                                            className="mt-2 mx-auto w-[50%] h-40 object-cover"
+                                        />
+                                    ) : null}
                                 </>
                             ) : (
                                 <FileInput

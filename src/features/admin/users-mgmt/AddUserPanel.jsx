@@ -49,6 +49,8 @@ export default function AddUserPanel({
         const newErrors = {};
 
         requiredFields.forEach((field) => {
+            if (field === "password" && isEditing) return;
+
           if (!formData[field]) {
               newErrors[field] = "Este campo es obligatorio";
           }
@@ -71,12 +73,23 @@ export default function AddUserPanel({
     };
 
     const isFormUnchanged = () => {
-        const fieldsToCompare = ["name", "email", "password", "role", "workArea"];
+        const fieldsToCompare = ["name", "email", "role", "workArea"];
 
         for (const field of fieldsToCompare) {
-            if (formData[field] !== (initialData[field] ?? "")) {
+            const currentValue = formData[field] ?? "";
+            const initialValue = initialData[field] ?? "";
+
+            if (Array.isArray(currentValue) && Array.isArray(initialValue)) {
+                if (currentValue.sort().join(",") !== initialValue.sort().join(",")) {
+                    return false;
+                }
+            } else if (currentValue !== initialValue) {
                 return false;
             }
+        }
+
+        if (formData.password && formData.password.length > 0) {
+            return false;
         }
 
         return true;

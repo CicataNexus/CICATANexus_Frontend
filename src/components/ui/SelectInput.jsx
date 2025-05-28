@@ -23,7 +23,7 @@ export default function SelectInput({
 		: options.find((opt) => opt.value === value);
 
     return (
-        <div className="w-full">
+        <div className="w-full mt-1">
             <Select
                 isMulti={isMulti}
 				name={name}
