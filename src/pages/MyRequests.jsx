@@ -73,7 +73,7 @@ const MyRequests = () => {
       }
     };
     fetchData();
-  }, [page]);
+  }, [page, reload]);
 
   const handleToggleDetails = (request) => {
     if (selectedRequest?.id === request.id) {
@@ -109,6 +109,8 @@ const MyRequests = () => {
       showToast("Solicitud cancelada con éxito", "success");
       setShowCancelModal(false);
       setRequestToCancel(null);
+      setSelectedRequest(null);
+      setReload(prev => !prev);
     } catch (error) {
       console.error("Error al cancelar solicitud:", error);
     }
