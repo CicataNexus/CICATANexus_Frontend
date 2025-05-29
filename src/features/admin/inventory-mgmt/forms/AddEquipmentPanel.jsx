@@ -154,9 +154,7 @@ export default function AddEquipmentPanel({
 
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${
-                    import.meta.env.VITE_SERVER_PORT
-                }/v1/equipment`,
+                `http://${import.meta.env.VITE_SERVER_IP}/v1/equipment`,
                 {
                     method: "POST",
                     body: equipmentFormData,
@@ -206,9 +204,7 @@ export default function AddEquipmentPanel({
 
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${
-                    import.meta.env.VITE_SERVER_PORT
-                }/v1/equipment/barcode/${initialData.barcode}`,
+                `http://${import.meta.env.VITE_SERVER_IP}/v1/equipment/barcode/${initialData.barcode}`,
                 {
                     method: "PUT",
                     headers: {
@@ -237,9 +233,7 @@ export default function AddEquipmentPanel({
     const handleDelete = async () => {
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${
-                    import.meta.env.VITE_SERVER_PORT
-                }/v1/equipment/barcode/${formData.barcode}`,
+                `http://${import.meta.env.VITE_SERVER_IP}/v1/equipment/barcode/${formData.barcode}`,
                 {
                     method: "DELETE",
                 }

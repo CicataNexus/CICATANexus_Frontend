@@ -92,7 +92,7 @@ const MyRequests = () => {
     try {
       console.log("Request cancelled:", requestToCancel.id);
       const response = await fetch(
-        `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/request/cancel/${requestToCancel.id}`,
+        `http://${import.meta.env.VITE_SERVER_IP}/v1/request/cancel/${requestToCancel.id}`,
         {
           method: "PUT",
           headers: {

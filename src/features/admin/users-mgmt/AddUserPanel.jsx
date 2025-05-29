@@ -105,9 +105,7 @@ export default function AddUserPanel({
         }
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${
-                    import.meta.env.VITE_SERVER_PORT
-                }/v1/auth/register`,
+                `http://${import.meta.env.VITE_SERVER_IP}/v1/auth/register`,
                 {
                     method: "POST",
                     headers: {
@@ -162,9 +160,7 @@ export default function AddUserPanel({
 
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${
-                    import.meta.env.VITE_SERVER_PORT
-                }/v1/user/${cleanedRegistrationNumber}`,
+                `http://${import.meta.env.VITE_SERVER_IP}/v1/user/${cleanedRegistrationNumber}`,
                 {
                     method: "PUT",
                     headers: {
@@ -193,7 +189,7 @@ export default function AddUserPanel({
     const handleDelete = async () => {
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/user/${formData.registrationNumber}`,
+                `http://${import.meta.env.VITE_SERVER_IP}/v1/user/${formData.registrationNumber}`,
                 {
                     method: "DELETE",
                 }

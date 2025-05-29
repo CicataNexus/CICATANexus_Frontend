@@ -26,7 +26,7 @@ export default function MovementsDetailsPanel({ request, onClose, setReload, }) 
             const newStatus = currentStatus === "inUse" ? "available" : "inUse";
 
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/equipment/barcode/${request.equipment.barcode}`,
+                `http://${import.meta.env.VITE_SERVER_IP}/v1/equipment/barcode/${request.equipment.barcode}`,
                 {
                     method: "PUT",
                     headers: {
