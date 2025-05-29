@@ -50,9 +50,7 @@ const RequestEquipment = () => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `https://${import.meta.env.VITE_SERVER_IP}${
-            import.meta.env.VITE_SERVER_PORT
-          }/v1/equipment/basic`
+          `https://${import.meta.env.VITE_SERVER_IP}/v1/equipment/basic`
         );
         if (!response.ok) {
           throw new Error("Error fetching data");
@@ -75,9 +73,7 @@ const RequestEquipment = () => {
 
         const fetches = selectedItems.map(async (equipment) => {
           const equipmentResponse = await fetch(
-            `https://${import.meta.env.VITE_SERVER_IP}${
-              import.meta.env.VITE_SERVER_PORT
-            }/v1/equipment/barcode/${equipment.barcode}`
+            `https://${import.meta.env.VITE_SERVER_IP}/v1/equipment/barcode/${equipment.barcode}`
           );
 
           if (!equipmentResponse.ok) {

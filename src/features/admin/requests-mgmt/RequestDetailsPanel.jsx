@@ -19,9 +19,7 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
         const fetchTechnicians = async () => {
             try {
                 const response = await fetch(
-                    `https://${import.meta.env.VITE_SERVER_IP}${
-                        import.meta.env.VITE_SERVER_PORT
-                    }/v1/user`
+                    `https://${import.meta.env.VITE_SERVER_IP}/v1/user`
                 );
                 if (!response.ok)
                     throw new Error("Error al obtener los técnicos");

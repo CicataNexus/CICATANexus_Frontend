@@ -343,8 +343,6 @@ export default function AddEquipmentPanel({
                                     <img
                                         src={`http://${
                                             import.meta.env.VITE_SERVER_IP
-                                        }:${
-                                            import.meta.env.VITE_SERVER_PORT
                                         }/v1/photo/${initialData.photoId}`}
                                         alt="Imagen del equipo"
                                         className="mt-2 mx-auto w-[50%] h-40 object-cover"
