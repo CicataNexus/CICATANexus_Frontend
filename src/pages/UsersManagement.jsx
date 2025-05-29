@@ -37,9 +37,7 @@ export default function UsersManagement() {
         const fetchData = async () => {
             try {
                 const response = await fetch(
-                    `https://${import.meta.env.VITE_SERVER_IP}${
-                        import.meta.env.VITE_SERVER_PORT
-                    }/v1/user?page=${page}&limit=${pageSize}`
+                    `https://${import.meta.env.VITE_SERVER_IP}/v1/user?page=${page}&limit=${pageSize}`
                 );
                 if (!response.ok) {
                     throw new Error("Error fetching users data");
