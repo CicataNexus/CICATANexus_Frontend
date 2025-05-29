@@ -42,7 +42,7 @@ const RequestMaterial = () => {
     const fetchData = async () => {
       try {
         const res = await fetch(
-          `https://${import.meta.env.VITE_SERVER_IP}:${
+          `https://${import.meta.env.VITE_SERVER_IP}${
             import.meta.env.VITE_SERVER_PORT
           }/v1/combined/basic`
         );

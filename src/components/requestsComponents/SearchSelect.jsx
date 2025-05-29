@@ -94,7 +94,7 @@ const SearchSelect = ({
                   {option.photoId && (
                     <>
                       <img
-                        src={`https://${import.meta.env.VITE_SERVER_IP}:${
+                        src={`https://${import.meta.env.VITE_SERVER_IP}${
                           import.meta.env.VITE_SERVER_PORT
                         }/v1/photo/${option.photoId}`}
                         alt={`Imagen de ${option.name}`}

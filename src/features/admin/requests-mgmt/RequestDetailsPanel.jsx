@@ -19,7 +19,7 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
         const fetchTechnicians = async () => {
             try {
                 const response = await fetch(
-                    `https://${import.meta.env.VITE_SERVER_IP}:${
+                    `https://${import.meta.env.VITE_SERVER_IP}${
                         import.meta.env.VITE_SERVER_PORT
                     }/v1/user`
                 );
