@@ -37,7 +37,7 @@ export default function UsersManagement() {
         const fetchData = async () => {
             try {
                 const response = await fetch(
-                    `http://${import.meta.env.VITE_SERVER_IP}:${
+                    `https://${import.meta.env.VITE_SERVER_IP}:${
                         import.meta.env.VITE_SERVER_PORT
                     }/v1/user?page=${page}&limit=${pageSize}`
                 );

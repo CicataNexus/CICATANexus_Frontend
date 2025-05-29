@@ -70,7 +70,7 @@ function Login() {
         // Validar credenciales con el back
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}/v1/auth/login`,
+                `https://${import.meta.env.VITE_SERVER_IP}/v1/auth/login`,
                 {
                     method: "POST",
                     headers: {

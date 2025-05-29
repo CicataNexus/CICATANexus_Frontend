@@ -77,7 +77,7 @@ function Register() {
 
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}/v1/auth/register`,
+                `https://${import.meta.env.VITE_SERVER_IP}/v1/auth/register`,
                 {
                     method: "POST",
                     headers: {

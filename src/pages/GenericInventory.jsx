@@ -27,9 +27,9 @@ const addPanelMap = {
 
 const apiEndpoints = {
     // For the API endpoints
-    equipos: `http://${import.meta.env.VITE_SERVER_IP}/v1/equipment`,
-    reactivos: `http://${import.meta.env.VITE_SERVER_IP}/v1/reagent`,
-    materiales: `http://${import.meta.env.VITE_SERVER_IP}/v1/materials`,
+    equipos: `https://${import.meta.env.VITE_SERVER_IP}/v1/equipment`,
+    reactivos: `https://${import.meta.env.VITE_SERVER_IP}/v1/reagent`,
+    materiales: `https://${import.meta.env.VITE_SERVER_IP}/v1/materials`,
 };
 
 const resultKeyMap = {

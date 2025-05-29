@@ -50,7 +50,7 @@ const RequestEquipment = () => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `http://${import.meta.env.VITE_SERVER_IP}:${
+          `https://${import.meta.env.VITE_SERVER_IP}:${
             import.meta.env.VITE_SERVER_PORT
           }/v1/equipment/basic`
         );
@@ -75,7 +75,7 @@ const RequestEquipment = () => {
 
         const fetches = selectedItems.map(async (equipment) => {
           const equipmentResponse = await fetch(
-            `http://${import.meta.env.VITE_SERVER_IP}:${
+            `https://${import.meta.env.VITE_SERVER_IP}:${
               import.meta.env.VITE_SERVER_PORT
             }/v1/equipment/barcode/${equipment.barcode}`
           );
@@ -257,7 +257,7 @@ const RequestEquipment = () => {
 
     try {
       const response = await fetch(
-        `http://${import.meta.env.VITE_SERVER_IP}/v1/request`,
+        `https://${import.meta.env.VITE_SERVER_IP}/v1/request`,
         {
           method: "POST",
           headers: {

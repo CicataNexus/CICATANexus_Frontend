@@ -214,7 +214,7 @@ export default function AddMaterialPanel({
 
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}/v1/materials`,
+                `https://${import.meta.env.VITE_SERVER_IP}/v1/materials`,
                 {
                     method: "POST",
                     body: materialFormData,
@@ -275,7 +275,7 @@ export default function AddMaterialPanel({
 
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}/v1/materials/${formData.id}`,
+                `https://${import.meta.env.VITE_SERVER_IP}/v1/materials/${formData.id}`,
                 {
                     method: "PUT",
                     headers: {
@@ -304,7 +304,7 @@ export default function AddMaterialPanel({
     const handleDelete = async () => {
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}/v1/materials/${formData.barcode}`,
+                `https://${import.meta.env.VITE_SERVER_IP}/v1/materials/${formData.barcode}`,
                 {
                     method: "DELETE",
                 }
@@ -454,7 +454,7 @@ export default function AddMaterialPanel({
                                         className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
                                     />
                                     <img
-                                        src={`http://${import.meta.env.VITE_SERVER_IP}/v1/photo/${initialData.photoId}`}
+                                        src={`https://${import.meta.env.VITE_SERVER_IP}/v1/photo/${initialData.photoId}`}
                                         alt="Imagen del material"
                                         className="mt-2 mx-auto w-[50%] h-40 object-cover"
                                     />

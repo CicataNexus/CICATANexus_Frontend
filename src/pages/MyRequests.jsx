@@ -54,7 +54,7 @@ const MyRequests = () => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `http://${import.meta.env.VITE_SERVER_IP}:${
+          `https://${import.meta.env.VITE_SERVER_IP}:${
             import.meta.env.VITE_SERVER_PORT
           }/v1/request/user/${registrationNumber}?page=${page}&limit=5`
         );
@@ -92,7 +92,7 @@ const MyRequests = () => {
     try {
       console.log("Request cancelled:", requestToCancel.id);
       const response = await fetch(
-        `http://${import.meta.env.VITE_SERVER_IP}/v1/request/cancel/${requestToCancel.id}`,
+        `https://${import.meta.env.VITE_SERVER_IP}/v1/request/cancel/${requestToCancel.id}`,
         {
           method: "PUT",
           headers: {

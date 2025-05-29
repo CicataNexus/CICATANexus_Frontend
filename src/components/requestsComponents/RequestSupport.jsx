@@ -95,7 +95,7 @@ const RequestSupport = () => {
     console.log(formattedRequest);
     try {
       const response = await fetch(
-        `http://${import.meta.env.VITE_SERVER_IP}/v1/request`,
+        `https://${import.meta.env.VITE_SERVER_IP}/v1/request`,
         {
           method: "POST",
           headers: {
