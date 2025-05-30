@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
+import { showToast } from "@/utils/toastUtils";
 import Header from "@/components/requestsComponents/Header";
 import MyRequestsTable from "@/features/user/my-requests/MyRequestsTable";
 import PaginationControls from "@/components/PaginationControls";
@@ -14,6 +15,7 @@ const MyRequests = () => {
   const [pageSize, setPageSize] = useState(5);
   const [totalItems, setTotalItems] = useState(0);
   const [type, setType] = useState("");
+  const [reload, setReload] = useState(false);
   const [requests, setRequests] = useState([]);
   const registrationNumber = jwtDecode(
     localStorage.getItem("token")
@@ -86,11 +88,30 @@ const MyRequests = () => {
     setShowCancelModal(true);
   };
 
-  const handleConfirmCancel = () => {
-    console.log("Request cancelled:", requestToCancel.id);
-    setShowCancelModal(false);
-    setRequestToCancel(null);
-    // Fetch
+  const handleConfirmCancel = async () => {
+    try {
+      console.log("Request cancelled:", requestToCancel.id);
+      const response = await fetch(
+        `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/request/cancel/${requestToCancel.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ registrationNumber }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Error al cancelar la solicitud");
+      }
+
+      showToast("Solicitud cancelada con éxito", "success");
+      setShowCancelModal(false);
+      setRequestToCancel(null);
+    } catch (error) {
+      console.error("Error al cancelar solicitud:", error);
+    }
   };
 
   const handleCloseCancelModal = () => {
