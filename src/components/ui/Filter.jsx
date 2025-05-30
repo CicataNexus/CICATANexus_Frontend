@@ -137,6 +137,7 @@ export default function Filter({ type, onClose, onChange, data = [] }) {
     const [open, setOpen] = useState(false);
     const [isAnimatingOut, setIsAnimatingOut] = useState(false);
     const [selectedFilters, setSelectedFilters] = useState({});
+    const [tempFilters, setTempFilters] = useState({});
     const panelRef = useRef(null);
 
     const handleClose = () => {
@@ -168,10 +169,54 @@ export default function Filter({ type, onClose, onChange, data = [] }) {
         };
     }, []);
 
+    useEffect(() => {
+        filterOptions[type]?.forEach((option) => {
+            if (option.dependsOn) {
+                const { field, value } = option.dependsOn;
+                const allowedValues = Array.isArray(value) ? value : [value];
+                const isVisible = tempFilters[field]?.some((v) => allowedValues.includes(v));
+
+                if (!isVisible) {
+                    return null;
+                }
+            }
+        });
+    }, [tempFilters, type]);
+
+    const getFilteredData = () => {
+        return data.filter((item) => {
+            return Object.entries(tempFilters).every(([key, values]) => {
+                if (!values?.length) return true;
+                const field = item[key];
+                if (Array.isArray(field)) {
+                    return values.some((v) => field.includes(v));
+                }
+                return values.includes(field);
+            });
+        });
+    };
+
+    const getFilteredDataExceptGroup = (groupKey) => {
+        return data.filter((item) => {
+            return Object.entries(tempFilters).every(([key, values]) => {
+            if (!values?.length || key === groupKey) return true;
+            const field = item[key];
+            if (Array.isArray(field)) {
+                return values.some((v) => field.includes(v));
+            }
+            return values.includes(field);
+            });
+        });
+    };
+
+
     return (
         <div className = 'relative'>
             <button
-                onClick={() => setOpen(true)}
+                onClick={() => {
+                    setTempFilters(selectedFilters);
+                    setOpen(true);
+                }}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
                 className = 'p-2 cursor-pointer'
@@ -219,9 +264,17 @@ export default function Filter({ type, onClose, onChange, data = [] }) {
                             {filterOptions[type]?.map((option) => {
                                 if (option.dependsOn) {
                                     const { field, value } = option.dependsOn;
-                                    if (
-                                        !selectedFilters[field]?.includes(value)
-                                    ) {
+                                    const allowedValues = Array.isArray(value) ? value : [value];
+                                    const isVisible = tempFilters[field]?.some((v) => allowedValues.includes(v));
+
+                                    if (!isVisible) {
+                                        if (tempFilters[option.value]?.length) {
+                                            setTempFilters((prev) => {
+                                                const updated = { ...prev };
+                                                delete updated[option.value];
+                                                return updated;
+                                            });
+                                        }
                                         return null;
                                     }
                                 }
@@ -237,7 +290,7 @@ export default function Filter({ type, onClose, onChange, data = [] }) {
                                                 {filterValues[
                                                     option.value
                                                 ]?.map((val) => {
-                                                    const count = data.filter((item) => {
+                                                    const count = getFilteredDataExceptGroup(option.value).filter((item) => {
                                                         const field = item[option.value];
                                                         if (Array.isArray(field)) {
                                                             return field.includes(val.value);
@@ -255,7 +308,7 @@ export default function Filter({ type, onClose, onChange, data = [] }) {
                                                                     type = 'checkbox'
                                                                     className = 'sr-only peer'
                                                                     checked={
-                                                                        selectedFilters[
+                                                                        tempFilters[
                                                                             option
                                                                                 .value
                                                                         ]?.includes(
@@ -266,43 +319,17 @@ export default function Filter({ type, onClose, onChange, data = [] }) {
                                                                     onChange={(
                                                                         e
                                                                     ) => {
-                                                                        setSelectedFilters(
-                                                                            (
-                                                                                prev
-                                                                            ) => {
-                                                                                const current =
-                                                                                    prev[
-                                                                                        option
-                                                                                            .value
-                                                                                    ] ||
-                                                                                    [];
-                                                                                const updated =
-                                                                                    e
-                                                                                        .target
-                                                                                        .checked
-                                                                                        ? [
-                                                                                              ...current,
-                                                                                              val.value,
-                                                                                          ]
-                                                                                        : current.filter(
-                                                                                              (
-                                                                                                  v
-                                                                                              ) =>
-                                                                                                  v !==
-                                                                                                  val.value
-                                                                                          );
-                                                                                const newFilters =
-                                                                                    {
-                                                                                        ...prev,
-                                                                                        [option.value]:
-                                                                                            updated,
-                                                                                    };
-                                                                                onChange?.(
-                                                                                    newFilters
-                                                                                );
-                                                                                return newFilters;
-                                                                            }
-                                                                        );
+                                                                        setTempFilters((prev) => {
+                                                                            const current = prev[option.value] || [];
+                                                                            const updated = e.target.checked
+                                                                                ? [...current, val.value]
+                                                                                : current.filter((v) => v !== val.value);
+
+                                                                            return {
+                                                                                ...prev,
+                                                                                [option.value]: updated,
+                                                                            };
+                                                                        });
                                                                     }}
                                                                 />
                                                                 <div className = 'w-4 h-4 border-2 border-primary-blue rounded-xs peer-checked:bg-primary-blue' />
@@ -339,7 +366,11 @@ export default function Filter({ type, onClose, onChange, data = [] }) {
                     <div className = 'flex flex-col p-7 gap-y-2 w-full'>
                         <Button
                             className = 'w-full bg-sidebar hover:bg-dim-blue-background text-white font-poppins font-semibold text-sm'
-                            onClick={() => alert('Se aplicó')}
+                            onClick={() => {
+                                setSelectedFilters(tempFilters);
+                                onChange?.(tempFilters);
+                                handleClose();
+                            }}
                         >
                             Aplicar cambios
                         </Button>
@@ -348,6 +379,7 @@ export default function Filter({ type, onClose, onChange, data = [] }) {
                             onClick={() => {
                                 setSelectedFilters({});
                                 onChange?.({});
+                                handleClose();
                             }}
                         >
                             Borrar filtros

@@ -297,7 +297,7 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                                     ) : (
                                         <>
                                             <SelectInput
-                                                className="w-auto text-xs font-montserrat mt-1.5"
+                                                className="w-auto text-xs font-montserrat"
                                                 value={selectedTechnicianId}
                                                 onChange={(e) => {
                                                     const selectedTechnicianId =

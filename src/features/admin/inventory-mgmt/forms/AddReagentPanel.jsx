@@ -26,7 +26,6 @@ export default function AddReagentPanel({
         "reagentBrand",
         "reagentCatalog",
         "reagentSupplier",
-        "reagentImage",
         "reagentLot",
         "receivingTemperature",
         // "dateOpened", check data type
@@ -50,6 +49,7 @@ export default function AddReagentPanel({
         "contact",
         "location",
         "reagentSticker",
+        ...(!isEditing ? ["reagentImage"] : []),
     ];
 
     const [formData, setFormData] = useState({
@@ -164,6 +164,7 @@ export default function AddReagentPanel({
             "reagentBrand",
             "reagentCatalog",
             "reagentSupplier",
+            "reagentImage",
             "reagentLot",
             "dateOfReception",
             "receivingTemperature",
@@ -331,7 +332,7 @@ export default function AddReagentPanel({
             return;
         }
 
-        const payload = {
+        const reagentData = {
             reagentCode: String(formData.reagentCode),
             reagentName: String(formData.reagentName),
             reagentPresentation: String(formData.reagentPresentation),
@@ -386,17 +387,20 @@ export default function AddReagentPanel({
             observations: String(formData.observations),
         };
 
+        const reagentFormData = new FormData();
+        reagentFormData.append("body", JSON.stringify(reagentData));
+        if (formData.reagentImage) {
+            reagentFormData.append("thumbnail", formData.reagentImage);
+        }
+
         try {
             const response = await fetch(
                 `http://${import.meta.env.VITE_SERVER_IP}:${
                     import.meta.env.VITE_SERVER_PORT
-                }/v1/reagent/${formData._id}`,
+                }/v1/reagent/${formData.barcode}`,
                 {
                     method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(payload),
+                    body: reagentFormData,
                 }
             );
 
@@ -513,7 +517,7 @@ export default function AddReagentPanel({
                             <span>
                                 Imagen <span className="text-red-500">*</span>
                             </span>
-                            {isEditing && initialData.photoId ? (
+                            {isEditing ? (
                                 <>
                                     <FileInput
                                         name="reagentImage"
@@ -526,15 +530,21 @@ export default function AddReagentPanel({
                                         }
                                         className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
                                     />
-                                    <img
-                                        src={`http://${
-                                            import.meta.env.VITE_SERVER_IP
-                                        }:${
-                                            import.meta.env.VITE_SERVER_PORT
-                                        }/v1/photo/${initialData.photoId}`}
-                                        alt="Imagen del reactivo"
-                                        className="mt-2 mx-auto w-[50%] h-40 object-cover"
-                                    />
+                                    {formData.reagentImage ? (
+                                        <img
+                                            src={URL.createObjectURL(
+                                                formData.reagentImage
+                                            )}
+                                            alt="Imagen del reactivo"
+                                            className="mt-2 mx-auto w-[50%] h-40 object-cover"
+                                        />
+                                    ) : initialData.photoId ? (
+                                            <img
+                                                src={`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/photo/${initialData.photoId}`}
+                                                alt="Imagen del reactivo"
+                                                className="mt-2 mx-auto w-[50%] h-40 object-cover"
+                                            />
+                                    ) : null}
                                 </>
                             ) : (
                                 <FileInput

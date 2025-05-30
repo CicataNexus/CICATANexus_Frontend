@@ -24,7 +24,6 @@ export default function AddMaterialPanel({
         "materialSupplier",
         "materialCatalog",
         "materialQuantity",
-        "materialImage",
         "warehouseUnits",
         "labUnits",
         "l1",
@@ -38,6 +37,7 @@ export default function AddMaterialPanel({
         "materialLot",
         "barcode",
         "location",
+        ...(!isEditing ? ["materialImage"] : []),
     ];
 
     const [formData, setFormData] = useState({
@@ -117,6 +117,7 @@ export default function AddMaterialPanel({
             "materialSupplier",
             "materialCatalog",
             "materialQuantity",
+            "materialImage",
             "warehouseUnits",
             "labUnits",
             "l1",
@@ -238,7 +239,7 @@ export default function AddMaterialPanel({
             return;
         }
 
-        const payload = {
+        const materialData = {
             materialCategory: String(formData.materialCategory),
             materialDescription: String(formData.materialDescription),
             materialPresentation: String(formData.materialPresentation),
@@ -273,15 +274,18 @@ export default function AddMaterialPanel({
             verified: Boolean(formData.verified),
         };
 
+        const materialFormData = new FormData();
+        materialFormData.append("body", JSON.stringify(materialData));
+        if (formData.materialImage) {
+            materialFormData.append("thumbnail", formData.materialImage);
+        }
+
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/materials/${formData.id}`,
+                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/materials/${formData.barcode}`,
                 {
                     method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(payload),
+                    body: materialFormData,
                 }
             );
 
@@ -424,7 +428,7 @@ export default function AddMaterialPanel({
                                     }
                                     min={
                                         name === "materialQuantity"
-                                            ? 0
+                                            ? "0"
                                             : undefined
                                     }
                                     name={name}
@@ -442,7 +446,7 @@ export default function AddMaterialPanel({
                             <span>
                                 Imagen <span className="text-red-500">*</span>
                             </span>
-                            {isEditing && initialData.photoId ? (
+                            {isEditing ? (
                                 <>
                                     <FileInput
                                         name="materialImage"
@@ -453,11 +457,19 @@ export default function AddMaterialPanel({
                                         errorMessage={"Este campo es obligatorio"}
                                         className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
                                     />
-                                    <img
-                                        src={`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/photo/${initialData.photoId}`}
-                                        alt="Imagen del material"
-                                        className="mt-2 mx-auto w-[50%] h-40 object-cover"
-                                    />
+                                    {formData.materialImage ? (
+                                        <img
+                                            src={URL.createObjectURL(formData.materialImage)}
+                                            alt="Imagen del material"
+                                            className="mt-2 mx-auto w-[50%] h-40 object-cover"
+                                        />
+                                    ) : initialData.photoId ? (
+                                        <img
+                                            src={`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/photo/${initialData.photoId}`}
+                                            alt="Imagen del material"
+                                            className="mt-2 mx-auto w-[50%] h-40 object-cover"
+                                        />
+                                    ) : null}
                                 </>
                             ) : (
                                 <FileInput
@@ -500,6 +512,7 @@ export default function AddMaterialPanel({
                                 </span>
                                 <Input
                                     type="number"
+                                    min="0"
                                     name={name}
                                     value={formData[name]}
                                     onChange={handleChange}
@@ -525,7 +538,7 @@ export default function AddMaterialPanel({
                                         </label>
                                         <Input
                                             type="number"
-                                            min={0}
+                                            min="0"
                                             name={label.toLowerCase()}
                                             value={
                                                 formData[label.toLowerCase()]
@@ -563,7 +576,7 @@ export default function AddMaterialPanel({
                                 </span>
                                 <Input
                                     type="number"
-                                    min={0}
+                                    min="0"
                                     name={name}
                                     value={formData[name]}
                                     onChange={handleChange}

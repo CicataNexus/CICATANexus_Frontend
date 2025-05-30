@@ -2,6 +2,7 @@ import { useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import DatePicker from "./DatePicker";
 import TimePicker from "./TimePicker";
+import { showToast } from "@/utils/toastUtils";
 import { Button } from "@/components/ui/Button";
 import ModalRequestConfirmation from "@/components/ModalRequestConfirmation";
 
@@ -108,6 +109,11 @@ const RequestSupport = () => {
       );
 
       if (!response.ok) {
+        const error = await response.json();
+        if (error.message === "Error creating request: Error: Error fetching user: Technician not found or not assigned to this work area") {
+          showToast("No hay técnico asignado para alguna de las áreas", "error");
+          return;
+        }
         throw new Error("Error al enviar la solicitud");
       }
 
