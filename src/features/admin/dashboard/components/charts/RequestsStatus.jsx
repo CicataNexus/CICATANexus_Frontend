@@ -74,14 +74,14 @@ export default function RequestsStatus() {
                     </RadialBarChart>
                 </ChartContainer>
             </CardContent>
-            <CardFooter className="flex justify-center gap-2 text-sm whitespace-nowrap overflow-x-hidden font-montserrat">
+            <CardFooter className="flex justify-center gap-2 text-xs whitespace-nowrap overflow-x-hidden font-montserrat">
                 <div className="flex items-center gap-1 font-medium leading-tight">
-                    <div className="w-3 h-3 rounded-full bg-primary-green" />
-                    Atendidas 65%
+                    <div className="w-2 h-2 rounded-full bg-primary-green" />
+                    Atendidas <span className="font-semibold tabular-nums">60%</span>
                 </div>
                 <div className="flex items-center gap-1 font-medium leading-tight">
-                    <div className="w-3 h-3 rounded-full bg-chart-light-green" />
-                    Pendientes 35%
+                    <div className="w-2 h-2 rounded-full bg-chart-light-green" />
+                    Pendientes <span className="font-semibold tabular-nums">40%</span>
                 </div>
             </CardFooter>
         </Card>
