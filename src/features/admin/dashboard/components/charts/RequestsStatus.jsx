@@ -28,7 +28,7 @@ export default function RequestsStatus() {
     return (
         <Card className="p-6 shadow flex flex-col justify-between">
             <CardHeader className="items-center pb-0">
-                <CardTitle className="text-base font-semibold font-poppins leading-tight">
+                <CardTitle className="text-base font-semibold font-poppins leading-none">
                     Solicitudes atendidas vs Solicitudes pendientes
                 </CardTitle>
             </CardHeader>

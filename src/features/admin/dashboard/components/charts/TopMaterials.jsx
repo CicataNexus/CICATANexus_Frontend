@@ -17,21 +17,21 @@ import { useState } from "react";
 export const description = "A bar chart with a label";
 
 const chartData = [
-    { equipment: "Agitador orbital", solicitudes: 186 },
-    { equipment: "Autoclave vertical", solicitudes: 305 },
-    { equipment: "Congelador horizontal", solicitudes: 237 },
-    { equipment: "Vortex", solicitudes: 73 },
-    { equipment: "Báscula", solicitudes: 209 },
+    { material: "Agitador orbital", solicitudes: 186 },
+    { material: "Autoclave vertical", solicitudes: 305 },
+    { material: "Congelador horizontal", solicitudes: 237 },
+    { material: "Vortex", solicitudes: 73 },
+    { material: "Báscula", solicitudes: 209 },
 ];
 
 const chartConfig = {
     solicitudes: {
         label: "Solicitudes",
-        color: "var(--color-chart-light-green)",
+        color: "var(--color-chart-light-blue)",
     },
 };
 
-export default function TopEquipments() {
+export default function TopMaterials() {
     const [viewMode, setViewMode] = useState("monthly");
     const [currentLabel, setCurrentLabel] = useState("Marzo");
     const [hoveredIndex, setHoveredIndex] = useState(null);
@@ -39,8 +39,8 @@ export default function TopEquipments() {
     return (
         <Card>
             <CardHeader className="flex justify-between items-start pb-3">
-                <CardTitle className="text-base font-semibold font-poppins leading-4.5">
-                    Equipos más solicitados
+                <CardTitle className="text-base font-semibold font-poppins leading-none">
+                    Materiales más solicitados
                 </CardTitle>
                 <ViewModeSwitch viewMode={viewMode} setViewMode={setViewMode} />
             </CardHeader>
@@ -58,7 +58,7 @@ export default function TopEquipments() {
                     >
                         <CartesianGrid vertical={false} stroke="#d1d1d1" />
                         <XAxis
-                            dataKey="equipment"
+                            dataKey="material"
                             interval={0}
                             tickLine={false}
                             tickMargin={10}
@@ -94,7 +94,7 @@ export default function TopEquipments() {
                         />
                         <Bar
                             dataKey="solicitudes"
-                            fill="var(--color-chart-light-green)"
+                            fill="var(--color-chart-light-blue)"
                             radius={8}
                             onMouseLeave={() => setHoveredIndex(null)}
                         >
@@ -103,8 +103,8 @@ export default function TopEquipments() {
                                     key={`cell-${index}`}
                                     fill={
                                         hoveredIndex === index
-                                            ? "var(--color-primary-green)"
-                                            : "var(--color-chart-light-green)"
+                                            ? "var(--color-primary-blue)"
+                                            : "var(--color-chart-light-blue)"
                                     }
                                     onMouseEnter={() => setHoveredIndex(index)}
                                     style={{ transition: "fill 0.2s ease" }}
