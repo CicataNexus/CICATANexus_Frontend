@@ -113,7 +113,7 @@ function ChartTooltipContent({
 
         if (labelFormatter) {
             return (
-                <div className={cn("font-medium", labelClassName)}>
+                <div className={cn("font-medium font-montserrat", labelClassName)}>
                     {labelFormatter(value, payload)}
                 </div>
             );
@@ -123,7 +123,7 @@ function ChartTooltipContent({
             return null;
         }
 
-        return <div className={cn("font-medium", labelClassName)}>{value}</div>;
+        return <div className={cn("font-medium font-montserrat", labelClassName)}>{value}</div>;
     }, [
         label,
         labelFormatter,
@@ -143,7 +143,7 @@ function ChartTooltipContent({
     return (
         <div
             className={cn(
-                "border border-primary-blue bg-gray-100 grid min-w-[8rem] items-start gap-1.5 rounded-lg px-2.5 py-1.5 text-xs shadow-xl",
+                "border border-primary-blue bg-gray-100 grid min-w-[8rem] items-start gap-1.5 rounded-lg px-2.5 py-1.5 text-xs shadow-xl font-montserrat",
                 className
             )}
         >

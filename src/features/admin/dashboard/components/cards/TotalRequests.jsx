@@ -11,7 +11,7 @@ export default function TotalRequests() {
     return (
         <div className="rounded-xl bg-white p-6 shadow flex flex-col justify-between">
             <div className="flex justify-between items-center mb-4 gap-4">
-                <h2 className="text-base font-semibold font-poppins leading-tight">
+                <h2 className="text-base font-semibold font-poppins leading-none">
                     Total de solicitudes
                 </h2>
                 <ViewModeSwitch viewMode={viewMode} setViewMode={setViewMode} />
@@ -27,7 +27,7 @@ export default function TotalRequests() {
                 </span>
             </div>
 
-            <div className="flex justify-center items-center gap-4 mt-2 text-sm font-semibold">
+            <div className="flex justify-center items-center gap-2 mt-2 text-sm font-semibold">
                 <Icon
                     icon="iconamoon:arrow-left-2-light"
                     className="h-4 w-4 cursor-pointer text-blue-600"

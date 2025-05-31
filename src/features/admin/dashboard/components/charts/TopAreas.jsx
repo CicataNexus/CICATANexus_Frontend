@@ -17,11 +17,11 @@ import { useState } from "react";
 export const description = "A bar chart with a label";
 
 const chartData = [
-    { equipment: "Agitador orbital", solicitudes: 186 },
-    { equipment: "Autoclave vertical", solicitudes: 305 },
-    { equipment: "Congelador horizontal", solicitudes: 237 },
-    { equipment: "Vortex", solicitudes: 73 },
-    { equipment: "Báscula", solicitudes: 209 },
+    { area: "Agitador orbital", solicitudes: 186 },
+    { area: "Autoclave vertical", solicitudes: 305 },
+    { area: "Congelador horizontal", solicitudes: 237 },
+    { area: "Vortex", solicitudes: 73 },
+    { area: "Báscula", solicitudes: 209 },
 ];
 
 const chartConfig = {
@@ -31,7 +31,7 @@ const chartConfig = {
     },
 };
 
-export default function TopEquipments() {
+export default function TopAreas() {
     const [viewMode, setViewMode] = useState("monthly");
     const [currentLabel, setCurrentLabel] = useState("Marzo");
     const [hoveredIndex, setHoveredIndex] = useState(null);
@@ -39,8 +39,8 @@ export default function TopEquipments() {
     return (
         <Card>
             <CardHeader className="flex justify-between items-start pb-3">
-                <CardTitle className="text-base font-semibold font-poppins leading-4.5">
-                    Equipos más solicitados
+                <CardTitle className="text-base font-semibold font-poppins leading-none">
+                    Áreas más solicitados
                 </CardTitle>
                 <ViewModeSwitch viewMode={viewMode} setViewMode={setViewMode} />
             </CardHeader>
@@ -58,7 +58,7 @@ export default function TopEquipments() {
                     >
                         <CartesianGrid vertical={false} stroke="#d1d1d1" />
                         <XAxis
-                            dataKey="equipment"
+                            dataKey="area"
                             interval={0}
                             tickLine={false}
                             tickMargin={10}
