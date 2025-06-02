@@ -135,10 +135,12 @@ export default function GenericInventory() {
 
     const filteredData = data.filter((item) => {
         const matchesSearch = (() => {
-        if (!searchedItem) return true;
+            if (!searchedItem) return true;
             if (type === "equipos") {
                 return (
-                    normalizeText(item.inventoryNumber).includes(searchedItem) ||
+                    normalizeText(item.inventoryNumber).includes(
+                        searchedItem
+                    ) ||
                     normalizeText(item.equipmentName).includes(searchedItem) ||
                     normalizeText(item.equipmentBrand).includes(searchedItem) ||
                     normalizeText(item.equipmentModel).includes(searchedItem) ||
@@ -162,7 +164,9 @@ export default function GenericInventory() {
                     normalizeText(item.materialDescription).includes(
                         searchedItem
                     ) ||
-                    normalizeText(item.materialCatalog).includes(searchedItem) ||
+                    normalizeText(item.materialCatalog).includes(
+                        searchedItem
+                    ) ||
                     normalizeText(item.materialBrand).includes(searchedItem) ||
                     normalizeText(item.location).includes(searchedItem) ||
                     item.barcode === search
@@ -172,14 +176,16 @@ export default function GenericInventory() {
             return true;
         })();
 
-        const matchesFilters = Object.entries(activeFilters).every(([key, values]) => {
-            if (!values || values.length === 0) return true;
-            const field = item[key];
-            if (Array.isArray(field)) {
-                return values.some((val) => field.includes(val));
+        const matchesFilters = Object.entries(activeFilters).every(
+            ([key, values]) => {
+                if (!values || values.length === 0) return true;
+                const field = item[key];
+                if (Array.isArray(field)) {
+                    return values.some((val) => field.includes(val));
+                }
+                return values.includes(field);
             }
-            return values.includes(field);
-        });
+        );
 
         return matchesSearch && matchesFilters;
     });
@@ -212,10 +218,11 @@ export default function GenericInventory() {
                 <div className="flex items-center justify-center h-[60vh] text-gray-500 font-montserrat text-4xl font-semibold text-center">
                     {search
                         ? `No se encontraron ${type} para "${search}"`
-                        : Object.values(activeFilters).some((arr) => Array.isArray(arr) && arr.length > 0)
-                            ? `No se encontraron ${type} con los filtros aplicados`
-                            : "No hay resultados disponibles"
-                    }
+                        : Object.values(activeFilters).some(
+                              (arr) => Array.isArray(arr) && arr.length > 0
+                          )
+                        ? `No se encontraron ${type} con los filtros aplicados`
+                        : "No hay resultados disponibles"}
                 </div>
             ) : (
                 <>
