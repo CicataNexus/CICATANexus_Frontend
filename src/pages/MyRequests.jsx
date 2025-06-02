@@ -134,27 +134,35 @@ const MyRequests = () => {
           Solicitudes de servicio
         </h2>
         <h3 className="font-montserrat text-base font-normal mb-4">
-          Puede cancelar su solicitud en progreso si ya no la requiere.
+          Puede cancelar su solicitud de servicio si ya no la requiere.
         </h3>
-        <div className="min-h-[400px] flex flex-col justify-between">
-          <MyRequestsTable
-            data={requests}
-            columns={columns}
-            selectedRequest={selectedRequest}
-            onCloseDetails={() => setSelectedRequest(null)}
-            onCancelRequest={handleCancelRequest}
-          />
-        </div>
-        <div className="mt-15">
-          <PaginationControls
-            page={page}
-            setPage={setPage}
-            pageSize={pageSize}
-            setPageSize={setPageSize}
-            totalItems={totalItems}
-            type="solicitud"
-          />
-        </div>
+        {Array.isArray(requests) && requests.length === 0 ? (
+          <div className="flex items-center justify-center h-[60vh] text-gray-500 font-montserrat text-4xl font-semibold text-center">
+            No ha enviado ninguna solicitud
+          </div>
+        ) : (
+          <>
+            <div className="min-h-[400px] flex flex-col justify-between">
+              <MyRequestsTable
+                data={requests}
+                columns={columns}
+                selectedRequest={selectedRequest}
+                onCloseDetails={() => setSelectedRequest(null)}
+                onCancelRequest={handleCancelRequest}
+              />
+            </div>
+            <div className="mt-15">
+              <PaginationControls
+                page={page}
+                setPage={setPage}
+                pageSize={pageSize}
+                setPageSize={setPageSize}
+                totalItems={totalItems}
+                type="solicitud"
+              />
+            </div>
+          </>
+        )}
       </section>
       {showCancelModal && (
         <ModalCancelReqConfirmation

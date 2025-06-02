@@ -67,7 +67,10 @@ const RequestSupport = () => {
     const newErrors = {
       dateRange: !dateRange.startDate || !dateRange.endDate,
       timeRange: !timeRange.startTime || !timeRange.endTime,
-      timeRangeStartEnd: timeRange.startTime >= timeRange.endTime,
+      timeRangeStartEnd:
+        timeRange.startTime &&
+        timeRange.endTime &&
+        timeRange.startTime >= timeRange.endTime,
       selectedOption: !selectedOption,
       selectedAreas: selectedAreas.length === 0,
     };
@@ -110,8 +113,14 @@ const RequestSupport = () => {
 
       if (!response.ok) {
         const error = await response.json();
-        if (error.message === "Error creating request: Error: Error fetching user: Technician not found or not assigned to this work area") {
-          showToast("No hay técnico asignado para alguna de las áreas", "error");
+        if (
+          error.message ===
+          "Error creating request: Error: Error fetching user: Technician not found or not assigned to this work area"
+        ) {
+          showToast(
+            "No hay técnico asignado para alguna de las áreas",
+            "error"
+          );
           return;
         }
         throw new Error("Error al enviar la solicitud");
@@ -212,6 +221,7 @@ const RequestSupport = () => {
                     setTimeRange={setTimeRange}
                     type="start"
                     className="select-none"
+                    onlyWorkHours={true}
                   />
                 </div>
                 <div className="">
@@ -222,6 +232,8 @@ const RequestSupport = () => {
                     timeRange={timeRange}
                     setTimeRange={setTimeRange}
                     type="end"
+                    className="select-none"
+                    onlyWorkHours={true}
                   />
                 </div>
               </div>

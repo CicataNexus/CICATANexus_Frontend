@@ -276,7 +276,7 @@ export default function AddUserPanel({
                                     required
                                     showError={errors.role}
                                     errorMessage={"Este campo es obligatorio"}
-                                    className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal font-montserrat h-8 focus:text-sm"
+                                    className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal font-montserrat min-h-8 focus:text-sm"
                                     options={[
                                         { value: ROLES.USER, label: "Usuario" },
                                         { value: ROLES.TECH, label: "Técnico" },
@@ -436,7 +436,7 @@ export default function AddUserPanel({
                                         required
                                         showError={errors.workArea}
                                         errorMessage={errors.workArea}
-                                        className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                                        className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal min-h-8"
                                     />
                                 </label>
                             )}

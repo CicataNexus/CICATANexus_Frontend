@@ -1,10 +1,20 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { showToast } from "@/utils/toastUtils";
+import SelectInput from "@/components/ui/SelectInput";
 import ModalMovementConfirmation from "@/components/ModalMovementConfirmation";
 
 export default function MovementsDetailsPanel({ request, onClose, setReload, }) {
     const [showConfirmation, setShowConfirmation] = useState(false);
+    const statusOptions = [
+        { label: "Disponible", value: "available" },
+        { label: "En uso", value: "inUse" },
+        { label: "Deshabilitado", value: "disabled" },
+    ];
+    const [newStatus, setNewStatus] = useState(
+        statusOptions.find((opt) => opt.value === request?.equipment?.status) || statusOptions[0]
+    );
+
     const {
         bookerName,
         bookerRegistrationNumber,
@@ -16,37 +26,33 @@ export default function MovementsDetailsPanel({ request, onClose, setReload, }) 
 
     const handleConfirm = async () => {
         try {
-            const currentStatus = request.equipment?.status;
-
-            if (!currentStatus || !["inUse", "available"].includes(currentStatus)) {
-                console.warn("Estado no válido para cambiar:", currentStatus);
+            if (!["available", "inUse", "disabled"].includes(newStatus?.value)) {
+                console.warn("Estado no válido:", newStatus);
                 return;
             }
-
-            const newStatus = currentStatus === "inUse" ? "available" : "inUse";
+            
+            const formData = new FormData();
+            formData.append("body", JSON.stringify({ status: newStatus.value }));
 
             const response = await fetch(
                 `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/equipment/barcode/${request.equipment.barcode}`,
                 {
                     method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ body: JSON.stringify({ status: newStatus }) })
+                    body: formData,
                 }
             );
 
             if (!response.ok) {
-                throw new Error("Error al actualizar el estado del equipo");
-            } else {
-                showToast("Estado actualizado correctamente", "success");
-                onClose();
-                setTimeout(() => {
-                    setReload((prev) => !prev);
-                }, 0);
+                const errorData = await response.json();
+                console.error("Error al actualizar el estado:", errorData);
+                throw new Error("Error al actualizar el estado");
             }
+
+            showToast("Estado actualizado correctamente", "success");
+            onClose();
+            setTimeout(() => setReload((prev) => !prev), 0);
         } catch (error) {
-            console.error("Error al cambiar el estado del equipo:", error);
+            console.error("Error:", error);
             showToast("No se pudo actualizar el estado", "error");
         }
     };
@@ -92,6 +98,20 @@ export default function MovementsDetailsPanel({ request, onClose, setReload, }) 
                                     <strong>Área(s) de trabajo</strong>
                                     <br />
                                     {workArea || "-"}
+                                </p>
+                                <p className="mb-3">
+                                    <strong>Estado del equipo</strong>
+                                    <br />
+                                    <SelectInput
+                                        name="status"
+                                        value={newStatus.value}
+                                        onChange={(e) => {
+                                            const selected = statusOptions.find(opt => opt.value === e.target.value);
+                                            setNewStatus(selected);
+                                        }}
+                                        options={statusOptions}
+                                        placeholder="Seleccione estado"
+                                    />
                                 </p>
                             </div>
 
@@ -144,10 +164,12 @@ export default function MovementsDetailsPanel({ request, onClose, setReload, }) 
                         </Button>
                         <Button
                             onClick={() => setShowConfirmation(true)}
-                            className="w-40 text-white text-base font-poppins font-semibold py-2 text-center cursor-pointer transition bg-sidebar hover:bg-dim-blue-background"
+                            disabled={newStatus.value === equipment?.status}
+                            className="w-40 text-white text-base font-poppins font-semibold py-2 text-center cursor-pointer transition bg-sidebar hover:bg-dim-blue-background disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             Cambiar estado
                         </Button>
+
                     </div>
                 </section>
             </div>

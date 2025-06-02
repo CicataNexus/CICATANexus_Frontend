@@ -115,41 +115,42 @@ function Register() {
 
     return (
         <>
-            <div className="w-full min-h-screen bg-gradient-to-b from-blue-bg-gradient to-dim-blue-background flex flex-col items-center">
-                <header className="w-full flex items-center justify-between px-15 py-3 z-50">
+            <div className="w-full h-screen flex items-center justify-center bg-gradient-to-b from-blue-bg-gradient to-dim-blue-background">
+                <header className="fixed top-0 w-full flex items-center justify-between px-4 sm:px-8 py-3 gap-4 overflow-hidden">
                     <img
                         src="/SepWhite.png"
                         alt="Logo SEP"
-                        className="h-12 w-auto"
+                        className="h-12 max-w-[30%] object-contain"
                     />
                     <img
                         src="/IpnWhite.png"
                         alt="Logo IPN"
-                        className="h-14 w-auto"
+                        className="h-14 max-w-[30%] object-contain"
                     />
                     <img
                         src="/CicataWhite.png"
                         alt="Logo CICATA"
-                        className="h-12 w-auto"
+                        className="h-12 max-w-[30%] object-contain"
                     />
                 </header>
+                
                 {/* Spheres for background */}
                 <div className="fixed bottom-20 left-3 w-65 h-65 bg-sphere-blue opacity-50 blur-[100px] rounded-full"></div>
                 <div className="fixed top-10 right-3 w-65 h-65 bg-sphere-blue opacity-50 blur-[100px] rounded-full"></div>
 
-                <div className="rounded-2xl w-full max-w-[42vw] bg-white my-10 shadow-md">
+                <div className="w-full max-w-xl px-4 sm:px-8">
                     <form
                         onSubmit={(e) => {
                             e.preventDefault();
                             handleRegister();
                         }}
                     >
-                        <div className="flex flex-col w-full h-full items-center justify-center text-center p-15 gap-10 bg-white rounded-2xl">
+                        <div className="flex flex-col w-full max-h-[70vh] mx-auto items-center justify-center text-center px-6 py-10 gap-10 bg-white rounded-2xl">
                             <h1 className="text-3xl text-black font-semibold font-poppins">
                                 Crear una cuenta
                             </h1>
-                            <div className="flex flex-col items-center justify-center text-center gap-3 flex-grow">
-                                <div className="flex flex-col min-w-[30vw] max-w-[40vw] text-1xl text-left gap-1 font-montserrat">
+                            <div className="flex flex-col items-center min-w-[80%] justify-center text-center gap-5 flex-grow overflow-y-auto">
+                                <div className="flex flex-col w-full text-1xl text-left gap-1 font-montserrat">
                                     <span className="font-semibold">
                                         Nombre completo{" "}
                                         <span className="text-red-500">*</span>
@@ -169,7 +170,7 @@ function Register() {
                                         </span>
                                     )}
                                 </div>
-                                <div className="flex flex-col min-w-[30vw] max-w-[40vw] text-1xl text-left gap-1 font-montserrat">
+                                <div className="flex flex-col w-full text-1xl text-left gap-1 font-montserrat">
                                     <span className="font-semibold">
                                         Clave de usuario{" "}
                                         <span className="text-red-500">*</span>
@@ -189,7 +190,7 @@ function Register() {
                                         </span>
                                     )}
                                 </div>
-                                <div className="flex flex-col min-w-[30vw] max-w-[40vw] text-1xl text-left gap-1 font-montserrat">
+                                <div className="flex flex-col w-full text-1xl text-left gap-1 font-montserrat">
                                     <span className="font-semibold">
                                         Correo electrónico{" "}
                                         <span className="text-red-500">*</span>
@@ -209,7 +210,7 @@ function Register() {
                                         </span>
                                     )}
                                 </div>
-                                <div className="flex flex-col min-w-[30vw] max-w-[40vw] text-1xl text-left gap-1 font-montserrat">
+                                <div className="flex flex-col w-full text-1xl text-left gap-1 font-montserrat">
                                     <span className="font-semibold">
                                         Contraseña{" "}
                                         <span className="text-red-500">*</span>
@@ -274,7 +275,7 @@ function Register() {
                                 </div>
                                 <button
                                     type="submit"
-                                    className="rounded-md p-2 min-w-[30vw] max-w-[40vw] items-center justify-center bg-primary-green text-white text-lg font-semibold font-poppins transition-all duration-200 hover:bg-login-btn-hover hover:scale-102 active:scale-95 cursor-pointer"
+                                    className="rounded-md p-2 w-full items-center justify-center bg-primary-green text-white text-lg font-semibold font-poppins transition-all duration-200 hover:bg-login-btn-hover hover:scale-102 active:scale-95 cursor-pointer"
                                 >
                                     Crear cuenta
                                 </button>

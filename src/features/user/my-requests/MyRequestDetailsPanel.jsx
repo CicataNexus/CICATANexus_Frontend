@@ -17,7 +17,6 @@ export default function MyRequestDetailsPanel({ request, onCancel }) {
   } = request;
 
   const userStatus = mapRequestStatusForUser(requestStatus);
-  const showCancelButton = userStatus === "inProgress";
   const fechaRequiere = requestDate?.startingDate
     ? new Date(requestDate.startingDate).toLocaleDateString()
     : "-";
@@ -127,16 +126,14 @@ export default function MyRequestDetailsPanel({ request, onCancel }) {
         </div>
       </article>
 
-      {showCancelButton && (
-        <div className="w-full flex justify-end mt-4 mb-4">
-          <Button
-            onClick={onCancel}
-            className="bg-delete-btn hover:bg-delete-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-md transition inline-flex items-center cursor-pointer"
-          >
-            Cancelar solicitud
-          </Button>
-        </div>
-      )}
+      <div className="w-full flex justify-end mt-4 mb-4">
+        <Button
+          onClick={onCancel}
+          className="bg-delete-btn hover:bg-delete-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-md transition inline-flex items-center cursor-pointer"
+        >
+          Cancelar solicitud
+        </Button>
+      </div>
     </section>
   );
 }

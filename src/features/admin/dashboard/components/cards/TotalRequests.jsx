@@ -1,12 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import ViewModeSwitch from "@/components/ViewModeSwitch";
+import useDateNavigation, { getPeriodLabel } from "@/utils/dateNavigation";
 
 export default function TotalRequests() {
-    const [viewMode, setViewMode] = useState("monthly");
-    const [currentLabel, setCurrentLabel] = useState("Marzo");
+    const {
+        viewMode,
+        setViewMode,
+        currentMonth,
+        currentYear,
+        handleLeftClick,
+        handleRightClick,
+        isLeftDisabled,
+        isRightDisabled,
+    } = useDateNavigation();
 
-    const total = 40;
+    const [total, setTotal] = useState(0);
+
+    useEffect(() => {
+        const fetchTotal = async () => {
+            const period = viewMode;
+            const year = currentYear;
+            const month = period === 0 ? currentMonth : undefined;
+
+            let url = `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/analytics/total?period=${period}&year=${year}`;
+            if (month) {
+                url += `&month=${month}`;
+            }
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                setTotal(data.total ?? 0);
+            } catch (error) {
+                console.error("Error al obtener total:", error);
+            }
+        };
+
+        fetchTotal();
+    }, [viewMode, currentMonth, currentYear]);
+
+    const currentLabel = getPeriodLabel(viewMode, currentMonth, currentYear);
 
     return (
         <div className="rounded-xl bg-white p-6 shadow flex flex-col justify-between">
@@ -30,14 +64,24 @@ export default function TotalRequests() {
             <div className="flex justify-center items-center gap-2 mt-2 text-sm font-semibold">
                 <Icon
                     icon="iconamoon:arrow-left-2-light"
-                    className="h-4 w-4 cursor-pointer text-blue-600"
+                    className={`h-4 w-4 ${isLeftDisabled 
+                        ? "text-gray-400" 
+                        : "text-blue-600 cursor-pointer"}`}
+                    onClick={!isLeftDisabled 
+                        ? handleLeftClick 
+                        : undefined}
                 />
                 <span className="font-montserrat font-medium">
                     {currentLabel}
                 </span>
                 <Icon
                     icon="iconamoon:arrow-right-2-light"
-                    className="h-4 w-4 cursor-pointer text-blue-600"
+                    className={`h-4 w-4 ${isRightDisabled 
+                        ? "text-gray-400" 
+                        : "text-blue-600 cursor-pointer"}`}
+                    onClick={!isRightDisabled 
+                        ? handleRightClick 
+                        : undefined}
                 />
             </div>
         </div>

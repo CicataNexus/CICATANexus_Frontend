@@ -8,24 +8,24 @@ export default function ViewModeSwitch({ viewMode, setViewMode }) {
         layout
         initial={false}
         animate={{
-          x: viewMode === "monthly" ? 0 : 58,
+          x: viewMode === 0 ? 0 : 58,
         }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
       />
 
       <div className="flex justify-between w-full z-10">
         <button
-          onClick={() => setViewMode("monthly")}
+          onClick={() => setViewMode(0)}
           className={`w-[58px] h-6 flex items-center justify-center rounded-full transition-colors cursor-pointer ${
-            viewMode === "monthly" ? "text-white" : "text-dark-gray"
+            viewMode === 0 ? "text-white" : "text-dark-gray"
           }`}
         >
           Mensual
         </button>
         <button
-          onClick={() => setViewMode("yearly")}
+          onClick={() => setViewMode(1)}
           className={`w-[58px] h-6 flex items-center justify-center rounded-full transition-colors cursor-pointer ${
-            viewMode === "yearly" ? "text-white" : "text-dark-gray"
+            viewMode === 1 ? "text-white" : "text-dark-gray"
           }`}
         >
           Anual

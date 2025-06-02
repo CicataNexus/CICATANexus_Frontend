@@ -49,7 +49,6 @@ export default function AddReagentPanel({
         "contact",
         "location",
         "reagentSticker",
-        ...(!isEditing ? ["reagentImage"] : []),
     ];
 
     const [formData, setFormData] = useState({
@@ -75,7 +74,6 @@ export default function AddReagentPanel({
         casNumber: "",
         safetyDataSheet: "",
         sdsLink: "",
-        verified: "",
         pictogramImage: null,
         explosive: "",
         oxidizing: "",
@@ -178,7 +176,7 @@ export default function AddReagentPanel({
             "casNumber",
             "safetyDataSheet",
             "sdsLink",
-            "verified",
+            "pictogramImage",
             "explosive",
             "oxidizing",
             "flammable",
@@ -271,8 +269,6 @@ export default function AddReagentPanel({
             casNumber: String(formData.casNumber),
             safetyDataSheet: Boolean(formData.safetyDataSheet),
             sdsLink: String(formData.sdsLink),
-            verified: Boolean(formData.verified),
-            pictogramImage: String(formData.pictogramImage),
             explosive: parseInt(formData.explosive, 10),
             oxidizing: parseInt(formData.oxidizing, 10),
             flammable: parseInt(formData.flammable, 10),
@@ -295,8 +291,11 @@ export default function AddReagentPanel({
 
         const reagentFormData = new FormData();
         reagentFormData.append("body", JSON.stringify(reagentData));
-        if (formData.reagentImage) {
+        if (formData.reagentImage instanceof File) {
             reagentFormData.append("thumbnail", formData.reagentImage);
+        }
+        if (formData.pictogramImage instanceof File) {
+            reagentFormData.append("pictogram", formData.pictogramImage);
         }
 
         try {
@@ -365,7 +364,6 @@ export default function AddReagentPanel({
             casNumber: String(formData.casNumber),
             safetyDataSheet: Boolean(formData.safetyDataSheet),
             sdsLink: String(formData.sdsLink),
-            verified: Boolean(formData.verified),
             pictogramImage: String(formData.pictogramImage),
             explosive: parseInt(formData.explosive, 10),
             oxidizing: parseInt(formData.oxidizing, 10),
@@ -389,8 +387,11 @@ export default function AddReagentPanel({
 
         const reagentFormData = new FormData();
         reagentFormData.append("body", JSON.stringify(reagentData));
-        if (formData.reagentImage) {
+        if (formData.reagentImage instanceof File) {
             reagentFormData.append("thumbnail", formData.reagentImage);
+        }
+        if (formData.pictogramImage instanceof File) {
+            reagentFormData.append("pictogram", formData.pictogramImage);
         }
 
         try {
@@ -515,7 +516,7 @@ export default function AddReagentPanel({
                         ))}
                         <label className="flex flex-col font-montserrat font-semibold">
                             <span>
-                                Imagen <span className="text-red-500">*</span>
+                                Imagen
                             </span>
                             {isEditing ? (
                                 <>
@@ -523,11 +524,6 @@ export default function AddReagentPanel({
                                         name="reagentImage"
                                         value={formData.reagentImage}
                                         onChange={handleChange}
-                                        required
-                                        showError={errors.reagentImage}
-                                        errorMessage={
-                                            "Este campo es obligatorio"
-                                        }
                                         className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
                                     />
                                     {formData.reagentImage ? (
@@ -551,9 +547,6 @@ export default function AddReagentPanel({
                                     name="reagentImage"
                                     value={formData.reagentImage}
                                     onChange={handleChange}
-                                    required
-                                    showError={errors.reagentImage}
-                                    errorMessage={"Este campo es obligatorio"}
                                     className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
                                 />
                             )}
@@ -769,24 +762,38 @@ export default function AddReagentPanel({
                                 )}
                             </label>
                         )}
-                        <label className="flex items-center font-montserrat font-semibold gap-2">
-                            Verificado
-                            <input
-                                type="checkbox"
-                                name="verified"
-                                checked={formData.verified}
-                                onChange={handleChange}
-                                className="h-4 w-4"
-                            />
-                        </label>
-                        <label className="font-montserrat font-semibold">
+                        <label className="flex flex-col font-montserrat font-semibold">
                             Pictograma
-                            <FileInput
-                                name="pictogramImage"
-                                value={formData.pictogramImage}
-                                onChange={handleChange}
-                                className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
-                            />
+                            {isEditing ? (
+                                <>
+                                    <FileInput
+                                        name="pictogramImage"
+                                        value={formData.pictogramImage}
+                                        onChange={handleChange}
+                                        className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
+                                    />
+                                    {formData.pictogramImage ? (
+                                        <img
+                                            src={URL.createObjectURL(formData.pictogramImage)}
+                                            alt="Imagen del pictograma"
+                                            className="mt-2 mx-auto w-[50%] h-40 object-cover"
+                                        />
+                                    ) : initialData.pictogramId ? (
+                                        <img
+                                            src={`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/photo/${initialData.pictogramId}`}
+                                            alt="Imagen del pictograma"
+                                            className="mt-2 mx-auto w-[50%] h-40 object-cover"
+                                        />
+                                    ) : null}
+                                </>
+                                ) : (
+                                    <FileInput
+                                        name="pictogramImage"
+                                        value={formData.pictogramImage}
+                                        onChange={handleChange}
+                                        className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
+                                    />
+                                )}
                         </label>
                     </fieldset>
 
@@ -833,6 +840,7 @@ export default function AddReagentPanel({
                                     name={name}
                                     type="number"
                                     min="0"
+                                    max="4"
                                     value={formData[name]}
                                     onChange={handleChange}
                                     placeholder={placeholder}
@@ -856,6 +864,7 @@ export default function AddReagentPanel({
                                 showError={errors.healthHazard}
                                 errorMessage={"Este campo es obligatorio"}
                                 min="0"
+                                max="4"
                                 onChange={handleChange}
                                 className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                             />
@@ -873,6 +882,7 @@ export default function AddReagentPanel({
                                 showError={errors.flammability}
                                 errorMessage={"Este campo es obligatorio"}
                                 min="0"
+                                max="4"
                                 onChange={handleChange}
                                 className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                             />
@@ -891,6 +901,7 @@ export default function AddReagentPanel({
                                 showError={errors.reactivity}
                                 errorMessage={"Este campo es obligatorio"}
                                 min="0"
+                                max="4"
                                 onChange={handleChange}
                                 className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                             />
@@ -908,6 +919,7 @@ export default function AddReagentPanel({
                                 showError={errors.contact}
                                 errorMessage={"Este campo es obligatorio"}
                                 min="0"
+                                max="4"
                                 onChange={handleChange}
                                 className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                             />

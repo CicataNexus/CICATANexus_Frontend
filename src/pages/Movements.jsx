@@ -123,27 +123,42 @@ const Movements = () => {
                     data={movementsData}
                     onFiltersChange={setActiveFilters}
                 />
-                <>
-                    <div className="min-h-[400px] flex flex-col justify-between">
-                        <MovementsTable
-                            data={filteredData}
-                            columns={columns}
-                            selectedMovement={selectedMovement}
-                            onCloseDetails={() => setSelectedMovement(null)}
-                            setReload={setReload}
-                        />
+                {Array.isArray(movementsData) && movementsData.length === 0 ? (
+                    <div className="flex items-center justify-center h-[60vh] text-gray-500 font-montserrat text-4xl font-semibold text-center">
+                        No hay movimientos pendientes
                     </div>
-                    <div className="mt-15">
-                        <PaginationControls
-                            page={page}
-                            setPage={setPage}
-                            pageSize={pageSize}
-                            setPageSize={setPageSize}
-                            totalItems={totalItems}
-                            type="solicitud"
-                        />
+                ) : filteredData.length === 0 ? (
+                    <div className="flex items-center justify-center h-[60vh] text-gray-500 font-montserrat text-4xl font-semibold text-center">
+                        {search
+                            ? `No se encontraron solicitudes para "${search}"`
+                            : Object.values(activeFilters).some((arr) => Array.isArray(arr) && arr.length > 0)
+                                ? "No se encontraron solicitudes con los filtros aplicados"
+                                : "No hay resultados disponibles"
+                        }
                     </div>
-                </>
+                ) : (
+                    <>
+                        <div className="min-h-[400px] flex flex-col justify-between">
+                            <MovementsTable
+                                data={filteredData}
+                                columns={columns}
+                                selectedMovement={selectedMovement}
+                                onCloseDetails={() => setSelectedMovement(null)}
+                                setReload={setReload}
+                            />
+                        </div>
+                        <div className="mt-15">
+                            <PaginationControls
+                                page={page}
+                                setPage={setPage}
+                                pageSize={pageSize}
+                                setPageSize={setPageSize}
+                                totalItems={totalItems}
+                                type="solicitud"
+                            />
+                        </div>
+                    </>
+                )}
             </section>
         </>
     );

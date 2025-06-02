@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Icon } from '@iconify/react';
+import { Icon } from "@iconify/react";
 
 const TimePicker = ({
   timeRange,
@@ -8,6 +8,7 @@ const TimePicker = ({
   className,
   limitTime = null,
   limitDirection = null,
+  onlyWorkHours = false,
 }) => {
   const hours = Array.from({ length: 24 }, (_, i) =>
     String(i).padStart(2, "0")
@@ -20,12 +21,10 @@ const TimePicker = ({
     const key = type === "start" ? "startTime" : "endTime";
     const existingTime = timeRange[key] || ":";
     const [existingHour = "", existingMinute = ""] = existingTime.split(":");
-
     const newTime =
       unit === "hour"
         ? `${value}:${existingMinute || "00"}`
         : `${existingHour || "00"}:${value}`;
-
     setTimeRange((prev) => ({
       ...prev,
       [key]: newTime,
@@ -39,13 +38,22 @@ const TimePicker = ({
   const [limitHour, limitMinute] = limitTime
     ? limitTime.split(":").map(Number)
     : [null, null];
-
   const limitTotalMinutes =
     limitHour !== null && limitMinute !== null
       ? limitHour * 60 + limitMinute
       : null;
 
+  const isWorkHour = (hour) => {
+    if (!onlyWorkHours) return true;
+    const h = parseInt(hour);
+    return h >= 8 && h <= 16; // 8 AM to 4 PM (16:00)
+  };
+
   const isAllowed = (h, m) => {
+    // First check work hours restriction
+    if (!isWorkHour(h)) return false;
+
+    // Then check limit time restriction
     if (limitTotalMinutes === null) return true;
     const total = parseInt(h) * 60 + parseInt(m);
     if (limitDirection === "before") return total < limitTotalMinutes;
@@ -54,7 +62,10 @@ const TimePicker = ({
   };
 
   const getValidHours = () =>
-    hours.filter((h) => minutes.some((m) => isAllowed(h, m)));
+    hours.filter((h) => {
+      // Check if this hour has any valid minutes
+      return minutes.some((m) => isAllowed(h, m));
+    });
 
   const getValidMinutes = () =>
     minutes.map((m) => ({
@@ -67,10 +78,7 @@ const TimePicker = ({
 
   return (
     <div className={`flex gap-2 items-center ${className}`}>
-      <Icon
-        icon="tabler:clock"
-        className="text-2xl"
-      />
+      <Icon icon="tabler:clock" className="text-2xl" />
       <select
         value={selectedHour}
         onChange={(e) => handleChange("hour", e.target.value)}
@@ -83,7 +91,7 @@ const TimePicker = ({
           </option>
         ))}
       </select>
-        :
+      :
       <select
         value={selectedMinute}
         onChange={(e) => handleChange("minute", e.target.value)}
