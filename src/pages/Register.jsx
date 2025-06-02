@@ -20,18 +20,24 @@ function Register() {
     const regNumberRef = useRef(null);
     const emailRef = useRef(null);
     const passwordRef = useRef(null);
+    
     const blockEnie = (e) => {
         if (e.key.toLowerCase() === "ñ") {
+            e.preventDefault();
+        }
+    };
+    const blockNum = (e) => {
+        if (/[0-9]/.test(e.key)) {
             e.preventDefault();
         }
     };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-            setFormData((prev) => ({
-                ...prev,
-                [name]: value,
-            }));
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
         setErrors((prev) => ({ ...prev, [name]: false }));
     };
 
@@ -168,6 +174,7 @@ function Register() {
                                         onChange={handleChange}
                                         className="rounded-md p-1 border-2 border-gray-200 outline-none focus:border-input-focus focus:bg-input-background placeholder:text-sm placeholder:text-placeholder-text"
                                         placeholder="Ingrese su nombre completo"
+                                        onKeyDown={blockNum}
                                     />
                                     {errors.name && (
                                         <span className="font-montserrat font-semibold text-red-500 text-sm">

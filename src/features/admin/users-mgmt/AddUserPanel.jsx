@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@iconify/react";
-import { showToast } from '@/utils/toastUtils';
+import { showToast } from "@/utils/toastUtils";
 import { ROLES } from "@/constants/roles";
 import ModalUserConfirmation from "@/components/ModalUserConfirmation";
 import SelectInput from "@/components/ui/SelectInput";
@@ -24,6 +24,17 @@ export default function AddUserPanel({
         "password",
         "role",
     ];
+
+    const blockEnie = (e) => {
+        if (e.key.toLowerCase() === "ñ") {
+            e.preventDefault();
+        }
+    };
+    const blockNum = (e) => {
+        if (/[0-9]/.test(e.key)) {
+            e.preventDefault();
+        }
+    };
 
     const [formData, setFormData] = useState({
         name: "",
@@ -51,21 +62,29 @@ export default function AddUserPanel({
         requiredFields.forEach((field) => {
             if (field === "password" && isEditing) return;
 
-          if (!formData[field]) {
-              newErrors[field] = "Este campo es obligatorio";
-          }
-      });
-  
-      if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-          newErrors.email = "Correo electrónico no válido";
-      }
-  
-      if (formData.password && formData.password.length < 6) {
-          newErrors.password = "La contraseña debe tener al menos 6 caracteres";
-      }
+            if (!formData[field]) {
+                newErrors[field] = "Este campo es obligatorio";
+            }
+        });
 
-      if (formData.role === ROLES.TECH && (!formData.workArea || formData.workArea.length === 0)) {
-            newErrors.workArea = "El usuario debe de tener por lo menos un área de trabajo";
+        if (
+            formData.email &&
+            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
+        ) {
+            newErrors.email = "Correo electrónico no válido";
+        }
+
+        if (formData.password && formData.password.length < 6) {
+            newErrors.password =
+                "La contraseña debe tener al menos 6 caracteres";
+        }
+
+        if (
+            formData.role === ROLES.TECH &&
+            (!formData.workArea || formData.workArea.length === 0)
+        ) {
+            newErrors.workArea =
+                "El usuario debe de tener por lo menos un área de trabajo";
         }
 
         setErrors(newErrors);
@@ -80,7 +99,10 @@ export default function AddUserPanel({
             const initialValue = initialData[field] ?? "";
 
             if (Array.isArray(currentValue) && Array.isArray(initialValue)) {
-                if (currentValue.sort().join(",") !== initialValue.sort().join(",")) {
+                if (
+                    currentValue.sort().join(",") !==
+                    initialValue.sort().join(",")
+                ) {
                     return false;
                 }
             } else if (currentValue !== initialValue) {
@@ -132,13 +154,17 @@ export default function AddUserPanel({
 
             if (!response.ok) {
                 const errorData = await response.json();
-                if (errorData.error === "Failed to create user: registrationNumber already exists") {
+                if (
+                    errorData.error ===
+                    "Failed to create user: registrationNumber already exists"
+                ) {
                     showToast("La clave de usuario ya existe", "error");
-                }
-                else if (errorData.error === "Failed to create user: Email already in use") {
+                } else if (
+                    errorData.error ===
+                    "Failed to create user: Email already in use"
+                ) {
                     showToast("El correo electrónico ya existe", "error");
-                }
-                else {
+                } else {
                     showToast("Error al agregar usuario", "error");
                 }
                 throw new Error("Error al agregar usuario");
@@ -165,7 +191,9 @@ export default function AddUserPanel({
             name: String(formData.name),
             registrationNumber: String(cleanedRegistrationNumber),
             email: String(formData.email),
-            ...(formData.password ? { password: String(formData.password) } : {}),
+            ...(formData.password
+                ? { password: String(formData.password) }
+                : {}),
             role: String(formData.role),
         };
 
@@ -193,7 +221,7 @@ export default function AddUserPanel({
                 showToast("Usuario editado correctamente", "success");
                 onClose();
                 setTimeout(() => {
-                    setReload(prev => !prev);
+                    setReload((prev) => !prev);
                 }, 0);
             }
             setReload((prev) => !prev);
@@ -206,7 +234,9 @@ export default function AddUserPanel({
     const handleDelete = async () => {
         try {
             const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/user/${formData.registrationNumber}`,
+                `http://${import.meta.env.VITE_SERVER_IP}:${
+                    import.meta.env.VITE_SERVER_PORT
+                }/v1/user/${formData.registrationNumber}`,
                 {
                     method: "DELETE",
                 }
@@ -218,7 +248,7 @@ export default function AddUserPanel({
                 showToast("Usuario eliminado exitosamente", "success");
                 onClose();
                 setTimeout(() => {
-                    setReload(prev => !prev);
+                    setReload((prev) => !prev);
                 }, 0);
             }
         } catch (error) {
@@ -250,7 +280,7 @@ export default function AddUserPanel({
                                 className="flex flex-col font-montserrat font-semibold"
                             >
                                 <span>
-                                    Nombre{" "}
+                                    Nombre completo{" "}
                                     <span className="text-red-500">*</span>
                                 </span>
                                 <Input
@@ -262,6 +292,7 @@ export default function AddUserPanel({
                                     showError={errors.name}
                                     errorMessage={"Este campo es obligatorio"}
                                     className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                                    onKeyDown={blockNum}
                                 />
                             </label>
                             <label className="font-montserrat font-semibold">
@@ -280,7 +311,10 @@ export default function AddUserPanel({
                                     options={[
                                         { value: ROLES.USER, label: "Usuario" },
                                         { value: ROLES.TECH, label: "Técnico" },
-                                        { value: ROLES.ADMIN, label: "Administrador" },
+                                        {
+                                            value: ROLES.ADMIN,
+                                            label: "Administrador",
+                                        },
                                     ]}
                                 />
                             </label>
@@ -301,7 +335,11 @@ export default function AddUserPanel({
                                         onChange={handleChange}
                                         placeholder={"Ingrese la contraseña"}
                                         required
-                                        className={`w-full placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8 ${errors.password ? "border-red-500" : "border-gray-500"}`}
+                                        className={`w-full placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8 ${
+                                            errors.password
+                                                ? "border-red-500"
+                                                : "border-gray-500"
+                                        }`}
                                     />
                                     <button
                                         type="button"
@@ -324,7 +362,9 @@ export default function AddUserPanel({
                                     </button>
                                 </div>
                                 {errors.password && (
-                                    <span className="text-red-500 text-xs mt-0.5">{errors.password}</span>
+                                    <span className="text-red-500 text-xs mt-0.5">
+                                        {errors.password}
+                                    </span>
                                 )}
                             </label>
 
@@ -343,16 +383,26 @@ export default function AddUserPanel({
                                     <>
                                         <span>
                                             Clave de usuario{" "}
-                                            <span className="text-red-500">*</span>
+                                            <span className="text-red-500">
+                                                *
+                                            </span>
                                         </span>
                                         <Input
                                             name={"registrationNumber"}
-                                            value={formData["registrationNumber"]}
+                                            value={
+                                                formData["registrationNumber"]
+                                            }
                                             onChange={handleChange}
-                                            placeholder={"Ingrese la clave de usuario"}
+                                            placeholder={
+                                                "Ingrese la clave de usuario"
+                                            }
                                             required
-                                            showError={errors.registrationNumber}
-                                            errorMessage={"Este campo es obligatorio"}
+                                            showError={
+                                                errors.registrationNumber
+                                            }
+                                            errorMessage={
+                                                "Este campo es obligatorio"
+                                            }
                                             className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
                                         />
                                     </>
@@ -378,6 +428,7 @@ export default function AddUserPanel({
                                     showError={errors.email}
                                     errorMessage={errors.email}
                                     className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal h-8"
+                                    onKeyDown={blockEnie}
                                 />
                             </label>
                             {formData.role === ROLES.TECH && (
