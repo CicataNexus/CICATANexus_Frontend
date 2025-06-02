@@ -178,6 +178,8 @@ const RequestMaterial = () => {
                   name: item.name,
                   brand: item.brand,
                   location: item.location,
+                  sdsLink: item.sdsLink,
+                  obsForUsers: item.obsForUsers,
                   photoId: item.photoId,
                 }))}
                 selectedItems={selectedItems}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
+import { showToast } from "@/utils/toastUtils";
 
 const DateRangePicker = ({
   startDate,
@@ -221,7 +222,7 @@ const DateRangePicker = ({
         }
 
         if (isBlockedInRange(newDateRange.start, newDateRange.end)) {
-          alert("Rango de fecha invalido");
+          showToast("Rango de fecha invalido", "error");
           return;
         }
         setSelecting("start");

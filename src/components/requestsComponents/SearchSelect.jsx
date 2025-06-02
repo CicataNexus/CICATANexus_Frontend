@@ -113,11 +113,34 @@ const SearchSelect = ({
                       <br />
                       <span className="font-normal">{option.brand}</span>
                     </p>
-                    <p className="text-sm font-montserrat mt-2">
-                      <span className="font-medium">Ubicación:</span>
-                      <br />
-                      <span className="font-normal">{option.location}</span>
-                    </p>
+                    {(option.location || option.sdsLink || option.obsForUsers) && (
+                      <div className="text-sm font-montserrat mt-2">
+                        <span className="font-medium">
+                          {option.location
+                            ? "Ubicación:"
+                            : option.sdsLink
+                            ? "Hoja de seguridad:"
+                            : "Observaciones:"}
+                        </span>
+                        <br />
+                        {option.location ? (
+                          <span className="font-normal">{option.location}</span>
+                        ) : option.sdsLink ? (
+                          <a
+                            href={option.sdsLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 underline font-normal break-all"
+                          >
+                            {option.sdsLink}
+                          </a>
+                        ) : (
+                          <span className="font-normal break-words whitespace-pre-line">
+                            {option.obsForUsers}
+                          </span>
+                        )}
+                      </div>
+                    )}
                     <div className="mt-auto pt-3 flex justify-center">
                       <Button
                         variant="secondary"
