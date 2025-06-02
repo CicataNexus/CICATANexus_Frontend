@@ -62,9 +62,9 @@ body {
     --color-approved-status: #C2E5B5; /* Applies for approval and notified status too */
     --color-approved-status-text: #2C7033; /* Applies for approval and notified status too*/
     --color-pending-approval-technician: #D4E9FF;
-    --color-pending-approval-technician-text: #005B96;
-    --color-approved-by-technician: #D8F2CC;
-    --color-approved-by-technician-text: #377E39;
+    --color-pending-approval-technician-text: #004877;
+    --color-approved-by-technician: #F8F3D4;
+    --color-approved-by-technician-text: #8C7B2F;
     --color-rejected-by-tech: #FAD4D4;
     --color-rejected-by-tech-text: #C84B4B;
     --color-cancelled-user: #F0F0F0;
