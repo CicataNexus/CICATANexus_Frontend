@@ -32,10 +32,8 @@ const RequestMaterial = () => {
     reservedMinutes: 0,
   });
   const [message, setMessage] = useState(false);
-  const [reagents, setReagents] = useState([]);
   const [selectedAreas, setSelectedAreas] = useState([]);
   const [observations, setObservations] = useState("");
-  const [materials, setMaterials] = useState([]);
   const [errors, setErrors] = useState({});
   const [combinedItems, setCombinedItems] = useState([]);
 
@@ -91,11 +89,10 @@ const RequestMaterial = () => {
     if (hasErrors) return;
     const token = localStorage.getItem("token");
 
-  
-      console.log("Raw token:", token);
+    console.log("Raw token:", token);
 
-      const decoded = jwtDecode(token);
-      console.log("Decoded token:", decoded);
+    const decoded = jwtDecode(token);
+    console.log("Decoded token:", decoded);
 
     const formattedRequest = {
       typeOfRequest: "R&M",
@@ -128,8 +125,14 @@ const RequestMaterial = () => {
 
       if (!response.ok) {
         const error = await response.json();
-        if (error.message === "Error creating request: Error: Error fetching user: Technician not found or not assigned to this work area") {
-          showToast("No hay técnico asignado para alguna de las áreas", "error");
+        if (
+          error.message ===
+          "Error creating request: Error: Error fetching user: Technician not found or not assigned to this work area"
+        ) {
+          showToast(
+            "No hay técnico asignado para alguna de las áreas",
+            "error"
+          );
           return;
         }
         throw new Error("Error al enviar la solicitud.");
@@ -221,6 +224,7 @@ const RequestMaterial = () => {
                     setTimeRange={setTimeRange}
                     type="start"
                     className="select-none"
+                    onlyWorkHours={true}
                   />
                   {errors.timeRange && (
                     <p className="mt-1 text-red-500 text-xs font-montserrat font-semibold">
@@ -293,13 +297,13 @@ const RequestMaterial = () => {
           </div>
         </div>
         <div className="flex justify-center mt-4">
-                <Button
-                  className="bg-deep-blue hover:bg-dark-blue text-white text-xl font-poppins font-semibold tracking-wide py-5 w-auto px-15"
-                  onClick={handleSubmit}
-                >
-                  Enviar
-                </Button>
-              </div>
+          <Button
+            className="bg-deep-blue hover:bg-dark-blue text-white text-xl font-poppins font-semibold tracking-wide py-5 w-auto px-15"
+            onClick={handleSubmit}
+          >
+            Enviar
+          </Button>
+        </div>
       </div>
       {message && (
         <ModalRequestConfirmation

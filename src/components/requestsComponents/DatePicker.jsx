@@ -6,6 +6,7 @@ const DateRangePicker = ({
   endDate,
   onChange,
   mode,
+  onlyWorkDays = true,
   occupiedDates = [],
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -39,8 +40,18 @@ const DateRangePicker = ({
     })
   );
 
+  // Check if a date is a weekend (Saturday = 6, Sunday = 0)
+  const isWeekend = (date) => {
+    if (onlyWorkDays === true) {
+      const dayOfWeek = date.getDay();
+      return dayOfWeek === 0 || dayOfWeek === 6; // Sunday or Saturday
+    }
+    return false;
+  };
+
   const isBlocked = (date) => {
-    return blockedRanges.some(({ start, end }) => {
+    // Check if date is in occupied ranges
+    const isOccupied = blockedRanges.some(({ start, end }) => {
       const day = new Date(date);
       day.setHours(0, 0, 0, 0);
       start = new Date(start);
@@ -49,6 +60,11 @@ const DateRangePicker = ({
       end.setHours(0, 0, 0, 0);
       return day >= start && day <= end;
     });
+
+    // Check if date is a weekend (when onlyWorkDays is true)
+    const isWeekendDay = isWeekend(date);
+
+    return isOccupied || isWeekendDay;
   };
 
   const isPast = (date) => {
@@ -98,22 +114,62 @@ const DateRangePicker = ({
     const lastDayOfMonth = new Date(year, month + 1, 0);
     const days = [];
 
-    const firstDay = firstDayOfMonth.getDay();
-    const prevMonthDaysCount = new Date(year, month, 0).getDate();
-    const prevMonthStartDay = prevMonthDaysCount - firstDay + 1;
+    if (onlyWorkDays === true) {
+      // For work days only, we need to calculate differently
+      const firstDay = firstDayOfMonth.getDay();
+      const adjustedFirstDay = firstDay === 0 ? 6 : firstDay - 1; // Convert Sunday=0 to Sunday=6, Monday=1 to Monday=0
 
-    for (let i = prevMonthStartDay; i <= prevMonthDaysCount; i++) {
-      days.push(new Date(year, month - 1, i));
-    }
+      const prevMonthDaysCount = new Date(year, month, 0).getDate();
+      const prevMonthStartDay = prevMonthDaysCount - adjustedFirstDay + 1;
 
-    for (let day = 1; day <= lastDayOfMonth.getDate(); day++) {
-      days.push(new Date(year, month, day));
-    }
+      // Add previous month days (only weekdays)
+      for (let i = prevMonthStartDay; i <= prevMonthDaysCount; i++) {
+        const date = new Date(year, month - 1, i);
+        const dayOfWeek = date.getDay();
+        if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+          days.push(date);
+        }
+      }
 
-    const totalCells = 42;
-    const remainingCells = totalCells - days.length;
-    for (let i = 1; i <= remainingCells; i++) {
-      days.push(new Date(year, month + 1, i));
+      // Add current month days (only weekdays)
+      for (let day = 1; day <= lastDayOfMonth.getDate(); day++) {
+        const date = new Date(year, month, day);
+        const dayOfWeek = date.getDay();
+        if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+          days.push(date);
+        }
+      }
+
+      // Add next month days to fill the grid (only weekdays)
+      const totalCells = 35; // 5 columns × 7 rows
+      let nextMonthDay = 1;
+      while (days.length < totalCells) {
+        const date = new Date(year, month + 1, nextMonthDay);
+        const dayOfWeek = date.getDay();
+        if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+          days.push(date);
+        }
+        nextMonthDay++;
+      }
+    } else {
+      // Original logic for full calendar
+      const firstDay = firstDayOfMonth.getDay();
+      const prevMonthDaysCount = new Date(year, month, 0).getDate();
+      const prevMonthStartDay = prevMonthDaysCount - firstDay + 1;
+
+      for (let i = prevMonthStartDay; i <= prevMonthDaysCount; i++) {
+        days.push(new Date(year, month - 1, i));
+      }
+
+      for (let day = 1; day <= lastDayOfMonth.getDate(); day++) {
+        days.push(new Date(year, month, day));
+      }
+
+      const totalCells = 42;
+      const remainingCells = totalCells - days.length;
+      for (let i = 1; i <= remainingCells; i++) {
+        days.push(new Date(year, month + 1, i));
+      }
     }
 
     return days;
@@ -232,9 +288,9 @@ const DateRangePicker = ({
       {" "}
       <div className="w-full p-5 bg-white border-2 border-primary-blue rounded-lg z-10 font-montserrat">
         {" "}
-        <div className="flex justify-between items-center pb-4">
+        <div className="flex justify-between items-center pb-4 px-2">
           {" "}
-          <span className="p-2 text-base font-semibold">
+          <span className="p-2 text-center font-semibold">
             {capitalize(
               new Date(year, month).toLocaleString("es-MX", {
                 month: "long",
@@ -242,7 +298,7 @@ const DateRangePicker = ({
             )}{" "}
             {year}
           </span>
-          <div>
+          <div className="p-2 flex items-center justify-center">
             {" "}
             <button
               type="button"
@@ -253,43 +309,61 @@ const DateRangePicker = ({
             </button>
             <button
               onClick={handleNextMonth}
-              className="text-gray-600 hover:text-primary-blue transition p-2 cursor-pointer"
+              className="text-gray-600 hover:text-primary-blue transition cursor-pointer"
             >
               <Icon icon="iconamoon:arrow-right-2-light" className="text-2xl" />
             </button>
           </div>
         </div>
-        <div className="grid grid-cols-7 gap-0.5 text-sm text-gray-700">
+        <div
+          className={`grid gap-0.5 text-sm text-gray-700 ${
+            onlyWorkDays === true ? "grid-cols-5" : "grid-cols-7"
+          }`}
+        >
           {" "}
           {/* Day of week headers */}
-          {["D", "L", "M", "M", "J", "V", "S"].map((day, index) => (
-            <div
-              key={index}
-              className="w-10 h-10 flex justify-center items-start"
-            >
-              {day}
-            </div>
-          ))}
-          {days.map((day, index) => {
-            const isStart =
-              dateRange.start &&
-              day.toDateString() === dateRange.start.toDateString();
-            const isEnd =
-              dateRange.end &&
-              day.toDateString() === dateRange.end.toDateString();
-            const isRangeDay = isInRange(day);
-            const isHoverDay = isInHoverRange(day);
-            const isDisabled = isBlocked(day);
-            const isBlockedStartDay = isBlockedStart(day);
-            const isBlockedEndDay = isBlockedEnd(day);
-            const isPastDay = isPast(day);
-
-            return (
+          {(onlyWorkDays === true
+            ? ["L", "M", "M", "J", "V"]
+            : ["D", "L", "M", "M", "J", "V", "S"]
+          ).map((day, index) => (
+            <div className="w-full flex items-center justify-center">
               <div
                 key={index}
-                onClick={() => handleDateSelect(day)}
-                onMouseEnter={() => handleDateHover(day)}
-                className={`w-10 h-10 flex items-center justify-center 
+                className="w-10 h-10 flex justify-center items-start"
+              >
+                {day}
+              </div>
+            </div>
+          ))}
+          {days
+            .filter((day) => {
+              if (onlyWorkDays === true) {
+                const dayOfWeek = day.getDay();
+                return dayOfWeek !== 0 && dayOfWeek !== 6; // Exclude Sunday (0) and Saturday (6)
+              }
+              return true;
+            })
+            .map((day, filteredIndex) => {
+              const isStart =
+                dateRange.start &&
+                day.toDateString() === dateRange.start.toDateString();
+              const isEnd =
+                dateRange.end &&
+                day.toDateString() === dateRange.end.toDateString();
+              const isRangeDay = isInRange(day);
+              const isHoverDay = isInHoverRange(day);
+              const isDisabled = isBlocked(day);
+              const isBlockedStartDay = isBlockedStart(day);
+              const isBlockedEndDay = isBlockedEnd(day);
+              const isPastDay = isPast(day);
+
+              return (
+                <div className="w-full flex items-center justify-center">
+                  <div
+                    key={`${day.getTime()}-${filteredIndex}`}
+                    onClick={() => handleDateSelect(day)}
+                    onMouseEnter={() => handleDateHover(day)}
+                    className={`w-10 h-10 flex items-center justify-center 
                   ${isDisabled ? "cursor-not-allowed" : ""}
                   ${isHoverDay ? "bg-indigo-50 text-black rounded-full" : ""}
                   ${
@@ -329,12 +403,14 @@ const DateRangePicker = ({
                       ? "text-gray-400 cursor-not-allowed line-through"
                       : ""
                   }
+
                 `}
-              >
-                {day.getDate()}
-              </div>
-            );
-          })}
+                  >
+                    {day.getDate()}
+                  </div>
+                </div>
+              );
+            })}
         </div>
       </div>
       {dateRange.start !== null && dateRange.end !== null && (

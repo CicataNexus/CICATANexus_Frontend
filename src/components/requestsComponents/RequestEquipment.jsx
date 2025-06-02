@@ -6,6 +6,7 @@ import SearchSelect from "./SearchSelect";
 import TimePicker from "./TimePicker";
 import { Button } from "@/components/ui/button";
 import ModalRequestConfirmation from "@/components/ModalRequestConfirmation";
+import { TiWarningOutline } from "react-icons/ti";
 
 const areas = [
   "Laboratorio de Biología Molecular",
@@ -44,9 +45,33 @@ const RequestEquipment = () => {
   const [selectedAreas, setSelectedAreas] = useState([]);
   const [observations, setObservations] = useState("");
   const [equipments, setEquipments] = useState([]);
-
   const [errors, setErrors] = useState({});
+  const [workDay, setWorkDay] = useState(true);
+  const [workTime, setWorkTime] = useState(true);
 
+  useEffect(() => {
+    const isValidWorkDay = (dateStr) => {
+      if (!dateStr) return true;
+      const date = new Date(dateStr);
+      const day = date.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+      return day >= 1 && day <= 5;
+    };
+    setWorkDay(
+      isValidWorkDay(dateRange.startDate) && isValidWorkDay(dateRange.endDate)
+    );
+  }, [dateRange]);
+
+  useEffect(() => {
+    const isValidWorkTime = (timeStr) => {
+      if (!timeStr) return true;
+      const [hour, minute] = timeStr.split(":").map(Number);
+      const totalMinutes = hour * 60 + minute;
+      return totalMinutes >= 480 && totalMinutes <= 960; // 8:00 AM (480) to 4:00 PM (960)
+    };
+    setWorkTime(
+      isValidWorkTime(timeRange.startTime) && isValidWorkTime(timeRange.endTime)
+    );
+  }, [timeRange]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -225,10 +250,14 @@ const RequestEquipment = () => {
     const newErrors = {
       dateRange: !dateRange.startDate || !dateRange.endDate,
       timeRange: !timeRange.startTime || !timeRange.endTime,
-      timeRangeStartEnd: timeRange.startTime >= timeRange.endTime,
+      timeRangeStartEnd:
+        timeRange.startTime &&
+        timeRange.endTime &&
+        timeRange.startTime >= timeRange.endTime,
       selectedItems: selectedItems.length === 0,
       selectedAreas: selectedAreas.length === 0,
     };
+
     setErrors(newErrors);
 
     const hasErrors = Object.values(newErrors).some((error) => error);
@@ -272,8 +301,14 @@ const RequestEquipment = () => {
 
       if (!response.ok) {
         const error = await response.json();
-        if (error.message === "Error creating request: Error: Error fetching user: Technician not found or not assigned to this work area") {
-          showToast("No hay técnico asignado para alguna de las áreas", "error");
+        if (
+          error.message ===
+          "Error creating request: Error: Error fetching user: Technician not found or not assigned to this work area"
+        ) {
+          showToast(
+            "No hay técnico asignado para alguna de las áreas",
+            "error"
+          );
           return;
         }
         throw new Error("Error al enviar la solicitud");
@@ -343,10 +378,19 @@ const RequestEquipment = () => {
                 onChange={setDateRange}
                 mode={datePickerMode}
                 occupiedDates={occupiedDates}
+                onlyWorkDays={false}
               />
               {errors.dateRange && (
                 <p className="mt-1 text-red-500 text-xs font-montserrat font-semibold">
                   Este campo es obligatorio
+                </p>
+              )}
+              {!workDay && (
+                <p className="flex justify-center items-center text-warning-toast-icon bg-warning-toast-icon-background text-xs font-montserrat font-semibold mt-1 p-2 w-fit rounded-full">
+                  <TiWarningOutline size={20} className="mr-1" />
+                  <p className="pr-2">
+                    Está solicitando el equipo en dia extra temporal
+                  </p>
                 </p>
               )}
             </div>
@@ -392,6 +436,14 @@ const RequestEquipment = () => {
               {errors.timeRangeStartEnd && (
                 <p className="text-red-500 text-xs font-montserrat font-semibold mt-1">
                   El tiempo final debe de ser mayor al de inicio
+                </p>
+              )}
+              {!workTime && (
+                <p className="flex justify-center items-center text-warning-toast-icon bg-warning-toast-icon-background text-xs font-montserrat font-semibold mt-1 p-2 w-fit rounded-full">
+                  <TiWarningOutline size={20} className="mr-1" />
+                  <p className="pr-2">
+                    Está solicitando el equipo en un horario extra temporal
+                  </p>
                 </p>
               )}
             </div>
@@ -457,9 +509,9 @@ const RequestEquipment = () => {
             </div>
           </div>
         </div>
-        <div className="flex justify-center mt-4">
+        <div className="flex flex-col items-center mt-4">
           <Button
-            className="bg-deep-blue hover:bg-dark-blue text-white text-xl font-poppins font-semibold tracking-wide py-5 w-auto px-15"
+            className="bg-deep-blue hover:bg-dark-blue text-white text-xl font-poppins font-semibold tracking-wide py-5 px-15"
             onClick={handleSubmit}
           >
             Enviar
