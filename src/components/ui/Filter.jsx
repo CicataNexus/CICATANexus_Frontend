@@ -28,6 +28,9 @@ const filterOptions = {
             dependsOn: { field: 'role', value: ROLES.TECH },
         },
     ],
+    movements: [
+        { label: 'Estado del equipo', value: 'status' },
+    ],
 };
 
 const filterValues = {
@@ -284,7 +287,7 @@ export default function Filter({ type, onClose, onChange, data = [] }) {
                                     <>
                                         <hr className = 'relative left-0 w-full border-t border-input-focus' />
                                         <div key={option.value} className = 'p-7'>
-                                            <label className = 'block text-montserrat font-bold mb-2'>
+                                            <label className = 'block font-poppins font-bold mb-2'>
                                                 {option.label}
                                             </label>
                                             <div className = 'grid grid-cols-2 gap-x-3 gap-y-1'>
@@ -348,7 +351,7 @@ export default function Filter({ type, onClose, onChange, data = [] }) {
                                                                     />
                                                                 </svg>
                                                             </div>
-                                                            <span className = 'font-poppins text-sm'>
+                                                            <span className = 'font-montserrat text-sm leading-tight'>
                                                                 {val.label}{' '}
                                                                 <span className = 'text-gray-500'>
                                                                     ({count})
