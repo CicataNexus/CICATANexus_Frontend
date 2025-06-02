@@ -94,6 +94,7 @@ const filterValues = {
     status: [
         { label: 'Disponible', value: 'available' },
         { label: 'En uso', value: 'inUse' },
+        { label: 'Deshabilitado', value: 'disabled' },
     ],
 
     // Reagent
