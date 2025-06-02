@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@iconify/react";
+import { showToast } from "@/utils/toastUtils";
 import Filter from "@/components/ui/Filter";
 
 export default function TableToolbar({
@@ -29,6 +30,31 @@ export default function TableToolbar({
     const handleFiltersChange = (filters) => {
         setActiveFilters(filters);
         onFiltersChange?.(filters);
+    };
+
+    const handleDownload = async () => {
+        try {
+            const response = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/export/inventory`);
+
+            if (!response.ok) {
+                showToast("Requiere productos en las tres categorías", "error");
+                return;
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "Inventario_Cicata.xlsx";
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            alert("Error al descargar el inventario.");
+            console.error(error);
+        }
     };
 
     return (
@@ -60,13 +86,24 @@ export default function TableToolbar({
 
             {/* Add button */}
             {type !== "requests" && type !== "movements" && (
-                <Button
-                    onClick={onAddClick}
-                    className="bg-deep-blue hover:bg-dark-blue text-white text-sm font-poppins font-semibold py-2 px-4 rounded-md transition inline-flex items-center"
-                >
-                    <Icon icon="ic:round-plus" className="mr-2 text-xl" />
-                    {buttonText}
-                </Button>
+                <div className="flex flex-col xl:flex-row items-start gap-2.5">
+                    {type !== "users" && (
+                        <Button
+                            onClick={handleDownload}
+                            className="bg-deep-blue hover:bg-dark-blue text-white text-sm font-poppins font-semibold py-2 px-4 rounded-md transition inline-flex items-center"
+                        >
+                            <Icon icon="material-symbols:download" className="mr-2 text-xl" />
+                            Descargar inventario
+                        </Button>
+                    )}
+                    <Button
+                        onClick={onAddClick}
+                        className="bg-deep-blue hover:bg-dark-blue text-white text-sm font-poppins font-semibold py-2 px-4 rounded-md transition inline-flex items-center"
+                    >
+                        <Icon icon="ic:round-plus" className="mr-2 text-xl" />
+                        {buttonText}
+                    </Button>
+                </div>
             )}
         </div>
     );

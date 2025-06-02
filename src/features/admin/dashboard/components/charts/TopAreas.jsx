@@ -32,8 +32,8 @@ const chartConfig = {
 };
 
 export default function TopAreas() {
-    const [viewMode, setViewMode] = useState("monthly");
-    const [currentLabel, setCurrentLabel] = useState("Marzo");
+    const [viewMode, setViewMode] = useState(0);
+    const [currentLabel, setCurrentLabel] = useState("Junio");
     const [hoveredIndex, setHoveredIndex] = useState(null);
 
     return (

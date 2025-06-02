@@ -80,6 +80,20 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
         }
     }, [assignedTechnicianName, availableTechnicians]);
 
+    const [observerChecks, setObserverChecks] = useState([]);
+    useEffect(() => {
+        if (request?.observatorTechnician?.length) {
+            setObserverChecks(request.observatorTechnician);
+        }
+    }, [request]);
+
+    const handleCheckChange = (id, checked) => {
+        const updated = observerChecks.map((tech) =>
+            tech._id === id ? { ...tech, check: checked } : tech
+        );
+        setObserverChecks(updated);
+    };
+
     const { role } = jwtDecode(localStorage.getItem("token"));
 
     const visibleStatesByRole = {
@@ -211,6 +225,8 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
         (tech) => tech.name === assignedTechnicianName
     );
 
+    const allChecked = observerChecks.length > 0 && observerChecks.every((t) => t.check);
+
     return (
         <>
             {showModal && (
@@ -299,18 +315,35 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                                             <SelectInput
                                                 className="w-auto text-xs font-montserrat"
                                                 value={selectedTechnicianId}
-                                                onChange={(e) => {
-                                                    const selectedTechnicianId =
-                                                        e.target.value;
-                                                    setSelectedTechnicianId(
-                                                        selectedTechnicianId
+                                                onChange={async (e) => {
+                                                    const selectedTechnicianId = e.target.value;
+                                                    setSelectedTechnicianId(selectedTechnicianId);
+
+                                                    const selectedTechnician = availableTechnicians.find(
+                                                        (tech) => tech._id === selectedTechnicianId
                                                     );
-                                                    // Aquí guardar el nuevo ID seleccionado (state, post, etc.)
-                                                    console.log(
-                                                        "Técnico seleccionado:",
-                                                        selectedTechnicianId
-                                                    );
-                                                    // Tal vez llamar a una función: handleTechnicianChange(selectedTechnicianId)
+
+                                                    if (!selectedTechnician) return;
+
+                                                    try {
+                                                        const response = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/request/${request.id}`, {
+                                                            method: "PUT",
+                                                            headers: {
+                                                                "Content-Type": "application/json",
+                                                            },
+                                                            body: JSON.stringify({
+                                                                registrationNumber: selectedTechnician.registrationNumber,
+                                                            }),
+                                                        });
+
+                                                        if (!response.ok) throw new Error("Error al cambiar técnico");
+
+                                                        showToast("Técnico reasignado exitosamente", "success");
+                                                        setReload((prev) => !prev);
+                                                    } catch (err) {
+                                                        console.error(err);
+                                                        showToast("No se pudo asignar el técnico", "error");
+                                                    }
                                                 }}
                                                 options={availableTechnicians.map(
                                                     (tech) => ({
@@ -391,49 +424,123 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                             <h2 className="text-base font-semibold font-poppins text-gray-800 border-b border-b-primary-blue pb-2">
                                 Revisión de la solicitud
                             </h2>
-
-                            <div className="flex flex-col">
-                                <div className="flex items-center gap-1 mb-1">
-                                    <label
-                                        htmlFor="observation"
-                                        className="font-medium text-sm text-gray-700"
-                                    >
-                                        Observaciones
-                                    </label>
-
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <button
-                                                type="button"
-                                                className="text-gray-500 hover:text-primary-blue transition"
-                                                aria-label="Información sobre observaciones"
-                                            >
-                                                <Icon
-                                                    icon="mdi:information-outline"
-                                                    className="text-base"
-                                                />
-                                            </button>
-                                        </TooltipTrigger>
-                                        <TooltipContent
-                                            side="right"
-                                            sideOffset={8}
-                                            className="bg-white border border-primary-blue text-black rounded-md shadow-lg text-xs font-poppins font-medium w-auto"
+                            <div className={`grid gap-4 ${role === ROLES.TECH ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
+                                <div className="flex flex-col w-full">
+                                    <div className="flex items-center gap-1 mb-1">
+                                        <label
+                                            htmlFor="observation"
+                                            className="font-medium text-sm text-gray-700"
                                         >
-                                            Este campo es opcional.
-                                        </TooltipContent>
-                                    </Tooltip>
-                                </div>
+                                            Observaciones
+                                        </label>
 
-                                <textarea
-                                    id="observation"
-                                    className="border border-gray-400 rounded-md p-3 text-sm h-25 focus:outline-none focus:ring-1 focus:ring-primary-blue font-montserrat focus:border-white"
-                                    placeholder="Ej. El equipo no requiere calibración extra. Se entrega a las 10:00 AM."
-                                />
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <button
+                                                    type="button"
+                                                    className="text-gray-500 hover:text-primary-blue transition"
+                                                    aria-label="Información sobre observaciones"
+                                                >
+                                                    <Icon
+                                                        icon="mdi:information-outline"
+                                                        className="text-base"
+                                                    />
+                                                </button>
+                                            </TooltipTrigger>
+                                            <TooltipContent
+                                                side="right"
+                                                sideOffset={8}
+                                                className="bg-white border border-primary-blue text-black rounded-md shadow-lg text-xs font-poppins font-medium w-auto"
+                                            >
+                                                Este campo es opcional.
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </div>
+
+                                    <textarea
+                                        id="observation"
+                                        className="border border-gray-400 rounded-md p-3 text-sm h-25 focus:outline-none focus:ring-1 focus:ring-primary-blue font-montserrat focus:border-white"
+                                        placeholder="Ej. El equipo no requiere calibración extra. Se entrega a las 10:00 AM."
+                                    />
+                                </div>
+                                {role === ROLES.TECH && (
+                                    <div className="flex flex-col w-full">
+                                        <div className="flex items-center gap-1 mb-1">
+                                            <label
+                                                className="font-medium text-sm text-gray-700"
+                                            >
+                                                Técnicos subasignados
+                                            </label>
+
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <button
+                                                        type="button"
+                                                        className="text-gray-500 hover:text-primary-blue transition"
+                                                        aria-label="Información sobre técnicos subasignados"
+                                                    >
+                                                        <Icon
+                                                            icon="mdi:information-outline"
+                                                            className="text-base"
+                                                        />
+                                                    </button>
+                                                </TooltipTrigger>
+                                                <TooltipContent
+                                                    side="right"
+                                                    sideOffset={8}
+                                                    className="bg-white border border-primary-blue text-black rounded-md shadow-lg text-xs font-poppins font-medium w-auto"
+                                                >
+                                                    Validar con técnicos subasignados.
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        </div>
+
+                                        <div className="flex flex-col gap-x-3 gap-y-1">
+                                            {observerChecks?.map((tech) => (
+                                                <label
+                                                    key={tech._id}
+                                                    className="flex items-center gap-2 text-sm"
+                                                >
+                                                    <div className="relative">
+                                                        <input
+                                                            type="checkbox"
+                                                            className="sr-only peer"
+                                                            checked={tech.check}
+                                                            onChange={(e) =>
+                                                                handleCheckChange(tech._id, e.target.checked)
+                                                            }
+                                                        />
+                                                        <div className="w-4 h-4 border-2 border-primary-blue rounded-xs peer-checked:bg-primary-blue" />
+                                                        <svg
+                                                            className="absolute top-1/2 left-1/2 w-3.5 h-3.5 text-white transform -translate-x-1/2 -translate-y-1/2 pointer-events-none hidden peer-checked:block"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            strokeWidth="3"
+                                                            viewBox="0 0 24 24"
+                                                        >
+                                                            <path
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                d="M5 13l4 4L19 7"
+                                                            />
+                                                        </svg>
+                                                    </div>
+                                                    <span className="font-poppins text-sm">{tech.name}</span>
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="flex justify-end gap-4 pt-1">
                                 <Button
-                                    className="bg-reject-btn hover:bg-reject-btn-hover text-white text-base font-poppins font-semibold transition inline-flex items-center cursor-pointer px-6 py-2 w-32 "
+                                    disabled={role === ROLES.TECH && !allChecked}
+                                    className={`text-base font-poppins font-semibold inline-flex items-center px-6 py-2 w-32 ${
+                                        role === ROLES.TECH && !allChecked
+                                            ? "cursor-not-allowed bg-gray-200 text-gray-400"
+                                            : "bg-reject-btn hover:bg-reject-btn-hover text-white transition cursor-pointer"
+                                    }`}
                                     onClick={() => {
                                         setModalAction("reject");
                                         setShowModal(true);
@@ -441,8 +548,14 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                                 >
                                     Rechazar
                                 </Button>
+
                                 <Button
-                                    className="bg-approve-btn hover:bg-approve-btn-hover text-white text-base font-poppins font-semibold transition inline-flex items-center cursor-pointer px-6 py-2 w-32"
+                                    disabled={role === ROLES.TECH && !allChecked}
+                                    className={`text-base font-poppins font-semibold inline-flex items-center px-6 py-2 w-32 ${
+                                        role === ROLES.TECH && !allChecked
+                                            ? "cursor-not-allowed bg-gray-200 text-gray-400"
+                                            : "bg-approve-btn hover:bg-approve-btn-hover text-white transition cursor-pointer"
+                                    }`}
                                     onClick={() => {
                                         setModalAction("approve");
                                         setShowModal(true);

@@ -1,28 +1,25 @@
+import { useState, useEffect } from "react";
 import { Card, CardHeader, CardContent, CardTitle } from "../cards/Card";
 
-const lowAvailability = [
-    "Sacarosa",
-    "Acetato de sodio anhidro.",
-    "Ácido sulfúrico",
-    "Agua biología molecular",
-    "Azul de bromo de sodio",
-    "Citrato de sodio",
-    "Cloruro de calcio",
-    "Cloruro de sodio",
-];
-
-const expiringSoon = [
-    "Cloruro de potasio",
-    "Dimetil sulforico biología molecular",
-    "Fosfato de potasio monobásico",
-    "Glicerina",
-    "Glicina",
-    "Hidróxido de sodio len",
-    "Tris cloruro de sodio",
-    "Tris cloruro de calcio",
-];
-
 export default function ReagentsState() {
+    const [lowAvailability, setLowAvailability] = useState([]);
+    const [expiringSoon, setExpiringSoon] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/analytics/reagent-status-summary`);
+                const data = await response.json();
+                setLowAvailability(data.lowStock.map((r) => r.reagentName));
+                setExpiringSoon(data.expiringSoon.map((r) => r.reagentName));
+            } catch (err) {
+                console.error("Error al obtener datos de reactivos:", err);
+            }
+        };
+
+        fetchData();
+    }, []);
+
     return (
         <Card className="p-6 shadow flex flex-col justify-between">
             <CardHeader className="items-start pb-0">
@@ -36,24 +33,31 @@ export default function ReagentsState() {
                     <div className="text-xs font-semibold text-red-600 mb-2 flex items-center gap-0.5 leading-none">
                         Baja disponibilidad
                     </div>
-                    <ul className="space-y-1 text-xs font-medium mb-0">
-                        {lowAvailability.map((item, idx) => (
-                            <li
-                                key={idx}
-                                className="bg-red-50 px-2 py-0.5 rounded-md truncate"
-                                title={item}
-                            >
-                                {item}
-                            </li>
-                        ))}
-                    </ul>
+                    {lowAvailability.length > 0 ? (
+                        <ul className="space-y-1 text-xs font-medium mb-0">
+                            {lowAvailability.map((item, idx) => (
+                                <li
+                                    key={idx}
+                                    className="bg-red-50 px-2 py-0.5 rounded-md truncate"
+                                    title={item}
+                                >
+                                    {item}
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <div className="flex items-center justify-center text-gray-500 font-montserrat text-xs font-semibold text-center">
+                            No hay reactivos con baja disponibilidad
+                        </div>
+                    )}
                 </div>
 
                 <div className="flex-1 overflow-y-auto pr-1 font-montserrat h-full">
                     <div className="text-xs font-semibold text-expiring-soon mb-2 flex items-center gap-0.5 leading-none">
                         Pronto a caducar
                     </div>
-                    <ul className="space-y-1 text-xs font-medium mb-0">
+                    {expiringSoon.length > 0 ? (
+                        <ul className="space-y-1 text-xs font-medium mb-0">
                         {expiringSoon.map((item, idx) => (
                             <li
                                 key={idx}
@@ -64,6 +68,11 @@ export default function ReagentsState() {
                             </li>
                         ))}
                     </ul>
+                    ) : (
+                        <div className="flex items-center justify-center text-gray-500 font-montserrat text-xs font-semibold text-center">
+                            No hay reactivos a punto de caducar
+                        </div>
+                    )}
                 </div>
             </CardContent>
         </Card>

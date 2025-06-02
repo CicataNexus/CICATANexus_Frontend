@@ -1,12 +1,34 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import ViewModeSwitch from "@/components/ViewModeSwitch";
 
 export default function TotalRequests() {
-    const [viewMode, setViewMode] = useState("monthly");
-    const [currentLabel, setCurrentLabel] = useState("Marzo");
+    const [viewMode, setViewMode] = useState(0);
+    const [currentLabel, setCurrentLabel] = useState("Junio");
+    const [total, setTotal] = useState(0);
 
-    const total = 40;
+    useEffect(() => {
+        const fetchTotal = async () => {
+            const period = viewMode;
+            const year = 2025;
+            const month = period === 0 ? 6 : undefined;
+
+            let url = `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/analytics/total?period=${period}&year=${year}`;
+            if (month) {
+                url += `&month=${month}`;
+            }
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                setTotal(data.total ?? 0);
+            } catch (error) {
+                console.error("Error al obtener total:", error);
+            }
+        };
+
+        fetchTotal();
+    }, [viewMode]);
 
     return (
         <div className="rounded-xl bg-white p-6 shadow flex flex-col justify-between">

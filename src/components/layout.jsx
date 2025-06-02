@@ -12,8 +12,8 @@ export default function Layout() {
         <SidebarProvider>
             <AppSidebar />
             <SidebarInset>
-                <header className="flex top-0 w-full items-center justify-left py-5 z-50">
-                    <div className="flex items-center gap-2 px-4">
+                <header className="flex items-center justify-left px-4 sm:px-8 py-3 gap-4 w-full z-50 overflow-hidden">
+                    <div className="flex items-start gap-2">
                         <SidebarTrigger className="-ml-1" />
                         <Separator
                             orientation="vertical"
@@ -23,12 +23,12 @@ export default function Layout() {
                     <img
                         src="/SepColor.png"
                         alt="Logo SEP"
-                        className="h-12 w-auto mr-12"
+                        className="h-12 max-w-[35%] object-contain"
                     />
                     <img
                         src="/IpnColor.png"
                         alt="Logo IPN"
-                        className="h-14 w-auto"
+                        className="h-14 max-w-[35%] object-contain"
                     />
                 </header>
 

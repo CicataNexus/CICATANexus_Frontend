@@ -37,7 +37,6 @@ export default function AddMaterialPanel({
         "materialLot",
         "barcode",
         "location",
-        ...(!isEditing ? ["materialImage"] : []),
     ];
 
     const [formData, setFormData] = useState({
@@ -68,7 +67,6 @@ export default function AddMaterialPanel({
         location: "",
         observations: "",
         obsForUsers: "",
-        verified: "",
         ...initialData,
     });
 
@@ -136,7 +134,6 @@ export default function AddMaterialPanel({
             "location",
             "observations",
             "obsForUsers",
-            "verified"
         ];
 
         for (const field of fieldsToCompare) {
@@ -204,7 +201,6 @@ export default function AddMaterialPanel({
             location: String(formData.location),
             observations: String(formData.observations),
             obsForUsers: String(formData.obsForUsers),
-            verified: Boolean(formData.verified),
         };
 
         const materialFormData = new FormData();
@@ -271,7 +267,6 @@ export default function AddMaterialPanel({
             location: String(formData.location),
             observations: String(formData.observations),
             obsForUsers: String(formData.obsForUsers),
-            verified: Boolean(formData.verified),
         };
 
         const materialFormData = new FormData();
@@ -444,7 +439,7 @@ export default function AddMaterialPanel({
                         ))}
                         <label className="flex flex-col font-montserrat font-semibold">
                             <span>
-                                Imagen <span className="text-red-500">*</span>
+                                Imagen
                             </span>
                             {isEditing ? (
                                 <>
@@ -452,9 +447,6 @@ export default function AddMaterialPanel({
                                         name="materialImage"
                                         value={formData.materialImage}
                                         onChange={handleChange}
-                                        required
-                                        showError={errors.materialImage}
-                                        errorMessage={"Este campo es obligatorio"}
                                         className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
                                     />
                                     {formData.materialImage ? (
@@ -476,9 +468,6 @@ export default function AddMaterialPanel({
                                     name="materialImage"
                                     value={formData.materialImage}
                                     onChange={handleChange}
-                                    required
-                                    showError={errors.materialImage}
-                                    errorMessage={"Este campo es obligatorio"}
                                     className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
                                 />
                             )}
@@ -685,10 +674,10 @@ export default function AddMaterialPanel({
                         </label>
                     </fieldset>
 
-                    {/* Column 4 - Estado y verificación */}
+                    {/* Column 4 - Estado y observaciones */}
                     <fieldset className="space-y-2 p-4">
                         <h2 className="font-poppins font-bold text-base text-center mt-2 mb-2">
-                            Estado y verificación
+                            Estado y observaciones
                         </h2>
                         <label className="flex flex-col font-montserrat font-semibold">
                             <span>
@@ -724,16 +713,6 @@ export default function AddMaterialPanel({
                                 onChange={handleChange}
                                 placeholder="Ingrese las observaciones para los usuarios"
                                 className="w-full h-20 rounded-md border border-gray-500 p-2 mt-1 font-normal placeholder:text-xs placeholder:font-montserrat placeholder:font-normal placeholder:text-placeholder-text focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-transparent focus:bg-input-background"
-                            />
-                        </label>
-                        <label className="flex items-center font-montserrat font-semibold gap-2">
-                            Verificado
-                            <input
-                                type="checkbox"
-                                name="verified"
-                                checked={formData.verified}
-                                onChange={handleChange}
-                                className="h-4 w-4"
                             />
                         </label>
                     </fieldset>

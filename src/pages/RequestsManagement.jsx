@@ -74,6 +74,7 @@ const Requests = () => {
                         assignedTechnicianName: req.assignedTechnicianName,
                         occupiedMaterial: req.occupiedMaterial,
                         observations: req.observations,
+                        observatorTechnician: req.observatorTechnician
                     };
                 });
 
