@@ -134,21 +134,22 @@ const MyRequests = () => {
     return (
         <main className="flex flex-col min-h-screen">
             <Header />
-            <section className="p-10 w-full max-w-full overflow-x-hidden bg-background">
-                <h2 className="font-poppins text-2xl font-semibold mb-2">
-                    Solicitudes de servicio
-                </h2>
-                <h3 className="font-montserrat text-base font-normal mb-4">
-                    Puede cancelar su solicitud de servicio si ya no la
-                    requiere.
-                </h3>
-                {Array.isArray(requests) && requests.length === 0 ? (
-                    <div className="flex items-center justify-center h-[60vh] text-gray-500 font-montserrat text-4xl font-semibold text-center">
-                        No ha enviado ninguna solicitud
-                    </div>
-                ) : (
-                    <>
-                        <div className="min-h-[400px] flex flex-col justify-between">
+            <div className="flex-1 flex flex-col overflow-hidden">
+                <section className="grow overflow-y-auto min-h-0 px-6 py-8 md:px-10">
+                    <h2 className="font-poppins text-2xl font-semibold mb-2">
+                        Solicitudes de servicio
+                    </h2>
+                    <h3 className="font-montserrat text-base font-normal mb-4">
+                        Puede cancelar su solicitud de servicio si ya no la
+                        requiere.
+                    </h3>
+
+                    {Array.isArray(requests) && requests.length === 0 ? (
+                        <div className="flex items-center justify-center h-[60vh] text-gray-500 font-montserrat text-4xl font-semibold text-center">
+                            No ha enviado ninguna solicitud
+                        </div>
+                    ) : (
+                        <div className="flex flex-col gap-6">
                             <MyRequestsTable
                                 data={requests}
                                 columns={columns}
@@ -156,8 +157,6 @@ const MyRequests = () => {
                                 onCloseDetails={() => setSelectedRequest(null)}
                                 onCancelRequest={handleCancelRequest}
                             />
-                        </div>
-                        <div className="mt-15">
                             <PaginationControls
                                 page={page}
                                 setPage={setPage}
@@ -165,11 +164,13 @@ const MyRequests = () => {
                                 setPageSize={setPageSize}
                                 totalItems={totalItems}
                                 type="solicitud"
+                                isAbsolute={false}
                             />
                         </div>
-                    </>
-                )}
-            </section>
+                    )}
+                </section>
+            </div>
+
             {showCancelModal && (
                 <ModalCancelReqConfirmation
                     onClose={handleCloseCancelModal}

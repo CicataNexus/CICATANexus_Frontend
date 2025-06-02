@@ -7,6 +7,7 @@ export default function PaginationControls({
     setPageSize,
     totalItems,
     type = "registros",
+    isAbsolute = true,
 }) {
     const totalPages = Math.ceil(totalItems / pageSize);
     const start = totalItems === 0 ? 0 : (page - 1) * pageSize + 1;
@@ -28,14 +29,18 @@ export default function PaginationControls({
     };
 
     return (
-        <div className="absolute bottom-10 left-0 w-full px-6 md:px-10 flex flex-row justify-between items-center gap-4 pt-4 font-montserrat font-medium text-sm text-gray-500">
+        <div
+            className={`${
+                isAbsolute ? "absolute bottom-10 left-0" : ""
+            } w-full px-6 md:px-10 flex flex-row justify-between items-center gap-4 pt-4 font-montserrat font-medium text-sm text-gray-500 leading-tight`}
+        >
             <p className="text-center sm:text-left flex items-center gap-2">
-                Mostrando {start} a {end} {" "}
-                de {totalItems} {pluralize(type, totalItems)}
+                Mostrando {start} a {end} de {totalItems}{" "}
+                {pluralize(type, totalItems)}
             </p>
 
             <div className="flex items-center gap-2">
-            <select
+                <select
                     id="rows"
                     className="rounded-md border px-1 py-1 cursor-pointer focus:ring-2 focus:border-none focus:ring-primary-blue focus:outline-none"
                     value={pageSize}
