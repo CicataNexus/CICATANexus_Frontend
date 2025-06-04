@@ -41,11 +41,10 @@ const DateRangePicker = ({
     })
   );
 
-  // Check if a date is a weekend (Saturday = 6, Sunday = 0)
   const isWeekend = (date) => {
     if (onlyWorkDays === true) {
       const dayOfWeek = date.getDay();
-      return dayOfWeek === 0 || dayOfWeek === 6; // Sunday or Saturday
+      return dayOfWeek === 0 || dayOfWeek === 6;
     }
     return false;
   };
@@ -62,7 +61,6 @@ const DateRangePicker = ({
       return day >= start && day <= end;
     });
 
-    // Check if date is a weekend (when onlyWorkDays is true)
     const isWeekendDay = isWeekend(date);
 
     return isOccupied || isWeekendDay;
@@ -110,20 +108,39 @@ const DateRangePicker = ({
     return false;
   };
 
+  const getMondayOfWeek = (date) => {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+    return new Date(d.setDate(diff));
+  };
+
+  const isSameWorkWeek = (date1, date2) => {
+    const monday1 = getMondayOfWeek(date1);
+    const monday2 = getMondayOfWeek(date2);
+    return monday1.getTime() === monday2.getTime();
+  };
+
+  const isOutsideWorkWeekRange = (date) => {
+    if (!onlyWorkDays || !dateRange.start || selecting === "start") {
+      return false;
+    }
+
+    return !isSameWorkWeek(dateRange.start, date);
+  };
+
   const generateCalendarDays = (month, year) => {
     const firstDayOfMonth = new Date(year, month, 1);
     const lastDayOfMonth = new Date(year, month + 1, 0);
     const days = [];
 
     if (onlyWorkDays === true) {
-      // For work days only, we need to calculate differently
       const firstDay = firstDayOfMonth.getDay();
-      const adjustedFirstDay = firstDay === 0 ? 6 : firstDay - 1; // Convert Sunday=0 to Sunday=6, Monday=1 to Monday=0
+      const adjustedFirstDay = firstDay === 0 ? 6 : firstDay - 1;
 
       const prevMonthDaysCount = new Date(year, month, 0).getDate();
       const prevMonthStartDay = prevMonthDaysCount - adjustedFirstDay + 1;
 
-      // Add previous month days (only weekdays)
       for (let i = prevMonthStartDay; i <= prevMonthDaysCount; i++) {
         const date = new Date(year, month - 1, i);
         const dayOfWeek = date.getDay();
@@ -132,7 +149,6 @@ const DateRangePicker = ({
         }
       }
 
-      // Add current month days (only weekdays)
       for (let day = 1; day <= lastDayOfMonth.getDate(); day++) {
         const date = new Date(year, month, day);
         const dayOfWeek = date.getDay();
@@ -141,8 +157,7 @@ const DateRangePicker = ({
         }
       }
 
-      // Add next month days to fill the grid (only weekdays)
-      const totalCells = 35; // 5 columns × 7 rows
+      const totalCells = 35;
       let nextMonthDay = 1;
       while (days.length < totalCells) {
         const date = new Date(year, month + 1, nextMonthDay);
@@ -153,7 +168,6 @@ const DateRangePicker = ({
         nextMonthDay++;
       }
     } else {
-      // Original logic for full calendar
       const firstDay = firstDayOfMonth.getDay();
       const prevMonthDaysCount = new Date(year, month, 0).getDate();
       const prevMonthStartDay = prevMonthDaysCount - firstDay + 1;
@@ -183,6 +197,15 @@ const DateRangePicker = ({
 
   const isInHoverRange = (date) => {
     if (!dateRange.start || !hoverDate || dateRange.end) return false;
+
+    if (
+      onlyWorkDays &&
+      selecting === "end" &&
+      !isSameWorkWeek(dateRange.start, date)
+    ) {
+      return false;
+    }
+
     return (
       (date > dateRange.start && date < hoverDate) ||
       (date < dateRange.start && date > hoverDate)
@@ -194,7 +217,8 @@ const DateRangePicker = ({
       isPast(selectedDate) ||
       (isBlocked(selectedDate) &&
         !isBlockedStart(selectedDate) &&
-        !isBlockedEnd(selectedDate))
+        !isBlockedEnd(selectedDate)) ||
+      isOutsideWorkWeekRange(selectedDate)
     )
       return;
 
@@ -357,6 +381,7 @@ const DateRangePicker = ({
               const isBlockedStartDay = isBlockedStart(day);
               const isBlockedEndDay = isBlockedEnd(day);
               const isPastDay = isPast(day);
+              const isOutsideWorkWeek = isOutsideWorkWeekRange(day);
 
               return (
                 <div className="w-full flex items-center justify-center">
@@ -365,7 +390,7 @@ const DateRangePicker = ({
                     onClick={() => handleDateSelect(day)}
                     onMouseEnter={() => handleDateHover(day)}
                     className={`w-10 h-10 flex items-center justify-center 
-                  ${isDisabled ? "cursor-not-allowed" : ""}
+                  ${isDisabled || isOutsideWorkWeek ? "cursor-not-allowed" : ""}
                   ${isHoverDay ? "bg-indigo-50 text-black rounded-full" : ""}
                   ${
                     isBlockedStartDay
@@ -394,7 +419,7 @@ const DateRangePicker = ({
                   ${isRangeDay ? "bg-indigo-100 rounded-full" : ""} 
                   ${day.getMonth() !== month ? "text-gray-400" : ""} 
                   ${
-                    !isDisabled && !isPastDay
+                    !isDisabled && !isPastDay && !isOutsideWorkWeek
                       ? "hover:bg-indigo-100 hover:rounded-full"
                       : ""
                   }
@@ -402,6 +427,12 @@ const DateRangePicker = ({
                   ${
                     isPastDay
                       ? "text-gray-400 cursor-not-allowed line-through"
+                      : ""
+                  }
+
+                  ${
+                    isOutsideWorkWeek
+                      ? "text-gray-300 cursor-not-allowed opacity-50"
                       : ""
                   }
 

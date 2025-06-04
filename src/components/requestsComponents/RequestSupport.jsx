@@ -149,12 +149,12 @@ const RequestSupport = () => {
   };
 
   return (
-    <div className="relative w-full flex-1 flex items-center justify-center py-4">
-      <div className="w-2/3 h-fit bg-white px-14 py-8 flex flex-col rounded-md shadow-md">
+    <div className="relative w-full flex-1 flex items-center justify-center md:pt-4 md:pb-8">
+      <div className="md:w-2/3 h-fit bg-white md:px-14 px-1 py-8 flex flex-col rounded-md shadow-md">
         <div className="text-lg mb-2 text-center font-poppins font-semibold">
           Ingrese los datos correspondientes
         </div>
-        <div className="grid grid-cols-2 gap-4 mt-5">
+        <div className="grid grid-cols-1 md:grid-cols-2  gap-4 mt-5">
           <div className="flex flex-col">
             <div className="p-2 flex flex-col">
               <span className="inline-block mb-2 font-montserrat font-semibold">
@@ -211,8 +211,8 @@ const RequestSupport = () => {
                 Horario en el que se requiere{" "}
                 <span className="text-red-500">*</span>
               </span>
-              <div className="flex gap-2 font-montserrat">
-                <div className="">
+              <div className="flex flex-wrap gap-2">
+                <div className="font-monot">
                   <div className=" bg-white flex select-none font-medium">
                     Desde
                   </div>
@@ -293,7 +293,7 @@ const RequestSupport = () => {
                 </p>
               )}
             </div>
-            <div className="flex flex-col w-full h-full">
+            <div className="flex flex-col w-full h-full p-2">
               <label
                 htmlFor="observaciones"
                 className="mb-2 select-none font-montserrat font-semibold"
