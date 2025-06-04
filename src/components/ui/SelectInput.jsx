@@ -43,7 +43,7 @@ export default function SelectInput({
 							? "#ef4444"
 							: state.isFocused
 							? "#5cb7e6"
-							: "#6b7280",
+							: "#99a1af",
 						borderRadius: "0.4rem",
 						height: isMulti && value.length > 1 ? "auto" : "2rem",
 						minHeight: "2rem",
@@ -55,7 +55,7 @@ export default function SelectInput({
 								? "#ef4444"
 								: state.isFocused
 								? "#5cb7e6"
-								: "#6b7280",
+								: "#99a1af",
 						},
 					}),
 					option: (base, state) => ({

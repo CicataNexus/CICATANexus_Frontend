@@ -94,7 +94,7 @@ export default function MyRequestDetailsPanel({ request, onCancel }) {
             <p>
               <strong>Observaciones</strong>
             </p>
-            <div className="max-h-32 overflow-y-auto border border-primary-blue rounded-md p-2">
+            <div className="max-h-32 overflow-y-auto border border-gray-400 rounded-md p-2">
               <ul className="flex flex-col gap-2 text-xs font-montserrat">
                 {observations?.map((obs, index) => {
                   const isSystemLog =
