@@ -40,6 +40,7 @@ export default function ModalMovementConfirmation({
                 <button
                     onClick={onClose}
                     className="absolute top-4 right-4 text-gray-600 hover:text-black cursor-pointer"
+                    aria-label="Cerrar"
                 >
                     <Icon icon="mingcute:close-fill" className="text-xl" />
                 </button>
@@ -54,12 +55,14 @@ export default function ModalMovementConfirmation({
                     <Button
                         onClick={onClose}
                         className="w-full sm:w-40 bg-gray-300 text-gray-600 hover:opacity-85 font-poppins font-semibold text-lg"
+                        aria-label="Cancelar"
                     >
                         Cancelar
                     </Button>
                     <Button
                         onClick={onChange}
                         className="w-full sm:w-40 bg-sidebar hover:bg-dim-blue-background text-white font-poppins font-semibold text-lg"
+                        aria-label="Confirmar cambio"
                     >
                         Confirmar
                     </Button>

@@ -193,6 +193,7 @@ function Login() {
                                                 setShowPassword(!showPassword)
                                             }
                                             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-black focus:outline-none cursor-pointer"
+                                            aria-label="Mostrar u ocultar contraseña"
                                         >
                                             <Icon
                                                 icon={
@@ -215,6 +216,7 @@ function Login() {
                                             onClick={() => {
                                                 navigate("/registro");
                                             }}
+                                            aria-label="Ir a registro"
                                         >
                                             Regístrese
                                         </button>
@@ -229,6 +231,7 @@ function Login() {
                                 <button
                                     type="submit"
                                     className="rounded-md p-2 w-full items-center justify-center bg-primary-green text-white text-lg font-semibold font-poppins transition-all duration-200 hover:bg-login-btn-hover hover:scale-102 active:scale-95 cursor-pointer"
+                                    aria-label="Ingresar al sistema"
                                 >
                                     Ingresar
                                 </button>

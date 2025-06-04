@@ -287,7 +287,7 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                                 <p className="mb-3">
                                     <strong>Área(s) de trabajo</strong>
                                     <br />
-                                    {workArea}
+                                    {Array.isArray(workArea) ? workArea.join(", ") : workArea}
                                 </p>
                                 <p className="mb-3">
                                     <strong>Estado de la solicitud</strong>
@@ -545,6 +545,7 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                                         setModalAction("reject");
                                         setShowModal(true);
                                     }}
+                                    aria-label="Rechazar solicitud"
                                 >
                                     Rechazar
                                 </Button>
@@ -560,6 +561,7 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                                         setModalAction("approve");
                                         setShowModal(true);
                                     }}
+                                    aria-label="Aprobar solicitud"
                                 >
                                     Aprobar
                                 </Button>

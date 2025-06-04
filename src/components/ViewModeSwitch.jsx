@@ -19,6 +19,7 @@ export default function ViewModeSwitch({ viewMode, setViewMode }) {
           className={`w-[58px] h-6 flex items-center justify-center rounded-full transition-colors cursor-pointer ${
             viewMode === 0 ? "text-white" : "text-dark-gray"
           }`}
+          aria-label="Cambiar a vista mensual"
         >
           Mensual
         </button>
@@ -27,6 +28,7 @@ export default function ViewModeSwitch({ viewMode, setViewMode }) {
           className={`w-[58px] h-6 flex items-center justify-center rounded-full transition-colors cursor-pointer ${
             viewMode === 1 ? "text-white" : "text-dark-gray"
           }`}
+          aria-label="Cambiar a vista anual"
         >
           Anual
         </button>

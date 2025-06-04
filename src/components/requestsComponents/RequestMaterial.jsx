@@ -302,6 +302,7 @@ const RequestMaterial = () => {
           <Button
             className="bg-deep-blue hover:bg-dark-blue text-white text-xl font-poppins font-semibold tracking-wide py-5 w-auto px-15"
             onClick={handleSubmit}
+            aria-label="Enviar solicitud"
           >
             Enviar
           </Button>

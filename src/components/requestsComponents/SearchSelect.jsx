@@ -147,6 +147,7 @@ const SearchSelect = ({
                         size="sm"
                         className="rounded-md font-poppins font-semibold text-sm bg-deep-blue hover:bg-dark-blue text-white transition inline-flex items-center"
                         onClick={() => handleSelect(option)}
+                        aria-label={`Agregar ${option.name} a la selección`}
                       >
                         Agregar
                       </Button>
@@ -171,6 +172,7 @@ const SearchSelect = ({
               <button
                 onClick={() => handleRemove(item)}
                 className="cursor-pointer"
+                aria-label={`Eliminar ${item.name} de la selección`}
               >
                 &times;
               </button>

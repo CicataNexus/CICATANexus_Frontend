@@ -25,7 +25,18 @@ export default function TableToolbar({
     } else {
         placeholder = "Escriba el nombre o escanee el código";
     }
-    const buttonText = isUsers ? "Agregar usuario" : "Agregar producto";
+    let buttonText;
+    if (type === "users") {
+        buttonText = "Agregar usuario";
+    } else if (type === "equipos") {
+        buttonText = "Agregar equipo";
+    } else if (type === "materiales") {
+        buttonText = "Agregar material";
+    } else if (type === "reactivos") {
+        buttonText = "Agregar reactivo";
+    } else {
+        buttonText = "Agregar producto";
+    }
 
     const handleFiltersChange = (filters) => {
         setActiveFilters(filters);
@@ -34,7 +45,11 @@ export default function TableToolbar({
 
     const handleDownload = async () => {
         try {
-            const response = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/export/inventory`);
+            const response = await fetch(
+                `http://${import.meta.env.VITE_SERVER_IP}:${
+                    import.meta.env.VITE_SERVER_PORT
+                }/v1/export/inventory`
+            );
 
             if (!response.ok) {
                 showToast("Requiere productos en las tres categorías", "error");
@@ -91,14 +106,19 @@ export default function TableToolbar({
                         <Button
                             onClick={handleDownload}
                             className="bg-deep-blue hover:bg-dark-blue text-white text-sm font-poppins font-semibold py-2 px-4 rounded-md transition inline-flex items-center"
+                            aria-label="Descargar inventario"
                         >
-                            <Icon icon="material-symbols:download" className="mr-2 text-xl" />
+                            <Icon
+                                icon="material-symbols:download"
+                                className="mr-2 text-xl"
+                            />
                             Descargar inventario
                         </Button>
                     )}
                     <Button
                         onClick={onAddClick}
                         className="bg-deep-blue hover:bg-dark-blue text-white text-sm font-poppins font-semibold py-2 px-4 rounded-md transition inline-flex items-center"
+                        aria-label="Agregar"
                     >
                         <Icon icon="ic:round-plus" className="mr-2 text-xl" />
                         {buttonText}

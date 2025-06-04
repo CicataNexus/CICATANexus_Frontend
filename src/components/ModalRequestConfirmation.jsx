@@ -37,6 +37,7 @@ export default function ModalCancelReqConfirmation({
                 <button
                     onClick={onClose}
                     className="absolute top-4 right-4 text-gray-600 hover:text-black cursor-pointer"
+                    aria-label="Cerrar"
                 >
                     <Icon icon="mingcute:close-fill" className="text-xl" />
                 </button>

@@ -62,6 +62,7 @@ export const RequestsColumns = (handleToggleDetails, selectedRequest) => [
                             : "hover:text-popup-background hover:scale-115"
                     }`}
                     title="Ver detalles"
+                    aria-label="Ver detalles"
                 >
                     <Icon
                         icon="material-symbols:info-outline-rounded"

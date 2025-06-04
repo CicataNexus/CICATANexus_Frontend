@@ -728,18 +728,20 @@ export default function AddMaterialPanel({
                                 setModalConfirming(true);
                                 setShowConfirmation(true);
                             }}
+                            aria-label="Eliminar producto"
                         >
                             <Icon
                                 icon="ix:trashcan-filled"
                                 className="mr-2 text-xl"
                             />
-                            Eliminar producto
+                            Eliminar material
                         </Button>
                     </div>
                     <div className="flex gap-4 mr-4">
                         <Button
                             onClick={onClose}
                             className="w-40 bg-gray-300 text-gray-600 hover:opacity-85 font-poppins font-semibold text-base"
+                            aria-label="Cancelar"
                         >
                             Cancelar
                         </Button>
@@ -751,6 +753,7 @@ export default function AddMaterialPanel({
                                     ? "cursor-not-allowed bg-gray-200 text-gray-400"
                                     : "cursor-pointer transition bg-sidebar hover:bg-dim-blue-background"
                             }`}
+                            aria-label="Aplicar cambios"
                         >
                             Aplicar cambios
                         </Button>
@@ -767,6 +770,7 @@ export default function AddMaterialPanel({
                     <Button
                         onClick={handleSubmit}
                         className="w-40 bg-sidebar hover:bg-dim-blue-background text-white font-poppins font-semibold text-lg"
+                        aria-label="Agregar material"
                     >
                         Agregar
                     </Button>

@@ -989,18 +989,20 @@ export default function AddReagentPanel({
                         <Button
                             className="bg-delete-btn hover:bg-delete-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-md transition inline-flex items-center cursor-pointer"
                             onClick={() => setShowConfirmation(true)}
+                            aria-label="Eliminar producto"
                         >
                             <Icon
                                 icon="ix:trashcan-filled"
                                 className="mr-2 text-xl"
                             />
-                            Eliminar producto
+                            Eliminar reactivo
                         </Button>
                     </div>
                     <div className="flex gap-4 mr-4">
                         <Button
                             onClick={onClose}
                             className="w-40 bg-gray-300 text-gray-600 hover:opacity-85 font-poppins font-semibold text-base"
+                            aria-label="Cancelar"
                         >
                             Cancelar
                         </Button>
@@ -1012,6 +1014,7 @@ export default function AddReagentPanel({
                                     ? "cursor-not-allowed bg-gray-200 text-gray-400"
                                     : "cursor-pointer transition bg-sidebar hover:bg-dim-blue-background"
                             }`}
+                            aria-label="Aplicar cambios"
                         >
                             Aplicar cambios
                         </Button>
@@ -1022,12 +1025,14 @@ export default function AddReagentPanel({
                     <Button
                         onClick={onClose}
                         className="w-40 bg-gray-300 text-gray-600 hover:opacity-85 font-poppins font-semibold text-lg"
+                        aria-label="Cancelar"
                     >
                         Cancelar
                     </Button>
                     <Button
                         onClick={handleSubmit}
                         className="w-40 bg-sidebar hover:bg-dim-blue-background text-white font-poppins font-semibold text-lg"
+                        aria-label="Agregar reactivo"
                     >
                         Agregar
                     </Button>

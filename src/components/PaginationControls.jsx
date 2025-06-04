@@ -40,6 +40,9 @@ export default function PaginationControls({
             </p>
 
             <div className="flex items-center gap-2">
+                <label htmlFor="rows" className="text-gray-500 sr-only">
+                    Número de filas por página
+                </label>
                 <select
                     id="rows"
                     className="rounded-md border px-1 py-1 cursor-pointer focus:ring-2 focus:border-none focus:ring-primary-blue focus:outline-none"
@@ -59,6 +62,7 @@ export default function PaginationControls({
                     className="px-2 py-1 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                     onClick={() => setPage((p) => Math.max(p - 1, 1))}
                     disabled={page === 1}
+                    aria-label="Página anterior"
                 >
                     <Icon
                         icon="material-symbols:chevron-left-rounded"
@@ -75,6 +79,7 @@ export default function PaginationControls({
                                     : "border bg-gray-50 border-gray-300 text-gray-700 hover:border-primary-blue transition-colors"
                             }`}
                             onClick={() => setPage(p)}
+                            aria-label="Ir a página {p}"
                         >
                             {p}
                         </button>
@@ -84,6 +89,7 @@ export default function PaginationControls({
                     className="px-2 py-1 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                     onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
                     disabled={page === totalPages}
+                    aria-label="Página siguiente"
                 >
                     <Icon
                         icon="material-symbols:chevron-right-rounded"
