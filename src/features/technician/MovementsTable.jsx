@@ -63,12 +63,18 @@ export default function MovementsTable({
                             {selectedMovement === row.original && (
                                 <tr>
                                     <td colSpan={columns.length}>
-                                        <MovementsDetailsPanel
-                                            request={selectedMovement}
-                                            onClose={onCloseDetails}
-                                            setReload={setReload}
-                                            onCancel={() => onCancelRequest(selectedMovement)}
-                                        />
+                                        <div className="w-full flex justify-center">
+                                            <MovementsDetailsPanel
+                                                request={selectedMovement}
+                                                onClose={onCloseDetails}
+                                                setReload={setReload}
+                                                onCancel={() =>
+                                                    onCancelRequest(
+                                                        selectedMovement
+                                                    )
+                                                }
+                                            />
+                                        </div>
                                     </td>
                                 </tr>
                             )}

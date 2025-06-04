@@ -38,6 +38,7 @@ export const MaterialColumns = (handleEdit, selectedProduct) => [
                             : "hover:text-popup-background hover:scale-115"
                     }`}
                     title="Editar producto"
+                    aria-label="Editar producto"
                 >
                     <Icon icon="mdi:edit-circle-outline" className="text-2xl" />
                 </button>

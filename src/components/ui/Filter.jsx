@@ -224,6 +224,7 @@ export default function Filter({ type, onClose, onChange, data = [] }) {
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
                 className = 'p-2 cursor-pointer'
+                aria-label="Ver filtros"
             >
                 <Icon
                     icon={
@@ -249,6 +250,7 @@ export default function Filter({ type, onClose, onChange, data = [] }) {
                         <button
                             onClick={() => handleClose()}
                             className = 'absolute top-4 right-4 text-gray-600 hover:text-black cursor-pointer'
+                            aria-label="Cerrar filtros"
                         >
                             <Icon
                                 icon = 'mingcute:close-fill'
@@ -375,6 +377,7 @@ export default function Filter({ type, onClose, onChange, data = [] }) {
                                 onChange?.(tempFilters);
                                 handleClose();
                             }}
+                            aria-label="Aplicar filtros"
                         >
                             Aplicar cambios
                         </Button>
@@ -385,6 +388,7 @@ export default function Filter({ type, onClose, onChange, data = [] }) {
                                 onChange?.({});
                                 handleClose();
                             }}
+                            aria-label="Borrar filtros"
                         >
                             Borrar filtros
                         </Button>

@@ -31,6 +31,7 @@ export const UsersColumns = (handleEdit, selectedUser) => [
               : "hover:text-popup-background hover:scale-115"
           }`}
           title="Editar usuario"
+          aria-label="Editar usuario"
         >
           <Icon icon="mdi:edit-circle-outline" className="text-2xl" />
         </button>

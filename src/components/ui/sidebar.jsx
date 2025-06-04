@@ -259,9 +259,10 @@ function SidebarTrigger({ className, onClick, ...props }) {
                 toggleSidebar();
             }}
             {...props}
+            aria-label="Ocultar barra lateral"
         >
             <PanelLeftIcon />
-            <span className="sr-only">Toggle Sidebar</span>
+            <span className="sr-only">Ocultar barra lateral</span>
         </Button>
     );
 }

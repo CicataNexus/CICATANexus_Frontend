@@ -347,6 +347,7 @@ export default function AddUserPanel({
                                             setShowPassword(!showPassword)
                                         }
                                         className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black"
+                                        aria-label="Mostrar u ocultar contraseña"
                                     >
                                         <Icon
                                             icon={
@@ -506,6 +507,7 @@ export default function AddUserPanel({
                                 setModalConfirming(true);
                                 setShowConfirmation(true);
                             }}
+                            aria-label="Eliminar usuario"
                         >
                             <Icon
                                 icon="ix:trashcan-filled"
@@ -518,6 +520,7 @@ export default function AddUserPanel({
                         <Button
                             onClick={onClose}
                             className="w-40 bg-gray-300 text-gray-600 hover:opacity-85 font-poppins font-semibold text-base"
+                            aria-label="Cancelar"
                         >
                             Cancelar
                         </Button>
@@ -529,6 +532,7 @@ export default function AddUserPanel({
                                     ? "cursor-not-allowed bg-gray-200 text-gray-400"
                                     : "cursor-pointer transition bg-sidebar hover:bg-dim-blue-background"
                             }`}
+                            aria-label="Aplicar cambios"
                         >
                             Aplicar cambios
                         </Button>
@@ -539,12 +543,14 @@ export default function AddUserPanel({
                     <Button
                         onClick={onClose}
                         className="w-40 bg-gray-300 text-gray-600 hover:opacity-85 font-poppins font-semibold text-lg"
+                        aria-label="Cancelar"
                     >
                         Cancelar
                     </Button>
                     <Button
                         onClick={handleSubmit}
                         className="w-40 bg-sidebar hover:bg-dim-blue-background text-white font-poppins font-semibold text-lg"
+                        aria-label="Agregar usuario"
                     >
                         Agregar
                     </Button>

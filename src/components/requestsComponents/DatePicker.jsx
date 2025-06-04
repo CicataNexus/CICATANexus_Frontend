@@ -305,12 +305,14 @@ const DateRangePicker = ({
               type="button"
               onClick={handlePreviousMonth}
               className="text-gray-600 hover:text-primary-blue transition cursor-pointer"
+              aria-label="Mes anterior"
             >
               <Icon icon="iconamoon:arrow-left-2-light" className="text-2xl" />
             </button>
             <button
               onClick={handleNextMonth}
               className="text-gray-600 hover:text-primary-blue transition cursor-pointer"
+              aria-label="Mes siguiente"
             >
               <Icon icon="iconamoon:arrow-right-2-light" className="text-2xl" />
             </button>
