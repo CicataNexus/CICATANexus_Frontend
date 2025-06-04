@@ -81,7 +81,7 @@ const Navbar = () => {
                 onClick={() => handleNavigation(path)}
               >
                 {icon}
-                <div className="pl-4 font-poppins">{label}</div>
+                <div className="pl-4 font-poppins font-medium">{label}</div>
               </div>
             ))}
           </div>
