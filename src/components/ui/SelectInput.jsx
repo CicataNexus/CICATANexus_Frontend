@@ -37,13 +37,13 @@ export default function SelectInput({
 				styles={{
 					control: (base, state) => ({
 						...base,
-						fontSize: "0.75rem",
+						fontSize: "0.85rem",
 						fontFamily: "Montserrat, sans-serif",
 						borderColor: showError 
 							? "#ef4444"
 							: state.isFocused
 							? "#5cb7e6"
-							: "#6b7280",
+							: "#99a1af",
 						borderRadius: "0.4rem",
 						height: isMulti && value.length > 1 ? "auto" : "2rem",
 						minHeight: "2rem",
@@ -55,7 +55,7 @@ export default function SelectInput({
 								? "#ef4444"
 								: state.isFocused
 								? "#5cb7e6"
-								: "#6b7280",
+								: "#99a1af",
 						},
 					}),
 					option: (base, state) => ({
@@ -68,7 +68,7 @@ export default function SelectInput({
 						color: state.isSelected
 							? "#ffffff"
 							: "#000000",
-						fontSize: "0.7rem",
+						fontSize: "0.75rem",
 						fontFamily: "Montserrat, sans-serif",
 						cursor: "pointer",
 						paddingTop: "0.4rem",

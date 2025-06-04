@@ -248,6 +248,7 @@ function Register() {
                                                 setShowPassword(!showPassword)
                                             }
                                             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-black focus:outline-none cursor-pointer"
+                                            aria-label="Mostrar u ocultar contraseña"
                                         >
                                             <Icon
                                                 icon={
@@ -275,6 +276,7 @@ function Register() {
                                             onClick={() => {
                                                 navigate("/");
                                             }}
+                                            aria-label="Ir a la página de inicio de sesión"
                                         >
                                             Entrar
                                         </button>
@@ -289,6 +291,7 @@ function Register() {
                                 <button
                                     type="submit"
                                     className="rounded-md p-2 w-full items-center justify-center bg-primary-green text-white text-lg font-semibold font-poppins transition-all duration-200 hover:bg-login-btn-hover hover:scale-102 active:scale-95 cursor-pointer"
+                                    aria-label="Crear cuenta"
                                 >
                                     Crear cuenta
                                 </button>

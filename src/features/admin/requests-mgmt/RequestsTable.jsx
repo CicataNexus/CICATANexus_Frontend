@@ -63,12 +63,18 @@ export default function RequestsTable({
                             {selectedRequest?.id === row.original.id && (
                                 <tr>
                                     <td colSpan={columns.length}>
-                                        <RequestDetailsPanel
-                                            request={selectedRequest}
-                                            onClose={onCloseDetails}
-                                            setReload={setReload}
-                                            onCancel={() => onCancelRequest(selectedRequest)}
-                                        />
+                                        <div className="w-full flex justify-center">
+                                            <RequestDetailsPanel
+                                                request={selectedRequest}
+                                                onClose={onCloseDetails}
+                                                setReload={setReload}
+                                                onCancel={() =>
+                                                    onCancelRequest(
+                                                        selectedRequest
+                                                    )
+                                                }
+                                            />
+                                        </div>
                                     </td>
                                 </tr>
                             )}

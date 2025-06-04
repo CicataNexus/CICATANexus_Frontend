@@ -59,11 +59,13 @@ export default function MyRequestsTable({
               {selectedRequest?.id === row.original.id && (
                 <tr>
                   <td colSpan={columns.length}>
-                    <MyRequestDetailsPanel
-                      request={selectedRequest}
-                      onClose={onCloseDetails}
-                      onCancel={() => onCancelRequest(selectedRequest)}
-                    />
+                    <div className="w-full flex justify-center">
+                      <MyRequestDetailsPanel
+                        request={selectedRequest}
+                        onClose={onCloseDetails}
+                        onCancel={() => onCancelRequest(selectedRequest)}
+                      />
+                    </div>
                   </td>
                 </tr>
               )}

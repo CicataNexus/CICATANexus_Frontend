@@ -287,7 +287,7 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                                 <p className="mb-3">
                                     <strong>Área(s) de trabajo</strong>
                                     <br />
-                                    {workArea}
+                                    {Array.isArray(workArea) ? workArea.join(", ") : workArea}
                                 </p>
                                 <p className="mb-3">
                                     <strong>Estado de la solicitud</strong>
@@ -305,7 +305,7 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                                         ? "Reactivo o Material"
                                         : "Asistencia técnica"}
                                 </p>
-                                <p className="mb-3">
+                                <div className="mb-3">
                                     <strong>Técnico asignado</strong>
                                     <br />
                                     {role === ROLES.TECH ? (
@@ -354,7 +354,7 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                                             />
                                         </>
                                     )}
-                                </p>
+                                </div>
                                 <p className="mb-3 mt-3">
                                     <strong>
                                         {typeOfRequest === "EQ"
@@ -375,7 +375,7 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                                 <p>
                                     <strong>Observaciones</strong>
                                 </p>
-                                <div className="max-h-32 overflow-y-auto border border-primary-blue rounded-md p-2">
+                                <div className="max-h-32 overflow-y-auto border border-gray-400 rounded-md p-2">
                                     <ul className="flex flex-col gap-2 text-xs font-montserrat">
                                         {observations?.map((obs, index) => {
                                             const isSystemLog =
@@ -545,6 +545,7 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                                         setModalAction("reject");
                                         setShowModal(true);
                                     }}
+                                    aria-label="Rechazar solicitud"
                                 >
                                     Rechazar
                                 </Button>
@@ -560,6 +561,7 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                                         setModalAction("approve");
                                         setShowModal(true);
                                     }}
+                                    aria-label="Aprobar solicitud"
                                 >
                                     Aprobar
                                 </Button>

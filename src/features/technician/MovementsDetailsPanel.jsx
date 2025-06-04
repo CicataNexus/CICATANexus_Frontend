@@ -97,7 +97,7 @@ export default function MovementsDetailsPanel({ request, onClose, setReload, }) 
                                 <p className="mb-3">
                                     <strong>Área(s) de trabajo</strong>
                                     <br />
-                                    {workArea || "-"}
+                                    {Array.isArray(workArea) ? workArea.join(", ") : workArea}
                                 </p>
                                 <p className="mb-3">
                                     <strong>Estado del equipo</strong>
@@ -159,6 +159,7 @@ export default function MovementsDetailsPanel({ request, onClose, setReload, }) 
                         <Button
                             onClick={onClose}
                             className="w-40 bg-gray-300 text-gray-600 hover:opacity-85 font-poppins font-semibold text-base"
+                            aria-label="Cancelar"
                         >
                             Cancelar
                         </Button>
@@ -166,6 +167,7 @@ export default function MovementsDetailsPanel({ request, onClose, setReload, }) 
                             onClick={() => setShowConfirmation(true)}
                             disabled={newStatus.value === equipment?.status}
                             className="w-40 text-white text-base font-poppins font-semibold py-2 text-center cursor-pointer transition bg-sidebar hover:bg-dim-blue-background disabled:opacity-50 disabled:cursor-not-allowed"
+                            aria-label="Cambiar estado del equipo"
                         >
                             Cambiar estado
                         </Button>

@@ -48,6 +48,7 @@ const Request = ({ item, index, isActive, onClick, onCancel }) => {
           <button
             className="w-fit px-4 rounded-lg bg-primary-blue text-white"
             onClick={handleCancel}
+            aria-label="Cancelar solicitud"
           >
             Cancelar
           </button>
@@ -56,7 +57,7 @@ const Request = ({ item, index, isActive, onClick, onCancel }) => {
         ""
       )}
 
-      <button className="absolute -right-10" onClick={onClick}>
+      <button className="absolute -right-10" onClick={onClick} aria-label="Ver detalles de la solicitud">
         <div className={isActive ? "text-green-500" : "text-black"}>
           <IoIosInformationCircleOutline size={32} />
         </div>
