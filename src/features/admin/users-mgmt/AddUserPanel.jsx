@@ -449,40 +449,40 @@ export default function AddUserPanel({
                                         placeholder="Seleccione una o varias áreas de trabajo"
                                         options={[
                                             {
-                                                value: "Laboratorio de Biología Molecular",
-                                                label: "Laboratorio de Biología Molecular",
+                                                label: 'Laboratorio de Biología Molecular',
+                                                value: 'LABORATORIO DE BIOLOGIA MOLECULAR',
                                             },
                                             {
-                                                value: "Laboratorio de Cultivo Celular y Microscopía",
-                                                label: "Laboratorio de Cultivo Celular y Microscopía",
+                                                label: 'Laboratorio de Cultivo Celular y Microscopía',
+                                                value: 'LABORATORIO DE CULTIVO CELULAR Y MICROSCOPIA',
                                             },
                                             {
-                                                value: "Anexo de Cultivo Celular",
-                                                label: "Anexo de Cultivo Celular",
+                                                label: 'Anexo de Cultivo Celular',
+                                                value: 'ANEXO DE CULTIVO CELULAR',
                                             },
                                             {
-                                                value: "Laboratorio de Microbiología",
-                                                label: "Laboratorio de Microbiología",
+                                                label: 'Laboratorio de Microbiología',
+                                                value: 'LABORATORIO DE MICROBIOLOGIA',
                                             },
                                             {
-                                                value: "Laboratorio de Cromatografía y Espectrofotometría",
-                                                label: "Laboratorio de Cromatografía y Espectrofotometría",
+                                                label: 'Laboratorio de Cromatografía y Espectrofotometría',
+                                                value: 'LABORATORIO DE CROMATOGRAFIA Y ESPECTROFOTOMETRIA',
                                             },
                                             {
-                                                value: "Laboratorio de Bioprocesos",
-                                                label: "Laboratorio de Bioprocesos",
+                                                label: 'Laboratorio de Bioprocesos',
+                                                value: 'LABORATORIO DE BIOPROCESOS',
                                             },
                                             {
-                                                value: "Laboratorio de Acondicionamiento",
-                                                label: "Laboratorio de Acondicionamiento",
+                                                label: 'Laboratorio de Acondicionamiento',
+                                                value: 'LABORATORIO DE ACONDICIONAMIENTO',
                                             },
                                             {
-                                                value: "Cámara Fría",
-                                                label: "Cámara Fría",
+                                                label: 'Cámara Fría',
+                                                value: 'CAMARA FRIA',
                                             },
                                             {
-                                                value: "Bioterio",
-                                                label: "Bioterio",
+                                                label: 'Bioterio',
+                                                value: 'BIOTERIO',
                                             },
                                         ]}
                                         required

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { showToast } from "@/utils/toastUtils";
+import { AREAS } from "@/constants/areas";
 import SelectInput from "@/components/ui/SelectInput";
 import ModalMovementConfirmation from "@/components/ModalMovementConfirmation";
 
@@ -97,7 +98,9 @@ export default function MovementsDetailsPanel({ request, onClose, setReload, }) 
                                 <p className="mb-3">
                                     <strong>Área(s) de trabajo</strong>
                                     <br />
-                                    {Array.isArray(workArea) ? workArea.join(", ") : workArea}
+                                    {Array.isArray(workArea)
+                                        ? workArea.map((area) => AREAS[area] || area).join(", ")
+                                        : AREAS[workArea] || workArea}
                                 </p>
                                 <p className="mb-3">
                                     <strong>Estado del equipo</strong>

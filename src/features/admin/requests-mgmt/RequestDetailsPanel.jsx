@@ -10,6 +10,7 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ROLES } from "@/constants/roles";
+import { AREAS } from "@/constants/areas";
 import SelectInput from "@/components/ui/SelectInput";
 
 export default function RequestDetailsPanel({ request, onClose, setReload }) {
@@ -287,7 +288,9 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                                 <p className="mb-3">
                                     <strong>Área(s) de trabajo</strong>
                                     <br />
-                                    {Array.isArray(workArea) ? workArea.join(", ") : workArea}
+                                    {Array.isArray(workArea)
+                                        ? workArea.map((area) => AREAS[area] || area).join(", ")
+                                        : AREAS[workArea] || workArea}
                                 </p>
                                 <p className="mb-3">
                                     <strong>Estado de la solicitud</strong>
@@ -429,7 +432,7 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                                     <div className="flex items-center gap-1 mb-1">
                                         <label
                                             htmlFor="observation"
-                                            className="font-medium text-sm text-gray-700"
+                                            className="font-medium text-sm"
                                         >
                                             Observaciones
                                         </label>
@@ -467,7 +470,7 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                                     <div className="flex flex-col w-full">
                                         <div className="flex items-center gap-1 mb-1">
                                             <label
-                                                className="font-medium text-sm text-gray-700"
+                                                className="font-medium text-sm"
                                             >
                                                 Técnicos subasignados
                                             </label>

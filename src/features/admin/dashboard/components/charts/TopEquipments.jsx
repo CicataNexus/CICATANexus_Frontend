@@ -58,7 +58,7 @@ export default function TopEquipments() {
                 const formattedData = data.equipment.map((item) => ({
                     equipment: item.name,
                     solicitudes: item.count,
-                }));
+                })).slice(0, 5);;
                 setChartData(formattedData);
             } catch (error) {
                 console.error("Error al obtener datos de equipos más solicitados:", error);

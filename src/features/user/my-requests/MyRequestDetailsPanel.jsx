@@ -1,5 +1,6 @@
 import { mapRequestStatusForUser } from "@/utils/mapRequestStatus";
 import { Button } from "@/components/ui/button";
+import { AREAS } from "@/constants/areas";
 import ModalCancelReqConfirmation from "@/components/ModalCancelReqConfirmation";
 import { useState } from "react";
 
@@ -60,8 +61,8 @@ export default function MyRequestDetailsPanel({ request, onCancel }) {
                             <strong>Área(s) de trabajo</strong>
                             <br />
                             {Array.isArray(workArea)
-                                ? workArea.join(", ")
-                                : workArea}
+                                ? workArea.map((area) => AREAS[area] || area).join(", ")
+                                : AREAS[workArea] || workArea}
                         </p>
                     </div>
                     <div className="space-y-1.5 p-2">
@@ -136,16 +137,17 @@ export default function MyRequestDetailsPanel({ request, onCancel }) {
                     </div>
                 </div>
             </article>
-
-            <div className="w-full flex justify-end mt-4 mb-4">
-                <Button
-                    onClick={onCancel}
-                    className="bg-delete-btn hover:bg-delete-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-md transition inline-flex items-center cursor-pointer"
-                    aria-label="Cancelar solicitud"
-                >
-                    Cancelar solicitud
-                </Button>
-            </div>
+            {requestStatus !== "Cancelada" && (          
+                <div className="w-full flex justify-end mt-4 mb-4">
+                    <Button
+                        onClick={onCancel}
+                        className="bg-delete-btn hover:bg-delete-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-md transition inline-flex items-center cursor-pointer"
+                        aria-label="Cancelar solicitud"
+                    >
+                        Cancelar solicitud
+                    </Button>
+                </div>
+            )}
         </section>
     );
 }

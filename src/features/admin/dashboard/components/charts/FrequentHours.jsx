@@ -10,23 +10,11 @@ import {
     CardTitle,
 } from "../cards/Card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "./Chart";
-import ViewModeSwitch from "@/components/ViewModeSwitch";
 import { Icon } from "@iconify/react";
-import { useState } from "react";
+import useDateNavigation from "@/utils/dateNavigation"; // ya lo tienes en el proyecto
+import { useState, useEffect } from "react";
 
 export const description = "A simple area chart";
-
-const chartData = [
-    { hour: "8:00", requests: 186 },
-    { hour: "9:00", requests: 305 },
-    { hour: "10:00", requests: 237 },
-    { hour: "11:00", requests: 73 },
-    { hour: "12:00", requests: 209 },
-    { hour: "13:00", requests: 214 },
-    { hour: "14:00", requests: 214 },
-    { hour: "15:00", requests: 214 },
-    { hour: "16:00", requests: 214 },
-];
 
 const chartConfig = {
     requests: {
@@ -37,6 +25,39 @@ const chartConfig = {
 
 export default function FrequentHours() {
     const [currentLabel, setCurrentLabel] = useState("Lunes");
+    const { currentMonth, currentYear } = useDateNavigation();
+    const [chartData, setChartData] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const dayString = "Wednesday";
+            const url = `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/analytics/hourly-frequency?month=${currentMonth}&dayString=${dayString}&year=${currentYear}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                const fixedHours = [
+                    "08:00", "09:00", "10:00", "11:00", "12:00",
+                    "13:00", "14:00", "15:00", "16:00"
+                ];
+
+                const formatted = fixedHours.map((hour) => {
+                    const match = data.find((item) => item.hour === hour);
+                    return {
+                        hour,
+                        requests: match ? match.count : 0,
+                    };
+                });
+
+                setChartData(formatted);
+            } catch (error) {
+                console.error("Error al cargar datos de horarios frecuentes", error);
+            }
+        };
+
+        fetchData();
+    }, [currentMonth, currentYear]);
 
     return (
         <Card>
@@ -54,8 +75,9 @@ export default function FrequentHours() {
                         accessibilityLayer
                         data={chartData}
                         margin={{
-                            left: 12,
+                            left: 14,
                             right: 12,
+                            top: 5,
                         }}
                     >
                         <CartesianGrid vertical={false} stroke="#d1d1d1" />
@@ -111,7 +133,7 @@ export default function FrequentHours() {
                         </defs>
                         <Area
                             dataKey="requests"
-                            type="natural"
+                            type="monotone"
                             fill="url(#greenGradient)"
                             fillOpacity={0.4}
                             stroke="var(--color-primary-green)"
