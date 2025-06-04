@@ -51,14 +51,33 @@ const RequestEquipment = () => {
 
   useEffect(() => {
     const isValidWorkDay = (dateStr) => {
-      if (!dateStr) return true;
       const date = new Date(dateStr);
-      const day = date.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-      return day >= 1 && day <= 5;
+      const day = date.getDay();
+      return day >= 1 && day <= 5; // Mon to Fri
     };
-    setWorkDay(
-      isValidWorkDay(dateRange.startDate) && isValidWorkDay(dateRange.endDate)
-    );
+
+    const getDatesInRange = (startStr, endStr) => {
+      const dates = [];
+      const current = new Date(startStr);
+      const end = new Date(endStr);
+
+      while (current <= end) {
+        dates.push(new Date(current));
+        current.setDate(current.getDate() + 1);
+      }
+
+      return dates;
+    };
+
+    if (!dateRange.startDate || !dateRange.endDate) {
+      setWorkDay(true);
+      return;
+    }
+
+    const allDates = getDatesInRange(dateRange.startDate, dateRange.endDate);
+    const allWorkDays = allDates.every((date) => isValidWorkDay(date));
+
+    setWorkDay(allWorkDays);
   }, [dateRange]);
 
   useEffect(() => {
@@ -66,7 +85,7 @@ const RequestEquipment = () => {
       if (!timeStr) return true;
       const [hour, minute] = timeStr.split(":").map(Number);
       const totalMinutes = hour * 60 + minute;
-      return totalMinutes >= 480 && totalMinutes <= 960; // 8:00 AM (480) to 4:00 PM (960)
+      return totalMinutes >= 480 && totalMinutes <= 960;
     };
     setWorkTime(
       isValidWorkTime(timeRange.startTime) && isValidWorkTime(timeRange.endTime)
@@ -337,12 +356,12 @@ const RequestEquipment = () => {
   };
 
   return (
-    <div className="relative w-full flex-1 flex items-center justify-center py-4">
-      <div className="w-2/3 h-fit bg-white px-14 py-8 flex flex-col rounded-md shadow-md">
+    <div className="relative w-full flex-1 flex items-center justify-center md:pt-4 md:pb-8">
+      <div className="md:w-2/3 h-fit bg-white md:px-14 px-0 py-8 flex flex-col rounded-md shadow-md m-2">
         <div className="text-lg mb-2 text-center font-poppins font-semibold">
           Ingrese los datos correspondientes
         </div>
-        <div className="grid grid-cols-2 gap-4 mt-5">
+        <div className="grid grid-cols-1 md:grid-cols-2  gap-4 mt-5">
           <div className="flex flex-col">
             <div className="p-2 flex flex-col">
               <span className="inline-block mb-2 font-montserrat font-semibold">
@@ -400,11 +419,9 @@ const RequestEquipment = () => {
                 Horario en el que se requiere{" "}
                 <span className="text-red-500">*</span>
               </span>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <div className="font-monot">
-                  <div className="bg-white flex select-none font-medium">
-                    Desde
-                  </div>
+                  <div className="flex select-none font-medium">Desde</div>
                   <TimePicker
                     timeRange={timeRange}
                     setTimeRange={setTimeRange}
@@ -415,9 +432,7 @@ const RequestEquipment = () => {
                   />
                 </div>
                 <div className="font-montserrat">
-                  <div className="bg-white flex select-none font-medium">
-                    Hasta
-                  </div>
+                  <div className="flex select-none font-medium">Hasta</div>
                   <TimePicker
                     timeRange={timeRange}
                     setTimeRange={setTimeRange}
@@ -439,7 +454,7 @@ const RequestEquipment = () => {
                 </p>
               )}
               {!workTime && (
-                <p className="flex justify-center items-center text-warning-toast-icon bg-warning-toast-icon-background text-xs font-montserrat font-semibold mt-1 p-2 w-fit rounded-full">
+                <p className="flex justify-center items-center text-warning-toast-icon bg-warning-toast-icon-background text-xs font-montserrat font-semibold mt-2 p-2 w-fit rounded-full">
                   <TiWarningOutline size={20} className="mr-1" />
                   <p className="pr-2">
                     Está solicitando el equipo en un horario extra temporal
@@ -492,7 +507,7 @@ const RequestEquipment = () => {
                 </p>
               )}
             </div>
-            <div className="flex flex-col w-full h-full">
+            <div className="flex flex-col w-full h-full p-2">
               <label
                 htmlFor="observaciones"
                 className="mb-2 select-none font-montserrat font-semibold"
