@@ -49,6 +49,7 @@ const RequestEquipment = () => {
   const [errors, setErrors] = useState({});
   const [workDay, setWorkDay] = useState(true);
   const [workTime, setWorkTime] = useState(true);
+  const [isWithin24Hours, setIsWithin24Hours] = useState(false);
 
   const isToday = (dateStr) => {
     if (!dateStr) return false;
@@ -64,6 +65,20 @@ const RequestEquipment = () => {
   const getCurrentTime = () => {
     const now = new Date();
     return now.toTimeString().slice(0, 5);
+  };
+
+  const checkIfWithin24Hours = (startDate, startTime) => {
+    if (!startDate || !startTime) return false;
+
+    const now = new Date();
+    const requestDateTime = new Date(startDate);
+    const [hours, minutes] = startTime.split(":").map(Number);
+    requestDateTime.setHours(hours, minutes, 0, 0);
+
+    const timeDifferenceMs = requestDateTime.getTime() - now.getTime();
+    const twentyFourHoursMs = 24 * 60 * 60 * 1000;
+
+    return timeDifferenceMs <= twentyFourHoursMs;
   };
 
   useEffect(() => {
@@ -110,6 +125,14 @@ const RequestEquipment = () => {
   }, [timeRange]);
 
   useEffect(() => {
+    const within24Hours = checkIfWithin24Hours(
+      dateRange.startDate,
+      timeRange.startTime
+    );
+    setIsWithin24Hours(within24Hours);
+  }, [dateRange.startDate, timeRange.startTime]);
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await apiFetch("/equipment/basic");
@@ -129,7 +152,9 @@ const RequestEquipment = () => {
         let hasDailyReservation = false;
 
         const fetches = selectedItems.map(async (equipment) => {
-          const data = await apiFetch(`/equipment/barcode/${equipment.barcode}`);
+          const data = await apiFetch(
+            `/equipment/barcode/${equipment.barcode}`
+          );
 
           if (data.reservationType === "D") {
             hasDailyReservation = true;
@@ -470,6 +495,15 @@ const RequestEquipment = () => {
                   <TiWarningOutline size={20} className="mr-1" />
                   <p className="pr-2">
                     Está solicitando el equipo en un horario extra temporal
+                  </p>
+                </p>
+              )}
+              {isWithin24Hours && (
+                <p className="flex justify-center items-center text-warning-toast-icon bg-warning-toast-icon-background text-xs font-montserrat font-semibold mt-2 p-2 w-fit rounded-full">
+                  <TiWarningOutline size={20} className="mr-1" />
+                  <p className="pr-2">
+                    Las solicitudes con menos de 24h de anticipación estan
+                    sujetas a disponibilidad
                   </p>
                 </p>
               )}
