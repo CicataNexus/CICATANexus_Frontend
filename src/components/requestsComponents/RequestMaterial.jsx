@@ -6,6 +6,7 @@ import { showToast } from "@/utils/toastUtils";
 import TimePicker from "./TimePicker";
 import { Button } from "@/components/ui/Button";
 import ModalRequestConfirmation from "@/components/ModalRequestConfirmation";
+import { fetchWithToken } from "@/constants/authFetch";
 
 const areas = [
   "Laboratorio de Biología Molecular",
@@ -40,7 +41,7 @@ const RequestMaterial = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(
+        const res = await fetchWithToken(
           `http://${import.meta.env.VITE_SERVER_IP}:${
             import.meta.env.VITE_SERVER_PORT
           }/v1/combined/basic`
@@ -110,7 +111,7 @@ const RequestMaterial = () => {
     };
     console.log(formattedRequest);
     try {
-      const response = await fetch(
+      const response = await fetchWithToken(
         `http://${import.meta.env.VITE_SERVER_IP}:${
           import.meta.env.VITE_SERVER_PORT
         }/v1/request`,

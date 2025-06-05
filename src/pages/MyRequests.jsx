@@ -6,6 +6,7 @@ import MyRequestsTable from "@/features/user/my-requests/MyRequestsTable";
 import PaginationControls from "@/components/PaginationControls";
 import { MyRequestsColumns } from "@/features/user/my-requests/MyRequestsColumns";
 import ModalCancelReqConfirmation from "@/components/ModalCancelReqConfirmation";
+import { fetchWithToken } from "@/constants/authFetch";
 
 const MyRequests = () => {
     const [selectedRequest, setSelectedRequest] = useState(null);
@@ -53,7 +54,7 @@ const MyRequests = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(
+                const response = await fetchWithToken(
                     `http://${import.meta.env.VITE_SERVER_IP}:${
                         import.meta.env.VITE_SERVER_PORT
                     }/v1/request/user/${registrationNumber}?page=${page}&limit=${pageSize}`
@@ -94,7 +95,7 @@ const MyRequests = () => {
     const handleConfirmCancel = async () => {
         try {
             console.log("Request cancelled:", requestToCancel.id);
-            const response = await fetch(
+            const response = await fetchWithToken(
                 `http://${import.meta.env.VITE_SERVER_IP}:${
                     import.meta.env.VITE_SERVER_PORT
                 }/v1/request/cancel/${requestToCancel.id}`,

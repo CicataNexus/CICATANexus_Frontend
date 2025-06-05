@@ -13,6 +13,8 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "./Chart";
 import { Icon } from "@iconify/react";
 import useDateNavigation from "@/utils/dateNavigation"; // ya lo tienes en el proyecto
 import { useState, useEffect } from "react";
+import { fetchWithToken } from "@/constants/authFetch";
+
 
 export const description = "A simple area chart";
 
@@ -31,15 +33,24 @@ export default function FrequentHours() {
     useEffect(() => {
         const fetchData = async () => {
             const dayString = "Wednesday";
-            const url = `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/analytics/hourly-frequency?month=${currentMonth}&dayString=${dayString}&year=${currentYear}`;
+            const url = `http://${import.meta.env.VITE_SERVER_IP}:${
+                import.meta.env.VITE_SERVER_PORT
+            }/v1/analytics/hourly-frequency?month=${currentMonth}&dayString=${dayString}&year=${currentYear}`;
 
             try {
-                const response = await fetch(url);
+                const response = await fetchWithToken(url);
                 const data = await response.json();
 
                 const fixedHours = [
-                    "08:00", "09:00", "10:00", "11:00", "12:00",
-                    "13:00", "14:00", "15:00", "16:00"
+                    "08:00",
+                    "09:00",
+                    "10:00",
+                    "11:00",
+                    "12:00",
+                    "13:00",
+                    "14:00",
+                    "15:00",
+                    "16:00",
                 ];
 
                 const formatted = fixedHours.map((hour) => {
@@ -52,7 +63,10 @@ export default function FrequentHours() {
 
                 setChartData(formatted);
             } catch (error) {
-                console.error("Error al cargar datos de horarios frecuentes", error);
+                console.error(
+                    "Error al cargar datos de horarios frecuentes",
+                    error
+                );
             }
         };
 

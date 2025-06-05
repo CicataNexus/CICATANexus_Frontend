@@ -12,6 +12,7 @@ import {
 import { ROLES } from "@/constants/roles";
 import { AREAS } from "@/constants/areas";
 import SelectInput from "@/components/ui/SelectInput";
+import { fetchWithToken } from "@/constants/authFetch";
 
 export default function RequestDetailsPanel({ request, onClose, setReload }) {
     const [showModal, setShowModal] = useState(false);
@@ -19,7 +20,7 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
     useEffect(() => {
         const fetchTechnicians = async () => {
             try {
-                const response = await fetch(
+                const response = await fetchWithToken(
                     `http://${import.meta.env.VITE_SERVER_IP}:${
                         import.meta.env.VITE_SERVER_PORT
                     }/v1/user`
@@ -141,7 +142,7 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
         }
 
         try {
-            const response = await fetch(
+            const response = await fetchWithToken(
                 `http://${import.meta.env.VITE_SERVER_IP}:${
                     import.meta.env.VITE_SERVER_PORT
                 }/v1/request/admin-action/${request.id}`,
@@ -196,7 +197,7 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
         }
 
         try {
-            const response = await fetch(
+            const response = await fetchWithToken(
                 `http://${import.meta.env.VITE_SERVER_IP}:${
                     import.meta.env.VITE_SERVER_PORT
                 }/v1/request/admin-action/${request.id}`,
@@ -306,7 +307,7 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                                         ? "Equipo"
                                         : typeOfRequest === "R&M"
                                         ? "Reactivo o Material"
-                                        : "Asistencia técnica"}
+                                        : "Apoyo técnico"}
                                 </p>
                                 <div className="mb-3">
                                     <strong>Técnico asignado</strong>
@@ -329,7 +330,7 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                                                     if (!selectedTechnician) return;
 
                                                     try {
-                                                        const response = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/request/${request.id}`, {
+                                                        const response = await fetchWithToken(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/request/${request.id}`, {
                                                             method: "PUT",
                                                             headers: {
                                                                 "Content-Type": "application/json",

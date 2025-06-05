@@ -10,7 +10,7 @@ export const MyRequestsColumns = (handleToggleDetails, selectedRequest) => [
             const value = getValue();
             if (value === "EQ") return "Equipo";
             if (value === "R&M") return "Reactivo o Material";
-            if (value === "TA") return "Asistencia técnica";
+            if (value === "TA") return "Apoyo técnico";
             return "Desconocido";
         },
     },

@@ -6,6 +6,7 @@ import { showToast } from "@/utils/toastUtils";
 import { ROLES } from "@/constants/roles";
 import ModalUserConfirmation from "@/components/ModalUserConfirmation";
 import SelectInput from "@/components/ui/SelectInput";
+import { fetchWithToken } from "@/constants/authFetch";
 
 export default function AddUserPanel({
     onClose,
@@ -139,7 +140,7 @@ export default function AddUserPanel({
             payload.workArea = formData.workArea;
         }
         try {
-            const response = await fetch(
+            const response = await fetchWithToken(
                 `http://${import.meta.env.VITE_SERVER_IP}:${
                     import.meta.env.VITE_SERVER_PORT
                 }/v1/auth/register`,
@@ -202,7 +203,7 @@ export default function AddUserPanel({
         }
 
         try {
-            const response = await fetch(
+            const response = await fetchWithToken(
                 `http://${import.meta.env.VITE_SERVER_IP}:${
                     import.meta.env.VITE_SERVER_PORT
                 }/v1/user/${cleanedRegistrationNumber}`,
@@ -233,7 +234,7 @@ export default function AddUserPanel({
 
     const handleDelete = async () => {
         try {
-            const response = await fetch(
+            const response = await fetchWithToken(
                 `http://${import.meta.env.VITE_SERVER_IP}:${
                     import.meta.env.VITE_SERVER_PORT
                 }/v1/user/${formData.registrationNumber}`,

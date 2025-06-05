@@ -22,6 +22,7 @@ import ViewModeSwitch from "@/components/ViewModeSwitch";
 import useDateNavigation, { getPeriodLabel } from "@/utils/dateNavigation";
 import { Icon } from "@iconify/react";
 import { useState, useEffect, useMemo } from "react";
+import { fetchWithToken } from "@/constants/authFetch";
 
 export default function RequestsByTech() {
     const {
@@ -49,7 +50,7 @@ export default function RequestsByTech() {
             }
 
             try {
-                const response = await fetch(url);
+                const response = await fetchWithToken(url);
                 const data = await response.json();
 
                 const sorted = data

@@ -4,6 +4,7 @@ import { showToast } from "@/utils/toastUtils";
 import { AREAS } from "@/constants/areas";
 import SelectInput from "@/components/ui/SelectInput";
 import ModalMovementConfirmation from "@/components/ModalMovementConfirmation";
+import { fetchWithToken } from "@/constants/authFetch";
 
 export default function MovementsDetailsPanel({ request, onClose, setReload, }) {
     const [showConfirmation, setShowConfirmation] = useState(false);
@@ -35,7 +36,7 @@ export default function MovementsDetailsPanel({ request, onClose, setReload, }) 
             const formData = new FormData();
             formData.append("body", JSON.stringify({ status: newStatus.value }));
 
-            const response = await fetch(
+            const response = await fetchWithToken(
                 `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/equipment/barcode/${request.equipment.barcode}`,
                 {
                     method: "PUT",

@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import ViewModeSwitch from "@/components/ViewModeSwitch";
 import useDateNavigation, { getPeriodLabel } from "@/utils/dateNavigation";
+import { fetchWithToken } from "@/constants/authFetch";
+
 
 export default function TotalRequests() {
     const {
@@ -23,13 +25,15 @@ export default function TotalRequests() {
             const year = currentYear;
             const month = period === 0 ? currentMonth : undefined;
 
-            let url = `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/analytics/total?period=${period}&year=${year}`;
+            let url = `http://${import.meta.env.VITE_SERVER_IP}:${
+                import.meta.env.VITE_SERVER_PORT
+            }/v1/analytics/total?period=${period}&year=${year}`;
             if (month) {
                 url += `&month=${month}`;
             }
 
             try {
-                const response = await fetch(url);
+                const response = await fetchWithToken(url);
                 const data = await response.json();
                 setTotal(data.total ?? 0);
             } catch (error) {
@@ -64,24 +68,24 @@ export default function TotalRequests() {
             <div className="flex justify-center items-center gap-2 mt-2 text-sm font-semibold">
                 <Icon
                     icon="iconamoon:arrow-left-2-light"
-                    className={`h-4 w-4 ${isLeftDisabled 
-                        ? "text-gray-400" 
-                        : "text-blue-600 cursor-pointer"}`}
-                    onClick={!isLeftDisabled 
-                        ? handleLeftClick 
-                        : undefined}
+                    className={`h-4 w-4 ${
+                        isLeftDisabled
+                            ? "text-gray-400"
+                            : "text-blue-600 cursor-pointer"
+                    }`}
+                    onClick={!isLeftDisabled ? handleLeftClick : undefined}
                 />
                 <span className="font-montserrat font-medium">
                     {currentLabel}
                 </span>
                 <Icon
                     icon="iconamoon:arrow-right-2-light"
-                    className={`h-4 w-4 ${isRightDisabled 
-                        ? "text-gray-400" 
-                        : "text-blue-600 cursor-pointer"}`}
-                    onClick={!isRightDisabled 
-                        ? handleRightClick 
-                        : undefined}
+                    className={`h-4 w-4 ${
+                        isRightDisabled
+                            ? "text-gray-400"
+                            : "text-blue-600 cursor-pointer"
+                    }`}
+                    onClick={!isRightDisabled ? handleRightClick : undefined}
                 />
             </div>
         </div>

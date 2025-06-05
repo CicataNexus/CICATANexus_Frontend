@@ -7,6 +7,7 @@ import TimePicker from "./TimePicker";
 import { Button } from "@/components/ui/button";
 import ModalRequestConfirmation from "@/components/ModalRequestConfirmation";
 import { TiWarningOutline } from "react-icons/ti";
+import { fetchWithToken } from "@/constants/authFetch";
 
 const areas = [
   "Laboratorio de Biología Molecular",
@@ -94,7 +95,7 @@ const RequestEquipment = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
+        const response = await fetchWithToken(
           `http://${import.meta.env.VITE_SERVER_IP}:${
             import.meta.env.VITE_SERVER_PORT
           }/v1/equipment/basic`
@@ -119,7 +120,7 @@ const RequestEquipment = () => {
         let hasDailyReservation = false;
 
         const fetches = selectedItems.map(async (equipment) => {
-          const equipmentResponse = await fetch(
+          const equipmentResponse = await fetchWithToken(
             `http://${import.meta.env.VITE_SERVER_IP}:${
               import.meta.env.VITE_SERVER_PORT
             }/v1/equipment/barcode/${equipment.barcode}`
@@ -305,7 +306,7 @@ const RequestEquipment = () => {
     console.log(formattedRequest);
 
     try {
-      const response = await fetch(
+      const response = await fetchWithToken(
         `http://${import.meta.env.VITE_SERVER_IP}:${
           import.meta.env.VITE_SERVER_PORT
         }/v1/request`,

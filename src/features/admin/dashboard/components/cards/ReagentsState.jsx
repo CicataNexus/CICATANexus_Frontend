@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardContent, CardTitle } from "../cards/Card";
+import { fetchWithToken } from "@/constants/authFetch";
+
 
 export default function ReagentsState() {
     const [lowAvailability, setLowAvailability] = useState([]);
@@ -8,7 +10,8 @@ export default function ReagentsState() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/analytics/reagent-status-summary`);
+                const response = await fetchWithToken(
+                    `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/analytics/reagent-status-summary`);
                 const data = await response.json();
                 setLowAvailability(data.lowStock.map((r) => r.reagentName));
                 setExpiringSoon(data.expiringSoon.map((r) => r.reagentName));
@@ -58,16 +61,16 @@ export default function ReagentsState() {
                     </div>
                     {expiringSoon.length > 0 ? (
                         <ul className="space-y-1 text-xs font-medium mb-0">
-                        {expiringSoon.map((item, idx) => (
-                            <li
-                                key={idx}
-                                className="bg-blue-50 px-2 py-0.5 rounded-md truncate"
-                                title={item}
-                            >
-                                {item}
-                            </li>
-                        ))}
-                    </ul>
+                            {expiringSoon.map((item, idx) => (
+                                <li
+                                    key={idx}
+                                    className="bg-blue-50 px-2 py-0.5 rounded-md truncate"
+                                    title={item}
+                                >
+                                    {item}
+                                </li>
+                            ))}
+                        </ul>
                     ) : (
                         <div className="flex items-center justify-center text-gray-500 font-montserrat text-xs font-semibold text-center">
                             No hay reactivos a punto de caducar

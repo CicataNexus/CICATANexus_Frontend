@@ -5,6 +5,7 @@ import TimePicker from "./TimePicker";
 import { showToast } from "@/utils/toastUtils";
 import { Button } from "@/components/ui/Button";
 import ModalRequestConfirmation from "@/components/ModalRequestConfirmation";
+import { fetchWithToken } from "@/constants/authFetch";
 
 const areas = [
   "Laboratorio de Biología Molecular",
@@ -98,7 +99,7 @@ const RequestSupport = () => {
     };
     console.log(formattedRequest);
     try {
-      const response = await fetch(
+      const response = await fetchWithToken(
         `http://${import.meta.env.VITE_SERVER_IP}:${
           import.meta.env.VITE_SERVER_PORT
         }/v1/request`,

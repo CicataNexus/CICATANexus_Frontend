@@ -6,6 +6,7 @@ import RequestsTable from "@/features/admin/requests-mgmt/RequestsTable";
 import PaginationControls from "@/components/PaginationControls";
 import { RequestsColumns } from "@/features/admin/requests-mgmt/RequestsColumns";
 import ModalCancelReqConfirmation from "@/components/ModalCancelReqConfirmation";
+import { fetchWithToken } from "@/constants/authFetch";
 
 const Requests = () => {
     const [reload, setReload] = useState(false);
@@ -27,7 +28,7 @@ const Requests = () => {
                 const endpoint = role === ROLES.TECH
                     ? `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/request/technician/${registrationNumber}?page=${page}&limit=${pageSize}`
                     : `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/request/paginated?page=${page}&limit=${pageSize}`;
-                const response = await fetch(endpoint);
+                const response = await fetchWithToken(endpoint);
                 if (!response.ok) throw new Error("Error fetching requests");
                 const data = await response.json();
 

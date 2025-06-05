@@ -8,6 +8,7 @@ import ModalProductConfirmation from "@/components/ModalProductConfirmation";
 import FileInput from "@/components/ui/FileInput";
 import DateInput from "@/components/ui/DateInput";
 import SelectInput from "@/components/ui/SelectInput";
+import { fetchWithToken } from "@/constants/authFetch";
 
 export default function AddEquipmentPanel({
     onClose,
@@ -154,7 +155,7 @@ export default function AddEquipmentPanel({
         }
 
         try {
-            const response = await fetch(
+            const response = await fetchWithToken(
                 `http://${import.meta.env.VITE_SERVER_IP}:${
                     import.meta.env.VITE_SERVER_PORT
                 }/v1/equipment`,
@@ -213,7 +214,7 @@ export default function AddEquipmentPanel({
         }
 
         try {
-            const response = await fetch(
+            const response = await fetchWithToken(
                 `http://${import.meta.env.VITE_SERVER_IP}:${
                     import.meta.env.VITE_SERVER_PORT
                 }/v1/equipment/barcode/${initialData.barcode}`,
@@ -241,7 +242,7 @@ export default function AddEquipmentPanel({
 
     const handleDelete = async () => {
         try {
-            const response = await fetch(
+            const response = await fetchWithToken(
                 `http://${import.meta.env.VITE_SERVER_IP}:${
                     import.meta.env.VITE_SERVER_PORT
                 }/v1/equipment/barcode/${formData.barcode}`,

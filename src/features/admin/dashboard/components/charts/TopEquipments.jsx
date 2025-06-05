@@ -14,6 +14,7 @@ import ViewModeSwitch from "@/components/ViewModeSwitch";
 import useDateNavigation, { getPeriodLabel } from "@/utils/dateNavigation";
 import { Icon } from "@iconify/react";
 import { useState, useEffect } from "react";
+import { fetchWithToken } from "@/constants/authFetch";
 
 export const description = "A bar chart with a label";
 
@@ -49,10 +50,9 @@ export default function TopEquipments() {
             if (month) {
                 url += `&month=${month}`;
             }
-            console.log(url)
             
             try {
-                const response = await fetch(url);
+                const response = await fetchWithToken(url);
                 const data = await response.json();
 
                 const formattedData = data.equipment.map((item) => ({

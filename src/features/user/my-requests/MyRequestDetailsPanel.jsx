@@ -73,7 +73,7 @@ export default function MyRequestDetailsPanel({ request, onCancel }) {
                                 ? "Equipo"
                                 : typeOfRequest === "R&M"
                                 ? "Reactivo o Material"
-                                : "Asistencia técnica"}
+                                : "Apoyo técnico"}
                         </p>
                         <p className="mb-3">
                             <strong>Técnico asignado</strong>

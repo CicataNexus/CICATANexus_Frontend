@@ -10,7 +10,7 @@ import TopAreas from "@/features/admin/dashboard/components/charts/TopAreas";
 import TopActiveUsers from "@/features/admin/dashboard/components/charts/TopActiveUsers";
 import FrequentHours from "@/features/admin/dashboard/components/charts/FrequentHours";
 
-function Dashboard() {
+export default function Dashboard() {
     return (
         <section className="p-2 -mt-1 w-full max-w-full overflow-x-hidden overflow-y-hidden pb-15">
             <h2 className="font-poppins text-2xl font-bold mb-2">
@@ -51,5 +51,3 @@ function Dashboard() {
         </section>
     );
 }
-
-export default Dashboard;

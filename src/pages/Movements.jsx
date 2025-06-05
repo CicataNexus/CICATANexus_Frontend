@@ -3,6 +3,7 @@ import TableToolbar from "../components/ui/TableToolbar";
 import MovementsTable from "@/features/technician/MovementsTable";
 import PaginationControls from "@/components/PaginationControls";
 import { MovementsColumns } from "@/features/technician/MovementsColumns";
+import { fetchWithToken } from "@/constants/authFetch";
 
 const Movements = () => {
     const [reload, setReload] = useState(false);
@@ -17,8 +18,8 @@ const Movements = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const requestResponse = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/request`);
-                const equipmentResponse = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/equipment/basic`);
+                const requestResponse = await fetchWithToken(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/request`);
+                const equipmentResponse = await fetchWithToken(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/equipment/basic`);
                 const requestData = await requestResponse.json();
                 const equipmentData = await equipmentResponse.json();
 

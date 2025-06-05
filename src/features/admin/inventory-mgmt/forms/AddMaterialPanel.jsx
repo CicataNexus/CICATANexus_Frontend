@@ -7,6 +7,7 @@ import { showToast } from '@/utils/toastUtils';
 import ModalProductConfirmation from "@/components/ModalProductConfirmation";
 import FileInput from "@/components/ui/FileInput";
 import DateInput from "@/components/ui/DateInput";
+import { fetchWithToken } from "@/constants/authFetch";
 
 export default function AddMaterialPanel({
     onClose,
@@ -210,7 +211,7 @@ export default function AddMaterialPanel({
         }
 
         try {
-            const response = await fetch(
+            const response = await fetchWithToken(
                 `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/materials`,
                 {
                     method: "POST",
@@ -276,7 +277,7 @@ export default function AddMaterialPanel({
         }
 
         try {
-            const response = await fetch(
+            const response = await fetchWithToken(
                 `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/materials/${formData.barcode}`,
                 {
                     method: "PUT",
@@ -302,7 +303,7 @@ export default function AddMaterialPanel({
 
     const handleDelete = async () => {
         try {
-            const response = await fetch(
+            const response = await fetchWithToken(
                 `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/materials/${formData.barcode}`,
                 {
                     method: "DELETE",

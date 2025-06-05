@@ -23,8 +23,8 @@ function Login() {
             }
         }
     }, []);
-    const [matricula, setMatricula] = useState("");
-    const matriculaRef = useRef(null);
+    const [registrationNumber, setRegistrationNumber] = useState("");
+    const registrationNumRef = useRef(null);
     const passwordRef = useRef(null);
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -34,32 +34,32 @@ function Login() {
         setError("");
 
         // Usuarios temporales para no prender la api
-        if (matricula === "ana" && password === "123") {
+        if (registrationNumber === "ana" && password === "123") {
             const token = import.meta.env.VITE_ADMIN_TOKEN;
             localStorage.setItem("token", token);
             navigate("/dashboard");
             return;
         }
-        if (matricula === "pepe" && password === "123") {
+        if (registrationNumber === "pepe" && password === "123") {
             const token = import.meta.env.VITE_TECH_TOKEN;
             localStorage.setItem("token", token);
             navigate("/gestion/solicitudes");
             return;
         }
-        if (matricula === "juan" && password === "123") {
+        if (registrationNumber === "juan" && password === "123") {
             const token = import.meta.env.VITE_USER_TOKEN;
             localStorage.setItem("token", token);
             navigate("/solicitud/equipo");
             return;
         }
 
-        if (!matricula || !password) {
-            if (!matricula && !password) {
+        if (!registrationNumber || !password) {
+            if (!registrationNumber && !password) {
                 setError("Por favor, ingrese su clave de usuario y contraseña");
-                matriculaRef.current?.focus();
-            } else if (!matricula) {
+                registrationNumRef.current?.focus();
+            } else if (!registrationNumber) {
                 setError("Por favor, ingrese su clave de usuario");
-                matriculaRef.current?.focus();
+                registrationNumRef.current?.focus();
             } else if (!password) {
                 setError("Por favor, ingrese su contraseña");
                 passwordRef.current?.focus();
@@ -78,7 +78,7 @@ function Login() {
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({ matricula, password }),
+                    body: JSON.stringify({ registrationNumber, password }),
                 }
             );
 
@@ -87,7 +87,7 @@ function Login() {
             if (response.ok) {
                 const token = data.token;
                 localStorage.setItem("token", token);
-                localStorage.setItem("matricula", matricula);
+                localStorage.setItem("registrationNumber", registrationNumber);
                 const decoded = jwtDecode(token);
                 console.log(decoded);
                 const role = decoded.role;
@@ -158,10 +158,10 @@ function Login() {
                                     </span>
                                     <input
                                         type="text"
-                                        ref={matriculaRef}
-                                        value={matricula}
+                                        ref={registrationNumRef}
+                                        value={registrationNumber}
                                         onChange={(e) =>
-                                            setMatricula(e.target.value)
+                                            setRegistrationNumber(e.target.value)
                                         }
                                         className="rounded-md p-1 border-2 border-gray-200 outline-none focus:border-input-focus focus:bg-input-background placeholder:text-sm placeholder:text-placeholder-text"
                                         placeholder="Ingrese su clave de usuario"

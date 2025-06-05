@@ -7,6 +7,8 @@ import { MaterialColumns } from "../features/admin/inventory-mgmt/columns/Materi
 import { ReagentColumns } from "../features/admin/inventory-mgmt/columns/ReagentColumns.jsx";
 import AddProductPanel from "../features/admin/inventory-mgmt/AddProductPanel";
 import PaginationControls from "@/components/PaginationControls";
+import { fetchWithToken } from "@/constants/authFetch";
+
 
 const columnsMap = {
     // For the table columns
@@ -43,7 +45,7 @@ export default function GenericInventory() {
     const [error, setError] = useState(null);
     const [reload, setReload] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
-    
+
     useEffect(() => {
         setSelectedProduct(null);
     }, [type]);
@@ -88,9 +90,8 @@ export default function GenericInventory() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(
-                    `${apiEndpoints[type]}?page=${page}&limit=${pageSize}`
-                );
+                const response = await fetchWithToken(
+                    `${apiEndpoints[type]}?page=${page}&limit=${pageSize}`);
                 if (!response.ok) {
                     throw new Error("Error fetching data");
                 }

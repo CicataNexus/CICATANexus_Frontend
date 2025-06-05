@@ -4,6 +4,7 @@ import UsersTable from "@/features/admin/users-mgmt/UsersTable";
 import { UsersColumns } from "@/features/admin/users-mgmt/UsersColumns";
 import AddUserModalPanel from "@/features/admin/users-mgmt/AddUserModalPanel";
 import PaginationControls from "@/components/PaginationControls";
+import { fetchWithToken } from "@/constants/authFetch";
 
 export default function UsersManagement() {
     const [search, setSearch] = useState("");
@@ -36,7 +37,7 @@ export default function UsersManagement() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(
+                const response = await fetchWithToken(
                     `http://${import.meta.env.VITE_SERVER_IP}:${
                         import.meta.env.VITE_SERVER_PORT
                     }/v1/user?page=${page}&limit=${pageSize}`
