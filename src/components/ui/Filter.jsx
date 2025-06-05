@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@iconify/react';
 import { ROLES } from "@/constants/roles";
+import { useLocation } from "react-router-dom";
 
 const filterOptions = {
     requests: [
@@ -38,34 +39,40 @@ const filterValues = {
     workArea: [
         {
             label: 'Laboratorio de Biología Molecular',
-            value: 'Laboratorio de Biología Molecular',
+            value: 'LABORATORIO DE BIOLOGIA MOLECULAR',
         },
         {
             label: 'Laboratorio de Cultivo Celular y Microscopía',
-            value: 'Laboratorio de Cultivo Celular y Microscopía',
+            value: 'LABORATORIO DE CULTIVO CELULAR Y MICROSCOPIA',
         },
         {
             label: 'Anexo de Cultivo Celular',
-            value: 'Anexo de Cultivo Celular',
+            value: 'ANEXO DE CULTIVO CELULAR',
         },
         {
             label: 'Laboratorio de Microbiología',
-            value: 'Laboratorio de Microbiología',
+            value: 'LABORATORIO DE MICROBIOLOGIA',
         },
         {
             label: 'Laboratorio de Cromatografía y Espectrofotometría',
-            value: 'Laboratorio de Cromatografía y Espectrofotometría',
+            value: 'LABORATORIO DE CROMATOGRAFIA Y ESPECTROFOTOMETRIA',
         },
         {
             label: 'Laboratorio de Bioprocesos',
-            value: 'Laboratorio de Bioprocesos',
+            value: 'LABORATORIO DE BIOPROCESOS',
         },
         {
             label: 'Laboratorio de Acondicionamiento',
-            value: 'Laboratorio de Acondicionamiento',
+            value: 'LABORATORIO DE ACONDICIONAMIENTO',
         },
-        { label: 'Cámara Fría', value: 'Cámara Fría' },
-        { label: 'Bioterio', value: 'Bioterio' },
+        {
+            label: 'Cámara Fría',
+            value: 'CAMARA FRIA',
+        },
+        {
+            label: 'Bioterio',
+            value: 'BIOTERIO',
+        },
     ],
     requestStatus: [
         {
@@ -137,6 +144,7 @@ const filterValues = {
 };
 
 export default function Filter({ type, onClose, onChange, data = [] }) {
+    const location = useLocation();
     const [isHovered, setIsHovered] = useState(false);
     const [open, setOpen] = useState(false);
     const [isAnimatingOut, setIsAnimatingOut] = useState(false);
@@ -186,6 +194,12 @@ export default function Filter({ type, onClose, onChange, data = [] }) {
             }
         });
     }, [tempFilters, type]);
+
+    useEffect(() => {
+        setSelectedFilters({});
+        setTempFilters({});
+        onChange?.({});
+    }, [location.pathname]);
 
     const getFilteredData = () => {
         return data.filter((item) => {

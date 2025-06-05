@@ -57,7 +57,7 @@ export default function TopMaterials() {
                 const formattedData = data.material.map((item) => ({
                     material: item.name,
                     solicitudes: item.count,
-                }));
+                })).slice(0, 5);;
                 setChartData(formattedData);
             } catch (error) {
                 console.error("Error al obtener datos de materiales más solicitados:", error);

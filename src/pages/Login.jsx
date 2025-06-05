@@ -137,10 +137,10 @@ function Login() {
                 </header>
 
                 {/* Spheres for background */}
-                <div className="fixed bottom-20 left-3 w-65 h-65 bg-sphere-blue opacity-50 blur-[100px] rounded-full"></div>
-                <div className="fixed top-10 right-3 w-65 h-65 bg-sphere-blue opacity-50 blur-[100px] rounded-full"></div>
+                <div className="fixed bottom-20 left-3 w-65 h-65 bg-sphere-blue opacity-50 blur-[100px] rounded-full z-0"></div>
+                <div className="fixed top-10 right-3 w-65 h-65 bg-sphere-blue opacity-50 blur-[100px] rounded-full z-0"></div>
 
-                <div className="w-full max-w-xl px-4 sm:px-8">
+                <div className="w-full max-w-xl px-4 sm:px-8 z-10">
                     <form
                         onSubmit={(e) => {
                             e.preventDefault();
