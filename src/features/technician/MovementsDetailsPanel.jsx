@@ -5,8 +5,9 @@ import { AREAS } from "@/constants/areas";
 import SelectInput from "@/components/ui/SelectInput";
 import ModalMovementConfirmation from "@/components/ModalMovementConfirmation";
 import { fetchWithToken } from "@/constants/authFetch";
+import SecureImage from "@/components/SecureImage";
 
-export default function MovementsDetailsPanel({ request, onClose, setReload, }) {
+export default function MovementsDetailsPanel({ request, onClose, setReload }) {
     const [showConfirmation, setShowConfirmation] = useState(false);
     const statusOptions = [
         { label: "Disponible", value: "available" },
@@ -14,7 +15,8 @@ export default function MovementsDetailsPanel({ request, onClose, setReload, }) 
         { label: "Deshabilitado", value: "disabled" },
     ];
     const [newStatus, setNewStatus] = useState(
-        statusOptions.find((opt) => opt.value === request?.equipment?.status) || statusOptions[0]
+        statusOptions.find((opt) => opt.value === request?.equipment?.status) ||
+            statusOptions[0]
     );
 
     const {
@@ -28,16 +30,23 @@ export default function MovementsDetailsPanel({ request, onClose, setReload, }) 
 
     const handleConfirm = async () => {
         try {
-            if (!["available", "inUse", "disabled"].includes(newStatus?.value)) {
+            if (
+                !["available", "inUse", "disabled"].includes(newStatus?.value)
+            ) {
                 console.warn("Estado no válido:", newStatus);
                 return;
             }
-            
+
             const formData = new FormData();
-            formData.append("body", JSON.stringify({ status: newStatus.value }));
+            formData.append(
+                "body",
+                JSON.stringify({ status: newStatus.value })
+            );
 
             const response = await fetchWithToken(
-                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/equipment/barcode/${request.equipment.barcode}`,
+                `http://${import.meta.env.VITE_SERVER_IP}:${
+                    import.meta.env.VITE_SERVER_PORT
+                }/v1/equipment/barcode/${request.equipment.barcode}`,
                 {
                     method: "PUT",
                     body: formData,
@@ -68,7 +77,7 @@ export default function MovementsDetailsPanel({ request, onClose, setReload, }) 
                 />
             )}
             <div className="w-full max-w-4xl flex justify-center py-2 place-self-center">
-                <section className ="w-full">
+                <section className="w-full">
                     <article className="flex flex-col items-center justify-center p-4 w-full max-w-4xl rounded-xl bg-white font-montserrat text-sm shadow-sm">
                         <div className="grid grid-cols-2 w-full gap-4 divide-primary-blue divide-x">
                             <div className="space-y-1.5 p-2">
@@ -86,9 +95,9 @@ export default function MovementsDetailsPanel({ request, onClose, setReload, }) 
                                     <strong>Fecha en que se requiere</strong>
                                     <br />
                                     {startingDate
-                                        ? new Date(startingDate).toLocaleDateString(
-                                            "es-MX"
-                                        )
+                                        ? new Date(
+                                              startingDate
+                                          ).toLocaleDateString("es-MX")
                                         : "-"}
                                 </p>
                                 <p className="mb-3">
@@ -100,7 +109,11 @@ export default function MovementsDetailsPanel({ request, onClose, setReload, }) 
                                     <strong>Área(s) de trabajo</strong>
                                     <br />
                                     {Array.isArray(workArea)
-                                        ? workArea.map((area) => AREAS[area] || area).join(", ")
+                                        ? workArea
+                                              .map(
+                                                  (area) => AREAS[area] || area
+                                              )
+                                              .join(", ")
                                         : AREAS[workArea] || workArea}
                                 </p>
                                 <p className="mb-3">
@@ -110,7 +123,10 @@ export default function MovementsDetailsPanel({ request, onClose, setReload, }) 
                                         name="status"
                                         value={newStatus.value}
                                         onChange={(e) => {
-                                            const selected = statusOptions.find(opt => opt.value === e.target.value);
+                                            const selected = statusOptions.find(
+                                                (opt) =>
+                                                    opt.value === e.target.value
+                                            );
                                             setNewStatus(selected);
                                         }}
                                         options={statusOptions}
@@ -146,12 +162,8 @@ export default function MovementsDetailsPanel({ request, onClose, setReload, }) 
                                     {equipment?.barcode || "-"}
                                 </p>
                                 {equipment?.photoID && (
-                                    <img
-                                        src={`http://${
-                                            import.meta.env.VITE_SERVER_IP
-                                        }:${
-                                            import.meta.env.VITE_SERVER_PORT
-                                        }/v1/photo/${equipment.photoID}`}
+                                    <SecureImage
+                                        photoId={equipment.photoID}
                                         alt="Foto del equipo"
                                         className="mt-2 mx-auto w-[50%] h-40 object-cover"
                                     />
@@ -175,7 +187,6 @@ export default function MovementsDetailsPanel({ request, onClose, setReload, }) 
                         >
                             Cambiar estado
                         </Button>
-
                     </div>
                 </section>
             </div>

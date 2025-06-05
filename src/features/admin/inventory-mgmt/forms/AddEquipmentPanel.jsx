@@ -9,6 +9,7 @@ import FileInput from "@/components/ui/FileInput";
 import DateInput from "@/components/ui/DateInput";
 import SelectInput from "@/components/ui/SelectInput";
 import { fetchWithToken } from "@/constants/authFetch";
+import SecureImage from "@/components/SecureImage";
 
 export default function AddEquipmentPanel({
     onClose,
@@ -359,8 +360,8 @@ export default function AddEquipmentPanel({
                                             className="mt-2 mx-auto w-[50%] h-40 object-cover"
                                         />
                                     ) : initialData.photoId ? (
-                                        <img
-                                            src={`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/photo/${initialData.photoId}`}
+                                        <SecureImage
+                                            photoId={initialData.photoId}
                                             alt="Imagen del equipo"
                                             className="mt-2 mx-auto w-[50%] h-40 object-cover"
                                         />

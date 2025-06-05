@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { Button } from "../ui/button";
+import SecureImage from "../SecureImage";
 
 const SearchSelect = ({
   options,
@@ -93,10 +94,8 @@ const SearchSelect = ({
                 >
                   {option.photoId && (
                     <>
-                      <img
-                        src={`http://${import.meta.env.VITE_SERVER_IP}:${
-                          import.meta.env.VITE_SERVER_PORT
-                        }/v1/photo/${option.photoId}`}
+                      <SecureImage
+                        photoId={option.photoId}
                         alt={`Imagen de ${option.name}`}
                         className="p-2 w-full max-h-35 object-contain"
                       />

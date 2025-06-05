@@ -9,6 +9,7 @@ import FileInput from "@/components/ui/FileInput";
 import DateInput from "@/components/ui/DateInput";
 import SelectInput from "@/components/ui/SelectInput";
 import { fetchWithToken } from "@/constants/authFetch";
+import SecureImage from "@/components/SecureImage";
 
 export default function AddReagentPanel({
     onClose,
@@ -536,8 +537,8 @@ export default function AddReagentPanel({
                                             className="mt-2 mx-auto w-[50%] h-40 object-cover"
                                         />
                                     ) : initialData.photoId ? (
-                                            <img
-                                                src={`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/photo/${initialData.photoId}`}
+                                            <SecureImage
+                                                photoId={initialData.photoId}
                                                 alt="Imagen del reactivo"
                                                 className="mt-2 mx-auto w-[50%] h-40 object-cover"
                                             />
@@ -780,8 +781,8 @@ export default function AddReagentPanel({
                                             className="mt-2 mx-auto w-[50%] h-40 object-cover"
                                         />
                                     ) : initialData.pictogramId ? (
-                                        <img
-                                            src={`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/photo/${initialData.pictogramId}`}
+                                        <SecureImage
+                                            photoId={initialData.pictogramId}
                                             alt="Imagen del pictograma"
                                             className="mt-2 mx-auto w-[50%] h-40 object-cover"
                                         />
