@@ -1,3 +1,4 @@
+import { apiFetch } from "@/utils/apiFetch";
 import React, { useState, useEffect, useRef } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
@@ -23,8 +24,8 @@ function Login() {
             }
         }
     }, []);
-    const [matricula, setMatricula] = useState("");
-    const matriculaRef = useRef(null);
+    const [registrationNumber, setRegistrationNumber] = useState("");
+    const registrationNumberRef = useRef(null);
     const passwordRef = useRef(null);
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -34,32 +35,32 @@ function Login() {
         setError("");
 
         // Usuarios temporales para no prender la api
-        if (matricula === "ana" && password === "123") {
+        if (registrationNumber === "ana" && password === "123") {
             const token = import.meta.env.VITE_ADMIN_TOKEN;
             localStorage.setItem("token", token);
             navigate("/dashboard");
             return;
         }
-        if (matricula === "pepe" && password === "123") {
+        if (registrationNumber === "pepe" && password === "123") {
             const token = import.meta.env.VITE_TECH_TOKEN;
             localStorage.setItem("token", token);
             navigate("/gestion/solicitudes");
             return;
         }
-        if (matricula === "juan" && password === "123") {
+        if (registrationNumber === "juan" && password === "123") {
             const token = import.meta.env.VITE_USER_TOKEN;
             localStorage.setItem("token", token);
             navigate("/solicitud/equipo");
             return;
         }
 
-        if (!matricula || !password) {
-            if (!matricula && !password) {
+        if (!registrationNumber || !password) {
+            if (!registrationNumber && !password) {
                 setError("Por favor, ingrese su clave de usuario y contraseña");
-                matriculaRef.current?.focus();
-            } else if (!matricula) {
+                registrationNumberRef.current?.focus();
+            } else if (!registrationNumber) {
                 setError("Por favor, ingrese su clave de usuario");
-                matriculaRef.current?.focus();
+                registrationNumberRef.current?.focus();
             } else if (!password) {
                 setError("Por favor, ingrese su contraseña");
                 passwordRef.current?.focus();
@@ -69,49 +70,35 @@ function Login() {
 
         // Validar credenciales con el back
         try {
-            const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${
-                    import.meta.env.VITE_SERVER_PORT
-                }/v1/auth/login`,
+            const data = await apiFetch("/auth/login",
                 {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ matricula, password }),
+                    body: JSON.stringify({ registrationNumber, password }),
                 }
             );
 
-            const data = await response.json();
+            const token = data.token;
+            localStorage.setItem("token", token);
+            localStorage.setItem("registrationNumber", registrationNumber);
+            const decoded = jwtDecode(token);
+            const role = decoded.role;
 
-            if (response.ok) {
-                const token = data.token;
-                localStorage.setItem("token", token);
-                localStorage.setItem("matricula", matricula);
-                const decoded = jwtDecode(token);
-                console.log(decoded);
-                const role = decoded.role;
-
-                // Dependiendo del rol, se envía al usuario a su ruts
-                switch (role) {
-                    case ROLES.ADMIN:
-                        navigate("/dashboard");
-                        break;
-                    case ROLES.TECH:
-                        navigate("/gestion/solicitudes");
-                        break;
-                    case ROLES.USER:
-                        navigate("/solicitud/equipo");
-                        break;
-                    default:
-                        setError("Usuario con rol no reconocido");
-                        break;
-                }
-            } else {
-                setError("Datos incorrectos, intente nuevamente");
+            switch (role) {
+            case ROLES.ADMIN:
+                navigate("/dashboard");
+                break;
+            case ROLES.TECH:
+                navigate("/gestion/solicitudes");
+                break;
+            case ROLES.USER:
+                navigate("/solicitud/equipo");
+                break;
+            default:
+                setError("Usuario con rol no reconocido");
+                break;
             }
         } catch (error) {
-            setError(data.error);
+            setError(error.message);
         }
     };
 
@@ -158,10 +145,10 @@ function Login() {
                                     </span>
                                     <input
                                         type="text"
-                                        ref={matriculaRef}
-                                        value={matricula}
+                                        ref={registrationNumberRef}
+                                        value={registrationNumber}
                                         onChange={(e) =>
-                                            setMatricula(e.target.value)
+                                            setRegistrationNumber(e.target.value)
                                         }
                                         className="rounded-md p-1 border-2 border-gray-200 outline-none focus:border-input-focus focus:bg-input-background placeholder:text-sm placeholder:text-placeholder-text"
                                         placeholder="Ingrese su clave de usuario"

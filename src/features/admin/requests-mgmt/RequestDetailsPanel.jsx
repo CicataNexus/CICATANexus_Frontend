@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import ModalDeclineReqConfirmation from "@/components/ModalDeclineReqConfirmation";
 import { Button } from "@/components/ui/button";
 import { showToast } from "@/utils/toastUtils";
@@ -14,7 +14,9 @@ import { AREAS } from "@/constants/areas";
 import SelectInput from "@/components/ui/SelectInput";
 
 export default function RequestDetailsPanel({ request, onClose, setReload }) {
+    const observationsRef = useRef(null);
     const [showModal, setShowModal] = useState(false);
+    const [observationText, setObservationText] = useState("");
     const [availableTechnicians, setAvailableTechnicians] = useState([]);
     useEffect(() => {
         const fetchTechnicians = async () => {
@@ -102,6 +104,7 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
             "Pendiente de aprobación (Jefe de departamento)",
             "Aprobada por técnico",
             "Rechazada por Técnico",
+            "Aprobada y notificada",
         ],
         [ROLES.TECH]: ["Pendiente de aprobación (Técnico)"],
     };
@@ -221,12 +224,50 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
             console.error("Error rejecting request:", error);
         }
     };
+    
+    const handleComment = async () => {
+        const { registrationNumber } = jwtDecode(localStorage.getItem("token"));
+
+        try {
+            const response = await fetch(
+                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/request/observation/${request.id}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        registrationNumber,
+                        observation: observationText.trim(),
+                    }),
+                }
+            );
+
+            if (!response.ok) {
+                const errorData = await response.json(); // intenta leer el mensaje del backend
+                throw new Error(errorData.message || "Error al agregar comentario");
+            }
+
+            showToast("Comentario agregado correctamente", "success");
+            setObservationText("");
+            setReload((prev) => !prev);
+        } catch (err) {
+            console.error("Error al agregar comentario:", err);
+        }
+    };
+
+    useEffect(() => {
+        if (observationsRef.current) {
+            observationsRef.current.scrollTop = observationsRef.current.scrollHeight;
+        }
+    }, [request?.observations?.length]);
 
     const assignedTechnician = availableTechnicians.find(
         (tech) => tech.name === assignedTechnicianName
     );
 
     const allChecked = observerChecks.length > 0 && observerChecks.every((t) => t.check);
+    const isDisabled = request.requestStatus === "Aprobada y notificada" && observationText.trim() === "";
 
     return (
         <>
@@ -378,19 +419,13 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                                 <p>
                                     <strong>Observaciones</strong>
                                 </p>
-                                <div className="max-h-32 overflow-y-auto border border-gray-400 rounded-md p-2">
+                                <div ref={observationsRef} className="max-h-32 overflow-y-auto border border-gray-400 rounded-md p-2">
                                     <ul className="flex flex-col gap-2 text-xs font-montserrat">
                                         {observations?.map((obs, index) => {
                                             const isSystemLog =
-                                                obs.message.includes(
-                                                    "ha iniciado"
-                                                ) ||
-                                                obs.message.includes(
-                                                    "ha aprobado"
-                                                ) ||
-                                                obs.message.includes(
-                                                    "ha rechazado"
-                                                );
+                                                obs?.message?.includes("ha iniciado") ||
+                                                obs?.message?.includes("ha aprobado") ||
+                                                obs?.message?.includes("ha rechazado");
 
                                             return (
                                                 <li
@@ -464,6 +499,8 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                                         id="observation"
                                         className="border border-gray-400 rounded-md p-3 text-sm h-25 focus:outline-none focus:ring-1 focus:ring-primary-blue font-montserrat focus:border-white"
                                         placeholder="Ej. El equipo no requiere calibración extra. Se entrega a las 10:00 AM."
+                                        value={observationText}
+                                        onChange={(e) => setObservationText(e.target.value)}
                                     />
                                 </div>
                                 {role === ROLES.TECH && (
@@ -535,40 +572,56 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                                     </div>
                                 )}
                             </div>
+                            {request.requestStatus === "Aprobada y notificada" ? (
+                                <div className="flex justify-end pt-1">
+                                    <Button
+                                        disabled={request.requestStatus === "Aprobada y notificada" && observationText.trim() === ""}
+                                        className={`text-base font-poppins font-semibold inline-flex items-center px-6 py-2 ${
+                                            isDisabled
+                                                ? "cursor-not-allowed bg-gray-200 text-gray-400"
+                                                : "bg-delete-btn hover:bg-delete-btn-hover text-white transition cursor-pointer"
+                                        }`}
+                                        onClick={handleComment}
+                                        aria-label="Guardar comentario"
+                                    >
+                                        Agregar comentario
+                                    </Button>
+                                </div>
+                            ) : (
+                                <div className="flex justify-end gap-4 pt-1">
+                                    <Button
+                                        disabled={role === ROLES.TECH && !allChecked}
+                                        className={`text-base font-poppins font-semibold inline-flex items-center px-6 py-2 w-32 ${
+                                            role === ROLES.TECH && !allChecked
+                                                ? "cursor-not-allowed bg-gray-200 text-gray-400"
+                                                : "bg-reject-btn hover:bg-reject-btn-hover text-white transition cursor-pointer"
+                                        }`}
+                                        onClick={() => {
+                                            setModalAction("reject");
+                                            setShowModal(true);
+                                        }}
+                                        aria-label="Rechazar solicitud"
+                                    >
+                                        Rechazar
+                                    </Button>
 
-                            <div className="flex justify-end gap-4 pt-1">
-                                <Button
-                                    disabled={role === ROLES.TECH && !allChecked}
-                                    className={`text-base font-poppins font-semibold inline-flex items-center px-6 py-2 w-32 ${
-                                        role === ROLES.TECH && !allChecked
-                                            ? "cursor-not-allowed bg-gray-200 text-gray-400"
-                                            : "bg-reject-btn hover:bg-reject-btn-hover text-white transition cursor-pointer"
-                                    }`}
-                                    onClick={() => {
-                                        setModalAction("reject");
-                                        setShowModal(true);
-                                    }}
-                                    aria-label="Rechazar solicitud"
-                                >
-                                    Rechazar
-                                </Button>
-
-                                <Button
-                                    disabled={role === ROLES.TECH && !allChecked}
-                                    className={`text-base font-poppins font-semibold inline-flex items-center px-6 py-2 w-32 ${
-                                        role === ROLES.TECH && !allChecked
-                                            ? "cursor-not-allowed bg-gray-200 text-gray-400"
-                                            : "bg-approve-btn hover:bg-approve-btn-hover text-white transition cursor-pointer"
-                                    }`}
-                                    onClick={() => {
-                                        setModalAction("approve");
-                                        setShowModal(true);
-                                    }}
-                                    aria-label="Aprobar solicitud"
-                                >
-                                    Aprobar
-                                </Button>
-                            </div>
+                                    <Button
+                                        disabled={role === ROLES.TECH && !allChecked}
+                                        className={`text-base font-poppins font-semibold inline-flex items-center px-6 py-2 w-32 ${
+                                            role === ROLES.TECH && !allChecked
+                                                ? "cursor-not-allowed bg-gray-200 text-gray-400"
+                                                : "bg-approve-btn hover:bg-approve-btn-hover text-white transition cursor-pointer"
+                                        }`}
+                                        onClick={() => {
+                                            setModalAction("approve");
+                                            setShowModal(true);
+                                        }}
+                                        aria-label="Aprobar solicitud"
+                                    >
+                                        Aprobar
+                                    </Button>
+                                </div>
+                            )}
                         </section>
                     )}
                 </section>

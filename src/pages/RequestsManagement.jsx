@@ -74,12 +74,22 @@ const Requests = () => {
                         assignedTechnicianName: req.assignedTechnicianName,
                         occupiedMaterial: req.occupiedMaterial,
                         observations: req.observations,
-                        observatorTechnician: req.observatorTechnician
+                        observatorTechnician: req.observatorTechnician,
+                        logCode: req.logCode,
                     };
                 });
 
                 setRequestsData(mapped);
                 setTotalItems(data.total || mapped.length);
+
+                if (selectedRequest) {
+                    const updated = mapped.find((r) => r.id === selectedRequest.id);
+                    if (updated) {
+                        setSelectedRequest(updated);
+                    } else {
+                        setSelectedRequest(null);
+                    }
+                }
             } catch (err) {
                 console.error("Error fetching requests:", err);
             }
@@ -100,10 +110,12 @@ const Requests = () => {
         const matchesSearch = (() => {
             if (!searchedItem) return true;
         
+            const logCode = request.logCode ?? ""
             const name = request.requestedBy?.name ?? "";
             const regNumber = request.requestedBy?.registrationNumber ?? "";
         
             return (
+                normalizeText(logCode).includes(searchedItem) ||
                 normalizeText(name).includes(searchedItem) ||
                 normalizeText(regNumber).includes(searchedItem)
             );
