@@ -1,3 +1,4 @@
+import { apiFetch, baseUrl } from "@/utils/apiFetch";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -299,30 +300,17 @@ export default function AddReagentPanel({
         }
 
         try {
-            const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${
-                    import.meta.env.VITE_SERVER_PORT
-                }/v1/reagent`,
+            const data = await apiFetch("/reagent",
                 {
                     method: "POST",
                     body: reagentFormData,
                 }
             );
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error("Error:", errorData);
-                showToast(
-                    "El código de barras ya está registrado, inténtelo de nuevo",
-                    "error"
-                );
-                throw new Error("Error al agregar el reactivo");
-            }
-            // If product was added successfully, set confirmation
             setModalConfirming(false);
             setShowConfirmation(true);
         } catch (error) {
-            console.error("Error:", error);
+            showToast("El código de barras ya está registrado, inténtelo de nuevo","error");
         }
     };
 
@@ -395,27 +383,18 @@ export default function AddReagentPanel({
         }
 
         try {
-            const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${
-                    import.meta.env.VITE_SERVER_PORT
-                }/v1/reagent/${formData.barcode}`,
+            const data = await apiFetch(`/reagent/${formData.barcode}`,
                 {
                     method: "PUT",
                     body: reagentFormData,
                 }
             );
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error("Error:", errorData);
-                throw new Error("Error al editar el reactivo");
-            } else {
-                showToast("Reactivo editado exitosamente", "success");
-                onClose();
-                setTimeout(() => {
-                    setReload((prev) => !prev);
-                }, 0);
-            }
+            showToast("Reactivo editado exitosamente", "success");
+            onClose();
+            setTimeout(() => {
+                setReload((prev) => !prev);
+            }, 0);
         } catch (error) {
             console.error("Error:", error);
         }
@@ -423,24 +402,17 @@ export default function AddReagentPanel({
 
     const handleDelete = async () => {
         try {
-            const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${
-                    import.meta.env.VITE_SERVER_PORT
-                }/v1/reagent/barcode/${formData.barcode}`,
+            const data = await apiFetch(`/reagent/barcode/${formData.barcode}`,
                 {
                     method: "DELETE",
                 }
             );
 
-            if (!response.ok) {
-                throw new Error("Error al eliminar el reactivo");
-            } else {
-                showToast("Reactivo eliminado exitosamente", "success");
-                onClose();
-                setTimeout(() => {
-                    setReload((prev) => !prev);
-                }, 0);
-            }
+            showToast("Reactivo eliminado exitosamente", "success");
+            onClose();
+            setTimeout(() => {
+                setReload((prev) => !prev);
+            }, 0);
         } catch (error) {
             console.error("Error:", error);
         }
@@ -536,7 +508,7 @@ export default function AddReagentPanel({
                                         />
                                     ) : initialData.photoId ? (
                                             <img
-                                                src={`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/photo/${initialData.photoId}`}
+                                                src={`${baseUrl}/photo/${initialData.photoId}`}
                                                 alt="Imagen del reactivo"
                                                 className="mt-2 mx-auto w-[50%] h-40 object-cover"
                                             />
@@ -780,7 +752,7 @@ export default function AddReagentPanel({
                                         />
                                     ) : initialData.pictogramId ? (
                                         <img
-                                            src={`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/photo/${initialData.pictogramId}`}
+                                            src={`${baseUrl}/photo/${initialData.pictogramId}`}
                                             alt="Imagen del pictograma"
                                             className="mt-2 mx-auto w-[50%] h-40 object-cover"
                                         />

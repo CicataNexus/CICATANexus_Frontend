@@ -1,3 +1,4 @@
+import { apiFetch } from "@/utils/apiFetch";
 import { useState, useEffect, useMemo } from "react";
 import { jwtDecode } from "jwt-decode";
 import { ROLES } from "@/constants/roles";
@@ -25,11 +26,9 @@ const Requests = () => {
             try {
                 const { role, registrationNumber } = jwtDecode(localStorage.getItem("token"));
                 const endpoint = role === ROLES.TECH
-                    ? `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/request/technician/${registrationNumber}?page=${page}&limit=${pageSize}`
-                    : `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/request/paginated?page=${page}&limit=${pageSize}`;
-                const response = await fetch(endpoint);
-                if (!response.ok) throw new Error("Error fetching requests");
-                const data = await response.json();
+                    ? `/request/technician/${registrationNumber}?page=${page}&limit=${pageSize}`
+                    : `/request/paginated?page=${page}&limit=${pageSize}`;
+                const data = await apiFetch(endpoint);
 
                 const requestsArray = data.requests || data;
                 const mapped = requestsArray.map((req) => {

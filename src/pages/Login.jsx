@@ -34,26 +34,6 @@ function Login() {
     const handleLogin = async () => {
         setError("");
 
-        // Usuarios temporales para no prender la api
-        if (registrationNumber === "ana" && password === "123") {
-            const token = import.meta.env.VITE_ADMIN_TOKEN;
-            localStorage.setItem("token", token);
-            navigate("/dashboard");
-            return;
-        }
-        if (registrationNumber === "pepe" && password === "123") {
-            const token = import.meta.env.VITE_TECH_TOKEN;
-            localStorage.setItem("token", token);
-            navigate("/gestion/solicitudes");
-            return;
-        }
-        if (registrationNumber === "juan" && password === "123") {
-            const token = import.meta.env.VITE_USER_TOKEN;
-            localStorage.setItem("token", token);
-            navigate("/solicitud/equipo");
-            return;
-        }
-
         if (!registrationNumber || !password) {
             if (!registrationNumber && !password) {
                 setError("Por favor, ingrese su clave de usuario y contraseña");

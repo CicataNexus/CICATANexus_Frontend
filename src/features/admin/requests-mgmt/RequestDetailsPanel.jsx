@@ -1,3 +1,4 @@
+import { apiFetch } from "@/utils/apiFetch";
 import { useState, useEffect, useRef } from "react";
 import ModalDeclineReqConfirmation from "@/components/ModalDeclineReqConfirmation";
 import { Button } from "@/components/ui/button";
@@ -21,15 +22,9 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
     useEffect(() => {
         const fetchTechnicians = async () => {
             try {
-                const response = await fetch(
-                    `http://${import.meta.env.VITE_SERVER_IP}:${
-                        import.meta.env.VITE_SERVER_PORT
-                    }/v1/user`
+                const data = await apiFetch(`/user`
                 );
-                if (!response.ok)
-                    throw new Error("Error al obtener los técnicos");
 
-                const data = await response.json();
                 const filtered = data.users.filter(
                     (user) => user.role === ROLES.TECH
                 );
@@ -144,15 +139,9 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
         }
 
         try {
-            const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${
-                    import.meta.env.VITE_SERVER_PORT
-                }/v1/request/admin-action/${request.id}`,
+            const data = await apiFetch(`/request/admin-action/${request.id}`,
                 {
                     method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
                     body: JSON.stringify({
                         registrationNumber,
                         requestStatus: nextStatus,
@@ -160,10 +149,6 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                     }),
                 }
             );
-
-            if (!response.ok) {
-                throw new Error("Error approving request");
-            }
             setReload((prev) => !prev);
         } catch (error) {
             console.error("Error approving request:", error);
@@ -199,15 +184,9 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
         }
 
         try {
-            const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${
-                    import.meta.env.VITE_SERVER_PORT
-                }/v1/request/admin-action/${request.id}`,
+            const data = await apiFetch(`/request/admin-action/${request.id}`,
                 {
                     method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
                     body: JSON.stringify({
                         registrationNumber,
                         requestStatus: nextStatus,
@@ -215,10 +194,6 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                     }),
                 }
             );
-
-            if (!response.ok) {
-                throw new Error("Error rejecting request");
-            }
             setReload((prev) => !prev);
         } catch (error) {
             console.error("Error rejecting request:", error);
@@ -229,24 +204,15 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
         const { registrationNumber } = jwtDecode(localStorage.getItem("token"));
 
         try {
-            const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/request/observation/${request.id}`,
+            const data = await apiFetch(`/request/observation/${request.id}`,
                 {
                     method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
                     body: JSON.stringify({
                         registrationNumber,
                         observation: observationText.trim(),
                     }),
                 }
             );
-
-            if (!response.ok) {
-                const errorData = await response.json(); // intenta leer el mensaje del backend
-                throw new Error(errorData.message || "Error al agregar comentario");
-            }
 
             showToast("Comentario agregado correctamente", "success");
             setObservationText("");
@@ -370,17 +336,12 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                                                     if (!selectedTechnician) return;
 
                                                     try {
-                                                        const response = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/request/${request.id}`, {
+                                                        const data = await apiFetch(`/request/${request.id}`, {
                                                             method: "PUT",
-                                                            headers: {
-                                                                "Content-Type": "application/json",
-                                                            },
                                                             body: JSON.stringify({
                                                                 registrationNumber: selectedTechnician.registrationNumber,
                                                             }),
                                                         });
-
-                                                        if (!response.ok) throw new Error("Error al cambiar técnico");
 
                                                         showToast("Técnico reasignado exitosamente", "success");
                                                         setReload((prev) => !prev);

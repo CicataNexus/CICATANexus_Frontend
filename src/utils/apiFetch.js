@@ -1,11 +1,13 @@
-const baseUrl = `http://${import.meta.env.VITE_SERVER_IP}/v1`;
+export const baseUrl = `http://${import.meta.env.VITE_SERVER_IP}/v1`;
 
 export const apiFetch = async (url, options = {}) => {
     const token = localStorage.getItem("token");
+    const isFormData = options.body instanceof FormData;
+    const isBlob = options.responseType === "blob";
 
     const headers = {
-        "Content-Type": "application/json",
         ...(token && { Authorization: `Bearer ${token}` }),
+        ...(isFormData ? {} : { "Content-Type": "application/json" }),
         ...options.headers,
     };
 
@@ -14,7 +16,15 @@ export const apiFetch = async (url, options = {}) => {
         headers,
     };
 
+    delete config.responseType;
+
     const response = await fetch(`${baseUrl}${url}`, config);
+
+    if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+        return;
+    }
 
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -23,5 +33,5 @@ export const apiFetch = async (url, options = {}) => {
         throw error;
     }
 
-    return response.json();
+    return isBlob ? response.blob() : response.json();
 };

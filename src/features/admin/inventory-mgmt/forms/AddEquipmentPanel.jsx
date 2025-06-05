@@ -1,3 +1,4 @@
+import { apiFetch, baseUrl } from "@/utils/apiFetch";
 import { useState } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
@@ -154,28 +155,17 @@ export default function AddEquipmentPanel({
         }
 
         try {
-            const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${
-                    import.meta.env.VITE_SERVER_PORT
-                }/v1/equipment`,
+            const data = await apiFetch("/equipment",
                 {
                     method: "POST",
                     body: equipmentFormData,
                 }
             );
 
-            if (!response.ok) {
-                showToast(
-                    "El código de barras ya está registrado, inténtelo de nuevo",
-                    "error"
-                );
-                throw new Error("Error al agregar el equipo");
-            }
-            // If product was added successfully, set confirmation
             setModalConfirming(false);
             setShowConfirmation(true);
         } catch (error) {
-            console.error("Error:", error);
+            showToast("El código de barras ya está registrado, inténtelo de nuevo", "error");
         }
     };
 
@@ -213,27 +203,18 @@ export default function AddEquipmentPanel({
         }
 
         try {
-            const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${
-                    import.meta.env.VITE_SERVER_PORT
-                }/v1/equipment/barcode/${initialData.barcode}`,
+            const data = await apiFetch("/equipment/barcode/${initialData.barcode}",
                 {
                     method: "PUT",
                     body: equipmentFormData,
                 }
             );
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error("Error:", errorData);
-                throw new Error("Error al editar el equipo");
-            } else {
-                showToast("Equipo editado exitosamente", "success");
-                onClose();
-                setTimeout(() => {
-                    setReload((prev) => !prev);
-                }, 0);
-            }
+            showToast("Equipo editado exitosamente", "success");
+            onClose();
+            setTimeout(() => {
+                setReload((prev) => !prev);
+            }, 0);
         } catch (error) {
             console.error("Error:", error);
         }
@@ -241,24 +222,17 @@ export default function AddEquipmentPanel({
 
     const handleDelete = async () => {
         try {
-            const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${
-                    import.meta.env.VITE_SERVER_PORT
-                }/v1/equipment/barcode/${formData.barcode}`,
+            const data = await apiFetch(`/equipment/barcode/${formData.barcode}`,
                 {
                     method: "DELETE",
                 }
             );
 
-            if (!response.ok) {
-                throw new Error("Error al eliminar el equipo");
-            } else {
-                showToast("Equipo eliminado exitosamente", "success");
-                onClose();
-                setTimeout(() => {
-                    setReload((prev) => !prev);
-                }, 0);
-            }
+            showToast("Equipo eliminado exitosamente", "success");
+            onClose();
+            setTimeout(() => {
+                setReload((prev) => !prev);
+            }, 0);
         } catch (error) {
             console.error("Error:", error);
         }
@@ -359,7 +333,7 @@ export default function AddEquipmentPanel({
                                         />
                                     ) : initialData.photoId ? (
                                         <img
-                                            src={`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/photo/${initialData.photoId}`}
+                                            src={`${baseUrl}/photo/${initialData.photoId}`}
                                             alt="Imagen del equipo"
                                             className="mt-2 mx-auto w-[50%] h-40 object-cover"
                                         />

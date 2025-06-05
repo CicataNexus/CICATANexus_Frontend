@@ -1,3 +1,4 @@
+import { apiFetch } from "@/utils/apiFetch";
 import { useState, useMemo, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import { showToast } from "@/utils/toastUtils";
@@ -53,22 +54,14 @@ const MyRequests = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(
-                    `http://${import.meta.env.VITE_SERVER_IP}:${
-                        import.meta.env.VITE_SERVER_PORT
-                    }/v1/request/user/${registrationNumber}?page=${page}&limit=${pageSize}`
-                );
+                const data = await apiFetch(`/request/user/${registrationNumber}?page=${page}&limit=${pageSize}`);
 
-                if (!response.ok) {
-                    throw new Error("Error fetching data");
-                }
-                const result = await response.json();
                 const transformedData = mapApiResponseToRequiredFormat(
-                    result.requests
+                    data.requests
                 );
 
                 setRequests(transformedData);
-                setTotalItems(result.total);
+                setTotalItems(data.total);
             } catch (err) {
                 setError(err);
             }
@@ -93,23 +86,12 @@ const MyRequests = () => {
 
     const handleConfirmCancel = async () => {
         try {
-            console.log("Request cancelled:", requestToCancel.id);
-            const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${
-                    import.meta.env.VITE_SERVER_PORT
-                }/v1/request/cancel/${requestToCancel.id}`,
+            const data = await apiFetch(`/request/cancel/${requestToCancel.id}`,
                 {
                     method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
                     body: JSON.stringify({ registrationNumber }),
                 }
             );
-
-            if (!response.ok) {
-                throw new Error("Error al cancelar la solicitud");
-            }
 
             showToast("Solicitud cancelada con éxito", "success");
             setShowCancelModal(false);

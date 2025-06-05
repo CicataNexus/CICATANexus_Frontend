@@ -1,3 +1,4 @@
+import { apiFetch, baseUrl } from "@/utils/apiFetch";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -197,7 +198,7 @@ export default function AddMaterialPanel({
                 ? new Date(formData.expirationDate).toISOString()
                 : null,
             receivingTemperature: String(formData.receivingTemperature),
-            barcode: String(formData.barcode), // should be String
+            barcode: String(formData.barcode),
             location: String(formData.location),
             observations: String(formData.observations),
             obsForUsers: String(formData.obsForUsers),
@@ -210,23 +211,17 @@ export default function AddMaterialPanel({
         }
 
         try {
-            const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/materials`,
+            const data = await apiFetch("/v1/materials`",
                 {
                     method: "POST",
                     body: materialFormData,
                 }
             );
 
-            if (!response.ok) {
-                showToast("El código de barras ya está registrado, inténtelo de nuevo", "error");
-                throw new Error("Error al agregar el material");
-            }
-            // If product was added successfully, set confirmation
             setModalConfirming(false);
             setShowConfirmation(true);
         } catch (error) {
-            console.error("Error:", error);
+            showToast("El código de barras ya está registrado, inténtelo de nuevo", "error");
         }
     };
 
@@ -276,25 +271,18 @@ export default function AddMaterialPanel({
         }
 
         try {
-            const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/materials/${formData.barcode}`,
+            const data = await apiFetch(`/materials/${formData.barcode}`,
                 {
                     method: "PUT",
                     body: materialFormData,
                 }
             );
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error("Error:", errorData);
-                throw new Error("Error al editar el material");
-            } else {
-                showToast("Material editado exitosamente", "success");
-                onClose();
-                setTimeout(() => {
-                    setReload(prev => !prev);
-                }, 0);
-            }
+            showToast("Material editado exitosamente", "success");
+            onClose();
+            setTimeout(() => {
+                setReload((prev) => !prev);
+            }, 0);
         } catch (error) {
             console.error("Error:", error);
         }
@@ -302,22 +290,17 @@ export default function AddMaterialPanel({
 
     const handleDelete = async () => {
         try {
-            const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/materials/${formData.barcode}`,
+            const data = await apiFetch(`/materials/${formData.barcode}`,
                 {
                     method: "DELETE",
                 }
             );
 
-            if (!response.ok) {
-                throw new Error("Error al eliminar el material");
-            } else {
-                showToast("Material eliminado exitosamente", "success");
-                onClose();
-                setTimeout(() => {
-                    setReload(prev => !prev);
-                }, 0);
-            }
+            showToast("Material eliminado exitosamente", "success");
+            onClose();
+            setTimeout(() => {
+                setReload((prev) => !prev);
+            }, 0);
         } catch (error) {
             console.error("Error:", error);
         }
@@ -457,7 +440,7 @@ export default function AddMaterialPanel({
                                         />
                                     ) : initialData.photoId ? (
                                         <img
-                                            src={`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/photo/${initialData.photoId}`}
+                                            src={`${baseUrl}/photo/${initialData.photoId}`}
                                             alt="Imagen del material"
                                             className="mt-2 mx-auto w-[50%] h-40 object-cover"
                                         />

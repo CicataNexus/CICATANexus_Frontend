@@ -1,3 +1,4 @@
+import { apiFetch } from "@/utils/apiFetch";
 import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import DatePicker from "./DatePicker";
@@ -40,15 +41,7 @@ const RequestMaterial = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(
-          `http://${import.meta.env.VITE_SERVER_IP}:${
-            import.meta.env.VITE_SERVER_PORT
-          }/v1/combined/basic`
-        );
-        if (!res.ok) {
-          throw new Error("Error fetching combined items");
-        }
-        const data = await res.json();
+        const data = await apiFetch("/combined/basic");
         setCombinedItems(data);
       } catch (err) {
         console.error(err);
@@ -108,35 +101,13 @@ const RequestMaterial = () => {
         .registrationNumber,
       observations: observations,
     };
-    console.log(formattedRequest);
     try {
-      const response = await fetch(
-        `http://${import.meta.env.VITE_SERVER_IP}:${
-          import.meta.env.VITE_SERVER_PORT
-        }/v1/request`,
+      const data = await apiFetch("/request",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
           body: JSON.stringify(formattedRequest),
         }
       );
-
-      if (!response.ok) {
-        const error = await response.json();
-        if (
-          error.message ===
-          "Error creating request: Error: Error fetching user: Technician not found or not assigned to this work area"
-        ) {
-          showToast(
-            "No hay técnico asignado para alguna de las áreas",
-            "error"
-          );
-          return;
-        }
-        throw new Error("Error al enviar la solicitud.");
-      }
 
       setMessage(true);
       setSelectedItems([]);
@@ -151,7 +122,11 @@ const RequestMaterial = () => {
       setObservations("");
       setErrors({});
     } catch (error) {
-      alert(error.message);
+      if (error.message === "Error creating request: Error: Error fetching user: Technician not found or not assigned to this work area") {
+				showToast("No hay técnico asignado para alguna de las áreas", "error");
+			} else {
+				showToast(error, "error");
+			}
     }
   };
 

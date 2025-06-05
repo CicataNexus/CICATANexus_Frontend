@@ -1,3 +1,4 @@
+import { apiFetch } from "@/utils/apiFetch";
 import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import ViewModeSwitch from "@/components/ViewModeSwitch";
@@ -23,14 +24,13 @@ export default function TotalRequests() {
             const year = currentYear;
             const month = period === 0 ? currentMonth : undefined;
 
-            let url = `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/analytics/total?period=${period}&year=${year}`;
+            let url = `/analytics/total?period=${period}&year=${year}`;
             if (month) {
                 url += `&month=${month}`;
             }
 
             try {
-                const response = await fetch(url);
-                const data = await response.json();
+                const data = await apiFetch(url);
                 setTotal(data.total ?? 0);
             } catch (error) {
                 console.error("Error al obtener total:", error);

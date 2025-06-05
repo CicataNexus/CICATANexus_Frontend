@@ -1,3 +1,4 @@
+import { baseUrl } from "@/utils/apiFetch";
 import React, { useState, useRef, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { Button } from "../ui/button";
@@ -94,9 +95,7 @@ const SearchSelect = ({
                   {option.photoId && (
                     <>
                       <img
-                        src={`http://${import.meta.env.VITE_SERVER_IP}:${
-                          import.meta.env.VITE_SERVER_PORT
-                        }/v1/photo/${option.photoId}`}
+                        src={`${baseUrl}/photo/${option.photoId}`}
                         alt={`Imagen de ${option.name}`}
                         className="p-2 w-full max-h-35 object-contain"
                       />

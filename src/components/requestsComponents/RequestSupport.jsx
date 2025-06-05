@@ -1,3 +1,4 @@
+import { apiFetch } from "@/utils/apiFetch";
 import { useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import DatePicker from "./DatePicker";
@@ -98,33 +99,12 @@ const RequestSupport = () => {
     };
     console.log(formattedRequest);
     try {
-      const response = await fetch(
-        `http://${import.meta.env.VITE_SERVER_IP}:${
-          import.meta.env.VITE_SERVER_PORT
-        }/v1/request`,
+      const data = await apiFetch("/request",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
           body: JSON.stringify(formattedRequest),
         }
       );
-
-      if (!response.ok) {
-        const error = await response.json();
-        if (
-          error.message ===
-          "Error creating request: Error: Error fetching user: Technician not found or not assigned to this work area"
-        ) {
-          showToast(
-            "No hay técnico asignado para alguna de las áreas",
-            "error"
-          );
-          return;
-        }
-        throw new Error("Error al enviar la solicitud");
-      }
 
       setMessage(true);
       setSelectedAreas([]);
@@ -139,8 +119,11 @@ const RequestSupport = () => {
       setSelectedOption("");
       setErrors({});
     } catch (error) {
-      alert("Ocurrió un error al enviar la solicitud. Intente de nuevo.");
-      console.error(error);
+      if (error.message === "Error creating request: Error: Error fetching user: Technician not found or not assigned to this work area") {
+        showToast("No hay técnico asignado para alguna de las áreas", "error");
+      } else {
+        showToast(error, "error");
+      }
     }
   };
 
