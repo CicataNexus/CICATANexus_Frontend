@@ -1,3 +1,4 @@
+import { apiFetch } from "@/utils/apiFetch";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import TableToolbar from "../components/ui/TableToolbar";
@@ -17,18 +18,12 @@ const columnsMap = {
 
 const apiEndpoints = {
     // For the API endpoints
-    equipos: `http://${import.meta.env.VITE_SERVER_IP}:${
-        import.meta.env.VITE_SERVER_PORT
-    }/v1/equipment`,
-    reactivos: `http://${import.meta.env.VITE_SERVER_IP}:${
-        import.meta.env.VITE_SERVER_PORT
-    }/v1/reagent`,
-    materiales: `http://${import.meta.env.VITE_SERVER_IP}:${
-        import.meta.env.VITE_SERVER_PORT
-    }/v1/materials`,
+    equipos: `/equipment`,
+    reactivos: `/reagent`,
+    materiales: `/materials`,
 };
 
-const resultKeyMap = {
+const dataKeyMap = {
     // Backend key mapping to frontend
     equipos: "equipments",
     materiales: "materials",
@@ -88,16 +83,12 @@ export default function GenericInventory() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(
+                const data = await apiFetch(
                     `${apiEndpoints[type]}?page=${page}&limit=${pageSize}`
                 );
-                if (!response.ok) {
-                    throw new Error("Error fetching data");
-                }
-                const result = await response.json();
-                const resultKey = resultKeyMap[type];
-                setData(result[resultKey]);
-                setTotalItems(result.total);
+                const dataKey = dataKeyMap[type];
+                setData(data[dataKey]);
+                setTotalItems(data.total);
             } catch (err) {
                 setError(err);
             }

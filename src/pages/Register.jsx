@@ -1,3 +1,4 @@
+import { apiFetch } from "@/utils/apiFetch";
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
@@ -87,40 +88,24 @@ function Register() {
         }
 
         try {
-            const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${
-                    import.meta.env.VITE_SERVER_PORT
-                }/v1/auth/register`,
+            await apiFetch("/auth/register",
                 {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
                     body: JSON.stringify(formData),
                 }
             );
-            if (response.ok) {
-                navigate("/");
-                showToast("Usuario registrado correctamente", "success");
-            } else {
-                const errorData = await response.json();
-                if (
-                    errorData.error ===
-                    "Failed to create user: registrationNumber already exists"
-                ) {
-                    showToast("La clave de usuario ya existe", "error");
-                } else if (
-                    errorData.error ===
-                    "Failed to create user: Email already in use"
-                ) {
-                    showToast("El correo electrónico ya existe", "error");
-                } else {
-                    showToast("Error al agregar usuario", "error");
-                }
-                throw new Error("Error al agregar usuario");
-            }
+
+            navigate("/");
+            showToast("Usuario registrado correctamente", "success");
         } catch (error) {
-            console.error("Error:", error);
+            if (error.message === "Failed to create user: registrationNumber already exists") {
+                showToast("La clave de usuario ya existe", "error");
+            } else if (error.message === "Failed to create user: Email already in use") {
+                showToast("El correo electrónico ya existe", "error");
+            } else {
+                showToast("Error al agregar usuario", "error");
+            }
+            throw new Error("Error al agregar usuario");
         }
     };
 

@@ -4,6 +4,10 @@ import { mapRequestStatusForAdminAndTechnician } from "@/utils/mapRequestAdminSt
 
 export const RequestsColumns = (handleToggleDetails, selectedRequest) => [
     {
+        header: "Identificador",
+        accessorFn: (row) => row.logCode || "-",
+    },
+    {
         header: "Nombre Solicitante",
         accessorFn: (row) => row.requestedBy?.name || "-",
     },

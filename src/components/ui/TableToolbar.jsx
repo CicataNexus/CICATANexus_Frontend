@@ -1,3 +1,4 @@
+import { apiFetch } from "@/utils/apiFetch";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@iconify/react";
@@ -45,19 +46,12 @@ export default function TableToolbar({
 
     const handleDownload = async () => {
         try {
-            const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${
-                    import.meta.env.VITE_SERVER_PORT
-                }/v1/export/inventory`
-            );
+            const data = await apiFetch("/export/inventory",
+            {
+                responseType: "blob",
+            });
 
-            if (!response.ok) {
-                showToast("Requiere productos en las tres categorías", "error");
-                return;
-            }
-
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
+            const url = window.URL.createObjectURL(data);
             const link = document.createElement("a");
             link.href = url;
             link.download = "Inventario_Cicata.xlsx";
@@ -67,7 +61,7 @@ export default function TableToolbar({
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
         } catch (error) {
-            alert("Error al descargar el inventario.");
+            showToast("Requiere productos en las tres categorías", "error");
             console.error(error);
         }
     };

@@ -1,3 +1,4 @@
+import { apiFetch } from "@/utils/apiFetch";
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardContent, CardTitle } from "../cards/Card";
 
@@ -8,8 +9,7 @@ export default function ReagentsState() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/analytics/reagent-status-summary`);
-                const data = await response.json();
+                const data = await apiFetch("/analytics/reagent-status-summary");
                 setLowAvailability(data.lowStock.map((r) => r.reagentName));
                 setExpiringSoon(data.expiringSoon.map((r) => r.reagentName));
             } catch (err) {

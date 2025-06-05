@@ -1,5 +1,5 @@
 "use client";
-
+import { apiFetch } from "@/utils/apiFetch";
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis, Cell } from "recharts";
 
 import {
@@ -46,15 +46,13 @@ export default function TopAreas() {
             const year = currentYear;
             const month = period === 0 ? currentMonth : undefined;
 
-            let url = `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/analytics/most-active-areas?period=${period}&year=${year}`;
+            let url = `/analytics/most-active-areas?period=${period}&year=${year}`;
             if (month) {
                 url += `&month=${month}`;
             }
-            console.log(url)
             
             try {
-                const response = await fetch(url);
-                const data = await response.json();
+                const data = await apiFetch(url);
 
                 const formattedData = data.map((item) => ({
                     workArea: AREAS[item.workArea] || item.workArea,

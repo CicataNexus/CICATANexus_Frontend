@@ -10,6 +10,7 @@ import {
     CardTitle,
 } from "../cards/Card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "./Chart";
+import { apiFetch } from "@/utils/apiFetch";
 
 const chartConfig = {
     atendidas: {
@@ -28,12 +29,11 @@ export default function RequestsStatus() {
     useEffect(() => {
         const fetchStatusData = async () => {
             try {
-                const res = await fetch(`http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/analytics/status-summary`);
-                const json = await res.json();
+                const data = await apiFetch(`/analytics/status-summary`);
                 setData([
                     {
-                        atendidas: json.attended ?? 0,
-                        pendientes: json.pending ?? 0,
+                        atendidas: data.attended ?? 0,
+                        pendientes: data.pending ?? 0,
                     },
                 ]);
             } catch (error) {

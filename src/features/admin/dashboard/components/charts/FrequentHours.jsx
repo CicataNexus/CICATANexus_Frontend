@@ -1,5 +1,5 @@
 "use client";
-
+import { apiFetch } from "@/utils/apiFetch";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
 import {
@@ -31,11 +31,11 @@ export default function FrequentHours() {
     useEffect(() => {
         const fetchData = async () => {
             const dayString = "Wednesday";
-            const url = `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/analytics/hourly-frequency?month=${currentMonth}&dayString=${dayString}&year=${currentYear}`;
+
+            let url = `/analytics/hourly-frequency?month=${currentMonth}&dayString=${dayString}&year=${currentYear}`;
 
             try {
-                const response = await fetch(url);
-                const data = await response.json();
+                const data = await apiFetch(url);
 
                 const fixedHours = [
                     "08:00", "09:00", "10:00", "11:00", "12:00",

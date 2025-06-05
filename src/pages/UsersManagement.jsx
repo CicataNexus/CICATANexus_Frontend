@@ -1,3 +1,4 @@
+import { apiFetch } from "@/utils/apiFetch";
 import { useEffect, useState } from "react";
 import TableToolbar from "../components/ui/TableToolbar";
 import UsersTable from "@/features/admin/users-mgmt/UsersTable";
@@ -36,17 +37,10 @@ export default function UsersManagement() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(
-                    `http://${import.meta.env.VITE_SERVER_IP}:${
-                        import.meta.env.VITE_SERVER_PORT
-                    }/v1/user?page=${page}&limit=${pageSize}`
-                );
-                if (!response.ok) {
-                    throw new Error("Error fetching users data");
-                }
-                const result = await response.json();
-                setData(result.users);
-                setTotalItems(result.total);
+                const data = await apiFetch(`/user?page=${page}&limit=${pageSize}`);
+
+                setData(data.users);
+                setTotalItems(data.total);
             } catch (err) {
                 setError(err);
             }

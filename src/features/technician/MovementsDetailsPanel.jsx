@@ -1,3 +1,4 @@
+import { apiFetch, baseUrl } from "@/utils/apiFetch";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { showToast } from "@/utils/toastUtils";
@@ -35,19 +36,12 @@ export default function MovementsDetailsPanel({ request, onClose, setReload, }) 
             const formData = new FormData();
             formData.append("body", JSON.stringify({ status: newStatus.value }));
 
-            const response = await fetch(
-                `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/v1/equipment/barcode/${request.equipment.barcode}`,
+            const data = await apiFetch(`/equipment/barcode/${request.equipment.barcode}`,
                 {
                     method: "PUT",
                     body: formData,
                 }
             );
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error("Error al actualizar el estado:", errorData);
-                throw new Error("Error al actualizar el estado");
-            }
 
             showToast("Estado actualizado correctamente", "success");
             onClose();
@@ -146,11 +140,7 @@ export default function MovementsDetailsPanel({ request, onClose, setReload, }) 
                                 </p>
                                 {equipment?.photoID && (
                                     <img
-                                        src={`http://${
-                                            import.meta.env.VITE_SERVER_IP
-                                        }:${
-                                            import.meta.env.VITE_SERVER_PORT
-                                        }/v1/photo/${equipment.photoID}`}
+                                        src={`${baseUrl}/photo/${equipment.photoID}`}
                                         alt="Foto del equipo"
                                         className="mt-2 mx-auto w-[50%] h-40 object-cover"
                                     />
