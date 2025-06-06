@@ -78,6 +78,13 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
         }
     }, [assignedTechnicianName, availableTechnicians]);
 
+    const noReassignment = [
+        "Cancelada",
+        "Rechazada y notificada",
+        "Aprobada y notificada",
+    ];
+
+
     const [observerChecks, setObserverChecks] = useState([]);
     useEffect(() => {
         if (request?.observatorTechnician?.length) {
@@ -318,7 +325,7 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                                 <div className="mb-3">
                                     <strong>Técnico asignado</strong>
                                     <br />
-                                    {role === ROLES.TECH ? (
+                                    {role === ROLES.TECH || noReassignment.includes(requestStatus) ? (
                                         <>{assignedTechnicianName}</>
                                     ) : (
                                         <>

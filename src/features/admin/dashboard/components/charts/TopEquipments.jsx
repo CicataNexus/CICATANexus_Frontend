@@ -66,7 +66,7 @@ export default function TopEquipments() {
         fetchData();
     }, [viewMode, currentMonth, currentYear]);
 
-    const currentLabel = getPeriodLabel(viewMode, currentMonth, currentYear);
+    const { label: currentLabel } = getPeriodLabel(viewMode, currentMonth, currentYear);
 
     return (
         <Card>

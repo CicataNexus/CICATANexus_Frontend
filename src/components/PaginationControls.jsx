@@ -59,7 +59,18 @@ export default function PaginationControls({
                     ))}
                 </select>
                 <button
-                    className="px-2 py-1 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="py-1 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                    onClick={() => setPage(1)}
+                    disabled={page === 1}
+                    aria-label="Página inicial"
+                >
+                    <Icon
+                        icon="material-symbols:keyboard-double-arrow-left-rounded"
+                        className="text-gray-500 text-2xl hover:text-primary-blue transition-colors"
+                    />
+                </button>
+                <button
+                    className="py-1 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                     onClick={() => setPage((p) => Math.max(p - 1, 1))}
                     disabled={page === 1}
                     aria-label="Página anterior"
@@ -69,8 +80,22 @@ export default function PaginationControls({
                         className="text-gray-500 text-2xl hover:text-primary-blue transition-colors"
                     />
                 </button>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                    (p) => (
+                {(() => {
+                    const maxButtons = 5;
+                    let startPage = Math.max(1, page - Math.floor(maxButtons / 2));
+                    let endPage = startPage + maxButtons - 1;
+
+                    if (endPage > totalPages) {
+                        endPage = totalPages;
+                        startPage = Math.max(1, endPage - maxButtons + 1);
+                    }
+
+                    const visiblePages = [];
+                    for (let p = startPage; p <= endPage; p++) {
+                        visiblePages.push(p);
+                    }
+
+                    return visiblePages.map((p) => (
                         <button
                             key={p}
                             className={`w-6 h-6 rounded-sm cursor-pointer ${
@@ -79,20 +104,31 @@ export default function PaginationControls({
                                     : "border bg-gray-50 border-gray-300 text-gray-700 hover:border-primary-blue transition-colors"
                             }`}
                             onClick={() => setPage(p)}
-                            aria-label="Ir a página {p}"
+                            aria-label={`Ir a página ${p}`}
                         >
                             {p}
                         </button>
-                    )
-                )}
+                    ));
+                })()}
                 <button
-                    className="px-2 py-1 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="py-1 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                     onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
                     disabled={page === totalPages}
                     aria-label="Página siguiente"
                 >
                     <Icon
                         icon="material-symbols:chevron-right-rounded"
+                        className="text-gray-500 text-2xl hover:text-primary-blue transition-colors"
+                    />
+                </button>
+                <button
+                    className="py-1 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                    onClick={() => setPage(totalPages)}
+                    disabled={page === totalPages}
+                    aria-label="Página final"
+                >
+                    <Icon
+                        icon="material-symbols:keyboard-double-arrow-right-rounded"
                         className="text-gray-500 text-2xl hover:text-primary-blue transition-colors"
                     />
                 </button>

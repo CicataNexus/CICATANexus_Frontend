@@ -70,7 +70,7 @@ export default function TopActiveUsers() {
         fetchData();
     }, [viewMode, currentMonth, currentYear]);
 
-    const currentLabel = getPeriodLabel(viewMode, currentMonth, currentYear);
+    const { label: currentLabel } = getPeriodLabel(viewMode, currentMonth, currentYear);
 
     const chartConfig = useMemo(() => {
         return data.reduce((config, item) => {

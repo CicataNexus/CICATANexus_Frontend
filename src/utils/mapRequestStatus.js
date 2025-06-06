@@ -9,6 +9,7 @@ export function mapRequestStatusForUser(rawStatus) {
             "Pendiente de aprobación (Jefe de departamento)",
             "Pendiente de aprobación (Técnico)",
             "Aprobada por técnico",
+            "Rechazada por Técnico",
         ].includes(rawStatus)
     )
         return "inProgress";
@@ -16,7 +17,6 @@ export function mapRequestStatusForUser(rawStatus) {
     if (rawStatus === "Aprobada y notificada") return "approved";
 
     if (
-        rawStatus === "Rechazada por técnico" ||
         rawStatus === "Rechazada y notificada"
     )
         return "rejected";
