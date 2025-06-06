@@ -2,6 +2,7 @@ import { apiFetch, baseUrl } from "@/utils/apiFetch";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import TokenImage from "@/components/ui/Image"
 import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
 import { showToast } from "@/utils/toastUtils";
@@ -490,38 +491,28 @@ export default function AddReagentPanel({
                             <span>
                                 Imagen
                             </span>
-                            {isEditing ? (
-                                <>
-                                    <FileInput
-                                        name="reagentImage"
-                                        value={formData.reagentImage}
-                                        onChange={handleChange}
-                                        className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
-                                    />
-                                    {formData.reagentImage ? (
-                                        <img
-                                            src={URL.createObjectURL(
-                                                formData.reagentImage
-                                            )}
-                                            alt="Imagen del reactivo"
-                                            className="mt-2 mx-auto w-[50%] h-40 object-cover"
-                                        />
-                                    ) : initialData.photoId ? (
-                                            <img
-                                                src={`${baseUrl}/photo/${initialData.photoId}`}
-                                                alt="Imagen del reactivo"
-                                                className="mt-2 mx-auto w-[50%] h-40 object-cover"
-                                            />
-                                    ) : null}
-                                </>
-                            ) : (
-                                <FileInput
-                                    name="reagentImage"
-                                    value={formData.reagentImage}
-                                    onChange={handleChange}
-                                    className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
+                            <FileInput
+                                name="reagentImage"
+                                value={formData.reagentImage}
+                                onChange={handleChange}
+                                required={!isEditing}
+                                showError={errors.reagentImage}
+                                errorMessage={"Este campo es obligatorio"}
+                                className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
+                            />
+                            {formData.reagentImage ? (
+                                <img
+                                    src={URL.createObjectURL(formData.reagentImage)}
+                                    alt="Imagen del reactivo"
+                                    className="mt-2 mx-auto w-[50%] h-40 object-cover"
                                 />
-                            )}
+                            ) : isEditing && initialData.photoId ? (
+                                <TokenImage
+                                    src={`${baseUrl}/photo/${initialData.photoId}`}
+                                    alt="Imagen del reactivo"
+                                    className="mt-2 mx-auto w-[50%] h-40 object-cover"
+                                />
+                            ) : null}
                         </label>
                     </fieldset>
 
@@ -736,36 +727,28 @@ export default function AddReagentPanel({
                         )}
                         <label className="flex flex-col font-montserrat font-semibold">
                             Pictograma
-                            {isEditing ? (
-                                <>
-                                    <FileInput
-                                        name="pictogramImage"
-                                        value={formData.pictogramImage}
-                                        onChange={handleChange}
-                                        className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
-                                    />
-                                    {formData.pictogramImage ? (
-                                        <img
-                                            src={URL.createObjectURL(formData.pictogramImage)}
-                                            alt="Imagen del pictograma"
-                                            className="mt-2 mx-auto w-[50%] h-40 object-cover"
-                                        />
-                                    ) : initialData.pictogramId ? (
-                                        <img
-                                            src={`${baseUrl}/photo/${initialData.pictogramId}`}
-                                            alt="Imagen del pictograma"
-                                            className="mt-2 mx-auto w-[50%] h-40 object-cover"
-                                        />
-                                    ) : null}
-                                </>
-                                ) : (
-                                    <FileInput
-                                        name="pictogramImage"
-                                        value={formData.pictogramImage}
-                                        onChange={handleChange}
-                                        className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
-                                    />
-                                )}
+                            <FileInput
+                                name="pictogramImage"
+                                value={formData.pictogramImage}
+                                onChange={handleChange}
+                                required={!isEditing}
+                                showError={errors.pictogramImage}
+                                errorMessage={"Este campo es obligatorio"}
+                                className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
+                            />
+                            {formData.pictogramImage ? (
+                                <img
+                                    src={URL.createObjectURL(formData.pictogramImage)}
+                                    alt="Pictograma del reactivo"
+                                    className="mt-2 mx-auto w-[50%] h-40 object-cover"
+                                />
+                            ) : isEditing && initialData.pictogramId ? (
+                                <TokenImage
+                                    src={`${baseUrl}/photo/${initialData.pictogramId}`}
+                                    alt="Pictograma del reactivo"
+                                    className="mt-2 mx-auto w-[50%] h-40 object-cover"
+                                />
+                            ) : null}
                         </label>
                     </fieldset>
 

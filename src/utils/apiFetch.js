@@ -21,14 +21,15 @@ export const apiFetch = async (url, options = {}) => {
     const response = await fetch(`${baseUrl}${url}`, config);
 
     if (response.status === 401 || response.status === 403) {
-        localStorage.removeItem("token");
-        window.location.href = "/login";
-        return;
+        const errorData = await response.json().catch(() => ({}));
+        const error = new Error(errorData.message || errorData.error || "No autorizado");
+        error.status = response.status;
+        throw error;
     }
 
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        const error = new Error(errorData.message || "Error en la solicitud");
+        const error = new Error(errorData.message || errorData.error || "Error en la solicitud");
         error.status = response.status;
         throw error;
     }

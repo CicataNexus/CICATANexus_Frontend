@@ -2,6 +2,7 @@ import { apiFetch, baseUrl } from "@/utils/apiFetch";
 import { useState } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import TokenImage from "@/components/ui/Image"
 import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
 import { showToast } from "@/utils/toastUtils";
@@ -203,7 +204,7 @@ export default function AddEquipmentPanel({
         }
 
         try {
-            const data = await apiFetch("/equipment/barcode/${initialData.barcode}",
+            const data = await apiFetch(`/equipment/barcode/${initialData.barcode}`,
                 {
                     method: "PUT",
                     body: equipmentFormData,
@@ -314,42 +315,28 @@ export default function AddEquipmentPanel({
                             <span>
                                 Imagen <span className="text-red-500">*</span>
                             </span>
-                            {isEditing ? (
-                                <>
-                                    <FileInput
-                                        name="equipmentImage"
-                                        value={formData.equipmentImage}
-                                        onChange={handleChange}
-                                        required
-                                        showError={errors.equipmentImage}
-                                        errorMessage={"Este campo es obligatorio"}
-                                        className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
-                                    />
-                                    {formData.equipmentImage ? (
-                                        <img
-                                            src={URL.createObjectURL(formData.equipmentImage)}
-                                            alt="Imagen del equipo"
-                                            className="mt-2 mx-auto w-[50%] h-40 object-cover"
-                                        />
-                                    ) : initialData.photoId ? (
-                                        <img
-                                            src={`${baseUrl}/photo/${initialData.photoId}`}
-                                            alt="Imagen del equipo"
-                                            className="mt-2 mx-auto w-[50%] h-40 object-cover"
-                                        />
-                                    ) : null}
-                                </>
-                            ) : (
-                                <FileInput
-                                    name="equipmentImage"
-                                    value={formData.equipmentImage}
-                                    onChange={handleChange}
-                                    required
-                                    showError={errors.equipmentImage}
-                                    errorMessage={"Este campo es obligatorio"}
-                                    className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
+                            <FileInput
+                                name="equipmentImage"
+                                value={formData.equipmentImage}
+                                onChange={handleChange}
+                                required={!isEditing}
+                                showError={errors.equipmentImage}
+                                errorMessage={"Este campo es obligatorio"}
+                                className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
+                            />
+                            {formData.equipmentImage ? (
+                                <img
+                                    src={URL.createObjectURL(formData.equipmentImage)}
+                                    alt="Imagen del equipo"
+                                    className="mt-2 mx-auto w-[50%] h-40 object-cover"
                                 />
-                            )}
+                            ) : isEditing && initialData.photoId ? (
+                                <TokenImage
+                                    src={`${baseUrl}/photo/${initialData.photoId}`}
+                                    alt="Imagen del equipo"
+                                    className="mt-2 mx-auto w-[50%] h-40 object-cover"
+                                />
+                            ) : null}
                         </label>
                     </fieldset>
 
