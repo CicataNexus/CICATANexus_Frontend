@@ -37,6 +37,26 @@ const RequestMaterial = () => {
   const [observations, setObservations] = useState("");
   const [errors, setErrors] = useState({});
   const [combinedItems, setCombinedItems] = useState([]);
+  const [occupiedTime, setOccupiedTime] = useState({
+    startTime: "",
+    startDirection: "before",
+  });
+
+  const isToday = (dateStr) => {
+    if (!dateStr) return false;
+    const today = new Date();
+    const compareDate = new Date(dateStr);
+    return (
+      today.getFullYear() === compareDate.getFullYear() &&
+      today.getMonth() === compareDate.getMonth() &&
+      today.getDate() === compareDate.getDate()
+    );
+  };
+
+  const getCurrentTime = () => {
+    const now = new Date();
+    return now.toTimeString().slice(0, 5);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,6 +70,27 @@ const RequestMaterial = () => {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const checkTimeConstraints = () => {
+      if (!dateRange.startDate) return;
+
+      let newOccupiedTime = {
+        startTime: "",
+        startDirection: "before",
+      };
+
+      if (isToday(dateRange.startDate)) {
+        const currentTime = getCurrentTime();
+        newOccupiedTime.startTime = currentTime;
+        newOccupiedTime.startDirection = "after";
+      }
+
+      setOccupiedTime(newOccupiedTime);
+    };
+
+    checkTimeConstraints();
+  }, [dateRange.startDate]);
 
   const handleSelectedItemsChange = (newSelectedItems) => {
     setSelectedItems(newSelectedItems);
@@ -102,12 +143,10 @@ const RequestMaterial = () => {
       observations: observations,
     };
     try {
-      const data = await apiFetch("/request",
-        {
-          method: "POST",
-          body: JSON.stringify(formattedRequest),
-        }
-      );
+      const data = await apiFetch("/request", {
+        method: "POST",
+        body: JSON.stringify(formattedRequest),
+      });
 
       setMessage(true);
       setSelectedItems([]);
@@ -122,11 +161,14 @@ const RequestMaterial = () => {
       setObservations("");
       setErrors({});
     } catch (error) {
-      if (error.message === "Error creating request: Error: Error fetching user: Technician not found or not assigned to this work area") {
-				showToast("No hay técnico asignado para alguna de las áreas", "error");
-			} else {
-				showToast(error, "error");
-			}
+      if (
+        error.message ===
+        "Error creating request: Error: Error fetching user: Technician not found or not assigned to this work area"
+      ) {
+        showToast("No hay técnico asignado para alguna de las áreas", "error");
+      } else {
+        showToast(error, "error");
+      }
     }
   };
 
@@ -136,7 +178,7 @@ const RequestMaterial = () => {
 
   return (
     <div className="relative w-full flex-1 flex items-center justify-center md:pt-4 md:pb-8">
-      <div className="md:w-2/3 h-fit bg-white md:px-14 px-0 py-8 flex flex-col rounded-md shadow-md">
+      <div className="md:w-2/3 h-fit bg-white md:px-14 px-0 py-8 flex flex-col rounded-md shadow-md m-2">
         <div className="text-lg mb-2 text-center font-poppins font-semibold">
           Ingrese los datos correspondientes
         </div>
@@ -202,6 +244,8 @@ const RequestMaterial = () => {
                     type="start"
                     className="select-none"
                     onlyWorkHours={true}
+                    limitTime={occupiedTime.startTime}
+                    limitDirection={occupiedTime.startDirection}
                   />
                   {errors.timeRange && (
                     <p className="mt-1 text-red-500 text-xs font-montserrat font-semibold">

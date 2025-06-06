@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Icon } from "@iconify/react";
 
 const TimePicker = ({
@@ -43,27 +43,24 @@ const TimePicker = ({
       ? limitHour * 60 + limitMinute
       : null;
 
-  const isWorkHour = (hour) => {
-    if (!onlyWorkHours) return true;
-    const h = parseInt(hour);
-    return h >= 8 && h <= 16; // 8 AM to 4 PM (16:00)
-  };
-
   const isAllowed = (h, m) => {
-    // First check work hours restriction
-    if (!isWorkHour(h)) return false;
+    const hour = parseInt(h);
+    const minute = parseInt(m);
 
-    // Then check limit time restriction
+    if (onlyWorkHours) {
+      if (hour < 8 || hour > 16) return false;
+      if (hour === 16 && minute > 0) return false;
+    }
+
     if (limitTotalMinutes === null) return true;
-    const total = parseInt(h) * 60 + parseInt(m);
+    const total = hour * 60 + minute;
     if (limitDirection === "before") return total < limitTotalMinutes;
     if (limitDirection === "after") return total > limitTotalMinutes;
-    return true; // default allow
+    return true;
   };
 
   const getValidHours = () =>
     hours.filter((h) => {
-      // Check if this hour has any valid minutes
       return minutes.some((m) => isAllowed(h, m));
     });
 

@@ -49,8 +49,23 @@ const DateRangePicker = ({
     return false;
   };
 
+  const isTodayBlockedByTime = (date) => {
+    if (!onlyWorkDays) return false;
+
+    const today = new Date();
+    const testDate = new Date(date);
+
+    const isToday = today.toDateString() === testDate.toDateString();
+
+    if (isToday) {
+      const currentHour = today.getHours();
+      return currentHour >= 16;
+    }
+
+    return false;
+  };
+
   const isBlocked = (date) => {
-    // Check if date is in occupied ranges
     const isOccupied = blockedRanges.some(({ start, end }) => {
       const day = new Date(date);
       day.setHours(0, 0, 0, 0);
@@ -62,8 +77,9 @@ const DateRangePicker = ({
     });
 
     const isWeekendDay = isWeekend(date);
+    const isTodayAfter4PM = isTodayBlockedByTime(date);
 
-    return isOccupied || isWeekendDay;
+    return isOccupied || isWeekendDay || isTodayAfter4PM;
   };
 
   const isPast = (date) => {
@@ -366,7 +382,7 @@ const DateRangePicker = ({
             .filter((day) => {
               if (onlyWorkDays === true) {
                 const dayOfWeek = day.getDay();
-                return dayOfWeek !== 0 && dayOfWeek !== 6; // Exclude Sunday (0) and Saturday (6)
+                return dayOfWeek !== 0 && dayOfWeek !== 6;
               }
               return true;
             })
@@ -437,6 +453,7 @@ const DateRangePicker = ({
                       ? "text-gray-300 cursor-not-allowed opacity-50"
                       : ""
                   }
+
 
                 `}
                   >

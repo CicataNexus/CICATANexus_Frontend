@@ -50,11 +50,27 @@ const RequestEquipment = () => {
   const [workDay, setWorkDay] = useState(true);
   const [workTime, setWorkTime] = useState(true);
 
+  const isToday = (dateStr) => {
+    if (!dateStr) return false;
+    const today = new Date();
+    const compareDate = new Date(dateStr);
+    return (
+      today.getFullYear() === compareDate.getFullYear() &&
+      today.getMonth() === compareDate.getMonth() &&
+      today.getDate() === compareDate.getDate()
+    );
+  };
+
+  const getCurrentTime = () => {
+    const now = new Date();
+    return now.toTimeString().slice(0, 5);
+  };
+
   useEffect(() => {
     const isValidWorkDay = (dateStr) => {
       const date = new Date(dateStr);
       const day = date.getDay();
-      return day >= 1 && day <= 5; // Mon to Fri
+      return day >= 1 && day <= 5;
     };
 
     const getDatesInRange = (startStr, endStr) => {
@@ -92,6 +108,7 @@ const RequestEquipment = () => {
       isValidWorkTime(timeRange.startTime) && isValidWorkTime(timeRange.endTime)
     );
   }, [timeRange]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -112,9 +129,10 @@ const RequestEquipment = () => {
         let hasDailyReservation = false;
 
         const fetches = selectedItems.map(async (equipment) => {
-          const data = await apiFetch("/equipment/barcode/${equipment.barcode}");
+          const data = await apiFetch(
+            `/equipment/barcode/${equipment.barcode}`
+          );
 
-          // Check if reservationType is "D"
           if (data.reservationType === "D") {
             hasDailyReservation = true;
           }
@@ -126,7 +144,6 @@ const RequestEquipment = () => {
 
         await Promise.all(fetches);
 
-        // Set the datePickerMode based on the presence of "D"
         setDatePickerMode(hasDailyReservation ? "range" : "single");
 
         setOccupiedDates(occupied);
@@ -139,7 +156,7 @@ const RequestEquipment = () => {
       fetchSelectedEquipmentData();
     } else {
       setOccupiedDates([]);
-      setDatePickerMode("single"); // reset when no items selected
+      setDatePickerMode("single");
     }
   }, [selectedItems]);
 
@@ -164,7 +181,23 @@ const RequestEquipment = () => {
       const start = parseLocalDate(dateRange.startDate);
       const end = parseLocalDate(dateRange.endDate);
 
-      let newOccupiedTime = { startTime: "", endTime: "" };
+      let newOccupiedTime = {
+        startTime: "",
+        endTime: "",
+        startDirection: "before",
+        endDirection: "after",
+      };
+
+      if (isToday(dateRange.startDate)) {
+        const currentTime = getCurrentTime();
+        newOccupiedTime.startTime = currentTime;
+        newOccupiedTime.startDirection = "after";
+      }
+      if (isToday(dateRange.endDate)) {
+        const currentTime = getCurrentTime();
+        newOccupiedTime.endTime = currentTime;
+        newOccupiedTime.endDirection = "after";
+      }
 
       occupiedDates.forEach((occ) => {
         const occStart = parseLocalDate(occ.startingDate);
@@ -176,16 +209,30 @@ const RequestEquipment = () => {
         const occEndDateOnly = occEnd.toISOString().split("T")[0];
 
         if (startDateOnly === occStartDateOnly) {
-          newOccupiedTime.startTime = occ.startingTime;
-          newOccupiedTime.startDirection = "before";
+          if (isToday(dateRange.startDate) && newOccupiedTime.startTime) {
+            if (occ.startingTime > newOccupiedTime.startTime) {
+              newOccupiedTime.startTime = occ.startingTime;
+              newOccupiedTime.startDirection = "before";
+            }
+          } else {
+            newOccupiedTime.startTime = occ.startingTime;
+            newOccupiedTime.startDirection = "before";
+          }
         }
         if (endDateOnly === occEndDateOnly) {
           newOccupiedTime.endTime = occ.finishingTime;
           newOccupiedTime.endDirection = "after";
         }
         if (startDateOnly === occEndDateOnly) {
-          newOccupiedTime.startTime = occ.finishingTime;
-          newOccupiedTime.startDirection = "after";
+          if (isToday(dateRange.startDate) && newOccupiedTime.startTime) {
+            if (occ.finishingTime > newOccupiedTime.startTime) {
+              newOccupiedTime.startTime = occ.finishingTime;
+              newOccupiedTime.startDirection = "after";
+            }
+          } else {
+            newOccupiedTime.startTime = occ.finishingTime;
+            newOccupiedTime.startDirection = "after";
+          }
         }
         if (occStartDateOnly === endDateOnly) {
           newOccupiedTime.endTime = occ.startingTime;
@@ -197,7 +244,7 @@ const RequestEquipment = () => {
     };
 
     checkOccupiedTimes();
-  }, [dateRange]);
+  }, [dateRange, occupiedDates]);
 
   const handleAreaChange = (area) => {
     setSelectedAreas((prevSelectedAreas) => {
@@ -208,10 +255,11 @@ const RequestEquipment = () => {
       }
     });
   };
+
   useEffect(() => {
     const { startTime, endTime } = timeRange;
 
-    if (!startTime || !endTime) return; // Don't calculate if times are incomplete
+    if (!startTime || !endTime) return;
 
     const calculateTimeDifference = (startTime, endTime) => {
       const [startHour, startMinute] = startTime.split(":").map(Number);
@@ -220,10 +268,10 @@ const RequestEquipment = () => {
       const start = new Date(0, 0, 0, startHour, startMinute);
       const end = new Date(0, 0, 0, endHour, endMinute);
 
-      let diff = (end - start) / (1000 * 60); // difference in minutes
+      let diff = (end - start) / (1000 * 60);
 
       if (diff < 0) {
-        diff += 24 * 60; // handle overnight
+        diff += 24 * 60;
       }
 
       const reservedHours = Math.floor(diff / 60);
@@ -288,12 +336,10 @@ const RequestEquipment = () => {
     console.log(formattedRequest);
 
     try {
-      const data = await apiFetch("/request",
-        {
-          method: "POST",
-          body: JSON.stringify(formattedRequest),
-        }
-      );
+      const data = await apiFetch("/request", {
+        method: "POST",
+        body: JSON.stringify(formattedRequest),
+      });
 
       setMessage(true);
       setSelectedItems([]);
@@ -308,11 +354,14 @@ const RequestEquipment = () => {
       setObservations("");
       setErrors({});
     } catch (error) {
-			if (error.message === "Error creating request: Error: Error fetching user: Technician not found or not assigned to this work area") {
-				showToast("No hay técnico asignado para alguna de las áreas", "error");
-			} else {
-				showToast(error, "error");
-			}
+      if (
+        error.message ===
+        "Error creating request: Error: Error fetching user: Technician not found or not assigned to this work area"
+      ) {
+        showToast("No hay técnico asignado para alguna de las áreas", "error");
+      } else {
+        showToast(error, "error");
+      }
     }
   };
 
