@@ -78,7 +78,11 @@ function Login() {
                 break;
             }
         } catch (error) {
-            setError(error.message);
+            if (error.message === "Invalid credentials") {
+                setError("Usuario o contraseña incorrectos");
+            } else {
+                setError(error.message);
+            }
         }
     };
 

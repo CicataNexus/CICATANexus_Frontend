@@ -129,9 +129,7 @@ const RequestEquipment = () => {
         let hasDailyReservation = false;
 
         const fetches = selectedItems.map(async (equipment) => {
-          const data = await apiFetch(
-            `/equipment/barcode/${equipment.barcode}`
-          );
+          const data = await apiFetch(`/equipment/barcode/${equipment.barcode}`);
 
           if (data.reservationType === "D") {
             hasDailyReservation = true;

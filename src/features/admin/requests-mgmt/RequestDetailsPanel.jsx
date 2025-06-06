@@ -362,13 +362,40 @@ export default function RequestDetailsPanel({ request, onClose, setReload }) {
                                 </div>
                                 <p className="mb-3 mt-3">
                                     <strong>
-                                        {typeOfRequest === "EQ"
-                                            ? "Equipo(s) que utilizará"
+                                        {typeOfRequest === "EQ" ? (
+                                            <div className="flex items-center gap-1">
+                                                <span>Equipo(s) que utilizará</span>
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <button
+                                                            type="button"
+                                                            className="text-gray-500 hover:text-primary-blue transition"
+                                                            aria-label="Recordatorio de movimientos"
+                                                        >
+                                                            <Icon
+                                                                icon="mdi:information-outline"
+                                                                className="text-base"
+                                                            />
+                                                        </button>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent
+                                                        side="right"
+                                                        sideOffset={8}
+                                                        className="bg-white border border-primary-blue text-black rounded-md shadow-lg text-xs font-poppins font-medium w-auto"
+                                                    >
+                                                        Verifica disponibilidad en "Movimientos".
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </div>
+                                        )
                                             : typeOfRequest === "R&M"
                                             ? "Reactivo(s) o Material(es) que utilizará"
                                             : "Tipo de apoyo"}
                                     </strong>
-                                    <br />
+                                    {typeOfRequest === "EQ"
+                                        ? ""
+                                        : <br />
+                                    }
                                     {typeOfRequest === "TA"
                                         ? requestSubtype || "-"
                                         : occupiedMaterial?.length > 0

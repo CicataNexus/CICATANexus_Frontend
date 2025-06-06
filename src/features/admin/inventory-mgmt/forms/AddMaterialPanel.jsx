@@ -2,6 +2,7 @@ import { apiFetch, baseUrl } from "@/utils/apiFetch";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import TokenImage from "@/components/ui/Image"
 import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
 import { showToast } from '@/utils/toastUtils';
@@ -211,7 +212,7 @@ export default function AddMaterialPanel({
         }
 
         try {
-            const data = await apiFetch("/v1/materials`",
+            const data = await apiFetch("/materials",
                 {
                     method: "POST",
                     body: materialFormData,
@@ -424,36 +425,28 @@ export default function AddMaterialPanel({
                             <span>
                                 Imagen
                             </span>
-                            {isEditing ? (
-                                <>
-                                    <FileInput
-                                        name="materialImage"
-                                        value={formData.materialImage}
-                                        onChange={handleChange}
-                                        className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
-                                    />
-                                    {formData.materialImage ? (
-                                        <img
-                                            src={URL.createObjectURL(formData.materialImage)}
-                                            alt="Imagen del material"
-                                            className="mt-2 mx-auto w-[50%] h-40 object-cover"
-                                        />
-                                    ) : initialData.photoId ? (
-                                        <img
-                                            src={`${baseUrl}/photo/${initialData.photoId}`}
-                                            alt="Imagen del material"
-                                            className="mt-2 mx-auto w-[50%] h-40 object-cover"
-                                        />
-                                    ) : null}
-                                </>
-                            ) : (
-                                <FileInput
-                                    name="materialImage"
-                                    value={formData.materialImage}
-                                    onChange={handleChange}
-                                    className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
+                            <FileInput
+                                name="materialImage"
+                                value={formData.materialImage}
+                                onChange={handleChange}
+                                required={!isEditing}
+                                showError={errors.materialImage}
+                                errorMessage={"Este campo es obligatorio"}
+                                className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal h-8"
+                            />
+                            {formData.materialImage ? (
+                                <img
+                                    src={URL.createObjectURL(formData.materialImage)}
+                                    alt="Imagen del material"
+                                    className="mt-2 mx-auto w-[50%] h-40 object-cover"
                                 />
-                            )}
+                            ) : isEditing && initialData.photoId ? (
+                                <TokenImage
+                                    src={`${baseUrl}/photo/${initialData.photoId}`}
+                                    alt="Imagen del material"
+                                    className="mt-2 mx-auto w-[50%] h-40 object-cover"
+                                />
+                            ) : null}
                         </label>
                     </fieldset>
 
