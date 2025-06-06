@@ -1,6 +1,7 @@
 import { apiFetch, baseUrl } from "@/utils/apiFetch";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
+import TokenImage from "@/components/ui/Image"
 import { showToast } from "@/utils/toastUtils";
 import { AREAS } from "@/constants/areas";
 import SelectInput from "@/components/ui/SelectInput";
@@ -139,7 +140,7 @@ export default function MovementsDetailsPanel({ request, onClose, setReload, }) 
                                     {equipment?.barcode || "-"}
                                 </p>
                                 {equipment?.photoID && (
-                                    <img
+                                    <TokenImage
                                         src={`${baseUrl}/photo/${equipment.photoID}`}
                                         alt="Foto del equipo"
                                         className="mt-2 mx-auto w-[50%] h-40 object-cover"

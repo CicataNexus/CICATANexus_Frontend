@@ -2,6 +2,7 @@ import { baseUrl } from "@/utils/apiFetch";
 import React, { useState, useRef, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { Button } from "../ui/button";
+import TokenImage from "@/components/ui/Image"
 
 const SearchSelect = ({
   options,
@@ -94,7 +95,7 @@ const SearchSelect = ({
                 >
                   {option.photoId && (
                     <>
-                      <img
+                      <TokenImage
                         src={`${baseUrl}/photo/${option.photoId}`}
                         alt={`Imagen de ${option.name}`}
                         className="p-2 w-full max-h-35 object-contain"

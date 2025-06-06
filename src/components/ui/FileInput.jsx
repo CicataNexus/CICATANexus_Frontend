@@ -10,11 +10,21 @@ export default function FileInput({
     className = "",
 }) {
     const [fileName, setFileName] = useState("");
+    const getShortFileName = (fullName) => {
+        const maxStart = 15;
+        const maxEnd = 8;
+
+        if (fullName.length <= maxStart + maxEnd + 3) return fullName;
+
+        const start = fullName.slice(0, maxStart);
+        const end = fullName.slice(-maxEnd);
+        return `${start}...${end}`;
+    };
 
     const handleFileChange = (e) => {
         const file = e.target.files?.[0];
         if (file) {
-            setFileName(file.name);
+            setFileName(getShortFileName(file.name));
             onChange?.(e); // if an onChange function is passed from outside
         }
     };

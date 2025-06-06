@@ -35,9 +35,10 @@ function Register() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+        const sanitizedValue = value.replace(/\s+/g, "");
         setFormData((prev) => ({
             ...prev,
-            [name]: value,
+            [name]: sanitizedValue,
         }));
         setErrors((prev) => ({ ...prev, [name]: false }));
     };
@@ -88,10 +89,14 @@ function Register() {
         }
 
         try {
+            const trimmedData = Object.fromEntries(
+                Object.entries(formData).map(([key, value]) => [key, value.trim()])
+            );
+
             await apiFetch("/auth/register",
                 {
                     method: "POST",
-                    body: JSON.stringify(formData),
+                    body: JSON.stringify(trimmedData),
                 }
             );
 

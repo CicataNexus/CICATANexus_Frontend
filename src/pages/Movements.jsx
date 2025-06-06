@@ -1,5 +1,6 @@
 import { apiFetch } from "@/utils/apiFetch";
 import { useState, useEffect, useMemo } from "react";
+import { jwtDecode } from "jwt-decode";
 import TableToolbar from "../components/ui/TableToolbar";
 import MovementsTable from "@/features/technician/MovementsTable";
 import PaginationControls from "@/components/PaginationControls";
@@ -18,8 +19,9 @@ const Movements = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const requestData = await apiFetch(`/request`);
-                const equipmentData = await apiFetch(`/equipment/basic`);
+                const { registrationNumber } = jwtDecode(localStorage.getItem("token"));
+                const requestData = await apiFetch(`/request/technician/${registrationNumber}`);
+                const equipmentData = await apiFetch("/equipment/basic");
 
                 const data = (requestData.requests || requestData)
                 .filter((req) => req.typeOfRequest === "EQ")
