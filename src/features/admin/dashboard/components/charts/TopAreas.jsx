@@ -67,7 +67,7 @@ export default function TopAreas() {
         fetchData();
     }, [viewMode, currentMonth, currentYear]);
 
-    const currentLabel = getPeriodLabel(viewMode, currentMonth, currentYear);
+    const { label: currentLabel } = getPeriodLabel(viewMode, currentMonth, currentYear);
 
     return (
         <Card>

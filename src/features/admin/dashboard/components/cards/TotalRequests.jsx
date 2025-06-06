@@ -40,7 +40,7 @@ export default function TotalRequests() {
         fetchTotal();
     }, [viewMode, currentMonth, currentYear]);
 
-    const currentLabel = getPeriodLabel(viewMode, currentMonth, currentYear);
+    const { label: currentLabel } = getPeriodLabel(viewMode, currentMonth, currentYear);
 
     return (
         <div className="rounded-xl bg-white p-6 shadow flex flex-col justify-between">
