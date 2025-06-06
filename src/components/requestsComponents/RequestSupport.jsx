@@ -1,5 +1,5 @@
 import { apiFetch } from "@/utils/apiFetch";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import DatePicker from "./DatePicker";
 import TimePicker from "./TimePicker";
@@ -27,8 +27,6 @@ const options = [
   "Recepción/resguardo de líneas celulares",
 ];
 
-const matricula = localStorage.getItem("matricula");
-
 const RequestSupport = () => {
   const [dateRange, setDateRange] = useState({
     startDate: "",
@@ -45,6 +43,56 @@ const RequestSupport = () => {
   const [selectedAreas, setSelectedAreas] = useState([]);
   const [observations, setObservations] = useState("");
   const [errors, setErrors] = useState({});
+  const [occupiedTime, setOccupiedTime] = useState({
+    startTime: "",
+    startDirection: "before",
+    endDirection: "after",
+    endTime: "",
+  });
+
+  const isToday = (dateStr) => {
+    if (!dateStr) return false;
+    const today = new Date();
+    const compareDate = new Date(dateStr);
+    return (
+      today.getFullYear() === compareDate.getFullYear() &&
+      today.getMonth() === compareDate.getMonth() &&
+      today.getDate() === compareDate.getDate()
+    );
+  };
+
+  const getCurrentTime = () => {
+    const now = new Date();
+    return now.toTimeString().slice(0, 5);
+  };
+
+  useEffect(() => {
+    const checkTimeConstraints = () => {
+      if (!dateRange.startDate || !dateRange.endDate) return;
+      let newOccupiedTime = {
+        startTime: "",
+        endTime: "",
+        startDirection: "before",
+        endDirection: "after",
+      };
+
+      // Check if start date is today and add current time constraint
+      if (isToday(dateRange.startDate)) {
+        const currentTime = getCurrentTime();
+        newOccupiedTime.startTime = currentTime;
+        newOccupiedTime.startDirection = "after";
+      }
+      if (isToday(dateRange.endDate)) {
+        const currentTime = getCurrentTime();
+        newOccupiedTime.endTime = currentTime;
+        newOccupiedTime.endDirection = "after";
+      }
+
+      setOccupiedTime(newOccupiedTime);
+    };
+
+    checkTimeConstraints();
+  }, [dateRange]);
 
   const handleRadioButtonChange = (option) => {
     setSelectedOption(option);
@@ -99,12 +147,10 @@ const RequestSupport = () => {
     };
     console.log(formattedRequest);
     try {
-      const data = await apiFetch("/request",
-        {
-          method: "POST",
-          body: JSON.stringify(formattedRequest),
-        }
-      );
+      const data = await apiFetch("/request", {
+        method: "POST",
+        body: JSON.stringify(formattedRequest),
+      });
 
       setMessage(true);
       setSelectedAreas([]);
@@ -119,7 +165,10 @@ const RequestSupport = () => {
       setSelectedOption("");
       setErrors({});
     } catch (error) {
-      if (error.message === "Error creating request: Error: Error fetching user: Technician not found or not assigned to this work area") {
+      if (
+        error.message ===
+        "Error creating request: Error: Error fetching user: Technician not found or not assigned to this work area"
+      ) {
         showToast("No hay técnico asignado para alguna de las áreas", "error");
       } else {
         showToast(error, "error");
@@ -133,7 +182,7 @@ const RequestSupport = () => {
 
   return (
     <div className="relative w-full flex-1 flex items-center justify-center md:pt-4 md:pb-8">
-      <div className="md:w-2/3 h-fit bg-white md:px-14 px-1 py-8 flex flex-col rounded-md shadow-md">
+      <div className="md:w-2/3 h-fit bg-white md:px-14 px-0 py-8 flex flex-col rounded-md shadow-md m-2">
         <div className="text-lg mb-2 text-center font-poppins font-semibold">
           Ingrese los datos correspondientes
         </div>
@@ -205,6 +254,8 @@ const RequestSupport = () => {
                     type="start"
                     className="select-none"
                     onlyWorkHours={true}
+                    limitTime={occupiedTime.startTime}
+                    limitDirection={occupiedTime.startDirection}
                   />
                 </div>
                 <div className="">
@@ -217,6 +268,8 @@ const RequestSupport = () => {
                     type="end"
                     className="select-none"
                     onlyWorkHours={true}
+                    limitTime={occupiedTime.endTime}
+                    limitDirection={occupiedTime.endDirection}
                   />
                 </div>
               </div>
