@@ -35,13 +35,19 @@ function Register() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        const sanitizedValue = value.replace(/\s+/g, "");
+        
+        const sanitizedValue = name === "name"
+            ? value // deja los espacios en nombre
+            : value.replace(/\s+/g, ""); // elimina espacios en los demás
+
         setFormData((prev) => ({
             ...prev,
             [name]: sanitizedValue,
         }));
+
         setErrors((prev) => ({ ...prev, [name]: false }));
     };
+
 
     const handleRegister = async () => {
         setGlobalError(""); // Limpiar el error
