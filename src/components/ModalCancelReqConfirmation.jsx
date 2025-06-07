@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@iconify/react";
 
@@ -6,6 +6,7 @@ export default function ModalCancelReqConfirmation({
     onClose,
     onConfirmCancel,
 }) {
+    const [observationText, setObservationText] = useState("");
     const panelRef = useRef(null);
 
     useEffect(() => {
@@ -50,6 +51,12 @@ export default function ModalCancelReqConfirmation({
                     ¿Seguro que desea cancelar la solicitud?
                 </h2>
                 </div>
+                <textarea
+                    id="observation"
+                    className="w-full my-3 border border-gray-400 rounded-md p-3 text-sm h-25 focus:outline-none focus:ring-1 focus:ring-primary-blue font-montserrat focus:border-white"
+                    placeholder="Ej. No puedo llegar al horario establecido en la solicitud."
+                    onChange={(e) => setObservationText(e.target.value)}
+                />
 
                 {/* Buttons */}
                 <div className="flex flex-col sm:flex-row justify-center gap-4 w-full">
@@ -62,7 +69,12 @@ export default function ModalCancelReqConfirmation({
                     </Button>
                     <Button
                         onClick={onConfirmCancel}
-                        className="w-full sm:w-40 bg-sidebar hover:bg-dim-blue-background text-white font-poppins font-semibold text-lg"
+                        disabled={observationText.trim() === ""}
+                        className={`w-full sm:w-40 ${
+                            observationText.trim() === ""
+                                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                                : "bg-sidebar hover:bg-dim-blue-background text-white"
+                        } font-poppins font-semibold text-lg`}
                         aria-label="Confirmar cancelación"
                     >
                         Confirmar

@@ -7,6 +7,7 @@ import RequestsTable from "@/features/admin/requests-mgmt/RequestsTable";
 import PaginationControls from "@/components/PaginationControls";
 import { RequestsColumns } from "@/features/admin/requests-mgmt/RequestsColumns";
 import ModalCancelReqConfirmation from "@/components/ModalCancelReqConfirmation";
+import { showToast } from "@/utils/toastUtils";
 
 const Requests = () => {
     const [reload, setReload] = useState(false);
@@ -146,11 +147,25 @@ const Requests = () => {
         setShowCancelModal(true);
     };
 
-    const handleConfirmCancel = () => {
-        console.log("Request cancelled:", requestToCancel.id);
-        setShowCancelModal(false);
-        setRequestToCancel(null);
-        // Fetch
+    const handleConfirmCancel = async () => {
+        const { registrationNumber } = jwtDecode(localStorage.getItem("token"));
+
+        try {
+            const data = await apiFetch(`/request/cancel/${requestToCancel.id}`,
+                {
+                    method: "PUT",
+                    body: JSON.stringify({ registrationNumber }),
+                }
+            );
+
+            showToast("Solicitud cancelada con éxito", "success");
+            setShowCancelModal(false);
+            setRequestToCancel(null);
+            setSelectedRequest(null);
+            setReload((prev) => !prev);
+        } catch (error) {
+            console.error("Error al cancelar solicitud:", error);
+        }
     };
 
     const handleCloseCancelModal = () => {

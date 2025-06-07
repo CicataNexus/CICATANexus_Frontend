@@ -150,9 +150,9 @@ export default function AddUserPanel({
             setModalConfirming(false);
             setShowConfirmation(true);
         } catch (error) {
-            if (errorData.error === "Failed to create user: registrationNumber already exists") {
+            if (error.message === "Failed to create user: registrationNumber already exists") {
                 showToast("La clave de usuario ya existe", "error");
-            } else if (errorData.error ==="Failed to create user: Email already in use") {
+            } else if (error.message ==="Failed to create user: Email already in use") {
                 showToast("El correo electrónico ya existe", "error");
             } else {
                 showToast("Error al agregar usuario", "error");
