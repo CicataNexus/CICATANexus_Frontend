@@ -7,6 +7,7 @@ import { showToast } from "@/utils/toastUtils";
 import TimePicker from "./TimePicker";
 import { Button } from "@/components/ui/Button";
 import ModalRequestConfirmation from "@/components/ModalRequestConfirmation";
+import { TiWarningOutline } from "react-icons/ti";
 
 const areas = [
   "Laboratorio de Biología Molecular",
@@ -41,6 +42,7 @@ const RequestMaterial = () => {
     startTime: "",
     startDirection: "before",
   });
+  const [isWithin24Hours, setIsWithin24Hours] = useState(false);
 
   const isToday = (dateStr) => {
     if (!dateStr) return false;
@@ -57,6 +59,28 @@ const RequestMaterial = () => {
     const now = new Date();
     return now.toTimeString().slice(0, 5);
   };
+
+  const checkIfWithin24Hours = (startDate, startTime) => {
+    if (!startDate || !startTime) return false;
+
+    const now = new Date();
+    const requestDateTime = new Date(startDate);
+    const [hours, minutes] = startTime.split(":").map(Number);
+    requestDateTime.setHours(hours, minutes, 0, 0);
+
+    const timeDifferenceMs = requestDateTime.getTime() - now.getTime();
+    const twentyFourHoursMs = 24 * 60 * 60 * 1000;
+
+    return timeDifferenceMs <= twentyFourHoursMs;
+  };
+
+  useEffect(() => {
+    const within24Hours = checkIfWithin24Hours(
+      dateRange.startDate,
+      timeRange.startTime
+    );
+    setIsWithin24Hours(within24Hours);
+  }, [dateRange.startDate, timeRange.startTime]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -250,6 +274,15 @@ const RequestMaterial = () => {
                   {errors.timeRange && (
                     <p className="mt-1 text-red-500 text-xs font-montserrat font-semibold">
                       Este campo es obligatorio
+                    </p>
+                  )}
+                  {isWithin24Hours && (
+                    <p className="flex justify-center items-center text-warning-toast-icon bg-warning-toast-icon-background text-xs font-montserrat font-semibold mt-2 p-2 w-fit rounded-full">
+                      <TiWarningOutline size={20} className="mr-1" />
+                      <p className="pr-2">
+                        Las solicitudes con menos de 24h de anticipación estan
+                        sujetas a disponibilidad
+                      </p>
                     </p>
                   )}
                 </div>
