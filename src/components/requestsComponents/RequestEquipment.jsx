@@ -326,6 +326,7 @@ const RequestEquipment = () => {
       timeRangeStartEnd:
         timeRange.startTime &&
         timeRange.endTime &&
+        dateRange.startDate === dateRange.endDate &&
         timeRange.startTime >= timeRange.endTime,
       selectedItems: selectedItems.length === 0,
       selectedAreas: selectedAreas.length === 0,
