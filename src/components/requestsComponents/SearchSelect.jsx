@@ -2,7 +2,7 @@ import { baseUrl } from "@/utils/apiFetch";
 import React, { useState, useRef, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { Button } from "../ui/button";
-import TokenImage from "@/components/ui/Image"
+import TokenImage from "@/components/ui/Image";
 
 const SearchSelect = ({
   options,
@@ -26,6 +26,10 @@ const SearchSelect = ({
   };
 
   const handleSelect = (option) => {
+    if (option.status === "disabled") {
+      return;
+    }
+
     if (!selectedItems.some((item) => item.name === option.name)) {
       const newSelectedItems = [...selectedItems, option];
       onSelectedItemsChange(newSelectedItems);
@@ -87,34 +91,59 @@ const SearchSelect = ({
             </div>
           ) : (
             filteredOptions.map((option, index) => {
-              // For para ir enseñando el endpoint de la imagen
+              const isDisabled = option.status === "disabled";
+
               return (
                 <div
                   key={index}
-                  className="border-2 border-primary-blue flex flex-col items-center rounded-lg bg-white"
+                  className={`border-2 flex flex-col items-center rounded-lg ${
+                    isDisabled
+                      ? "border-gray-300 bg-gray-100 opacity-60"
+                      : "border-primary-blue bg-white"
+                  }`}
                 >
                   {option.photoId && (
                     <>
                       <TokenImage
                         src={`${baseUrl}/photo/${option.photoId}`}
                         alt={`Imagen de ${option.name}`}
-                        className="p-2 w-full max-h-35 object-contain"
+                        className={`p-2 w-full max-h-35 object-contain ${
+                          isDisabled ? "grayscale" : ""
+                        }`}
                       />
-                      <div className="w-full border-t border-primary-blue"></div>
+                      <div
+                        className={`w-full border-t ${
+                          isDisabled ? "border-gray-300" : "border-primary-blue"
+                        }`}
+                      ></div>
                     </>
                   )}
 
                   <div className="p-2 w-full flex flex-col justify-between h-full">
-                    <p className="text-base font-montserrat font-semibold">
+                    <p
+                      className={`text-base font-montserrat font-semibold ${
+                        isDisabled ? "text-gray-500" : ""
+                      }`}
+                    >
                       {option.name}
                     </p>
-                    <p className="text-sm font-montserrat mt-2">
+                    <p
+                      className={`text-sm font-montserrat mt-2 ${
+                        isDisabled ? "text-gray-400" : ""
+                      }`}
+                    >
                       <span className="font-medium">Marca:</span>
                       <br />
                       <span className="font-normal">{option.brand}</span>
                     </p>
-                    {(option.location || option.sdsLink || option.obsForUsers) && (
-                      <div className="text-sm font-montserrat mt-2">
+                    {(option.location ||
+                      option.sdsLink ||
+                      option.obsForUsers) && (
+                      <div
+                        className={`text-sm font-montserrat mt-2 ${
+                          isDisabled ? "text-gray-400" : ""
+                        }`}
+                      >
                         <span className="font-medium">
                           {option.location
                             ? "Ubicación:"
@@ -130,7 +159,11 @@ const SearchSelect = ({
                             href={option.sdsLink}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-600 underline font-normal break-all"
+                            className={`underline font-normal break-all ${
+                              isDisabled
+                                ? "text-gray-400 pointer-events-none"
+                                : "text-blue-600"
+                            }`}
                           >
                             {option.sdsLink}
                           </a>
@@ -145,11 +178,20 @@ const SearchSelect = ({
                       <Button
                         variant="secondary"
                         size="sm"
-                        className="rounded-md font-poppins font-semibold text-sm bg-deep-blue hover:bg-dark-blue text-white transition inline-flex items-center"
+                        className={`rounded-md font-poppins font-semibold text-sm transition inline-flex items-center ${
+                          isDisabled
+                            ? "bg-gray-400 text-gray-600 cursor-not-allowed"
+                            : "bg-deep-blue hover:bg-dark-blue text-white cursor-pointer"
+                        }`}
                         onClick={() => handleSelect(option)}
-                        aria-label={`Agregar ${option.name} a la selección`}
+                        disabled={isDisabled}
+                        aria-label={`${
+                          isDisabled ? "No disponible" : "Agregar"
+                        } ${option.name} ${
+                          isDisabled ? "(deshabilitado)" : "a la selección"
+                        }`}
                       >
-                        Agregar
+                        {isDisabled ? "No disponible" : "Agregar"}
                       </Button>
                     </div>
                   </div>

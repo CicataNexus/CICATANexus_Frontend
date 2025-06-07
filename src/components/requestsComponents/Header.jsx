@@ -12,7 +12,7 @@ const Header = () => {
   };
 
   return (
-    <div className="flex flex-wrap h-fit items-center justify-between bg-gradient-to-r from-blue-bg-gradient to-dim-blue-background md:px-6 px-2">
+    <div className="flex h-fit items-center justify-between bg-gradient-to-r from-blue-bg-gradient to-dim-blue-background md:px-6 px-2">
       <div className="flex">
         {" "}
         <img
@@ -32,7 +32,7 @@ const Header = () => {
         />
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 text-white leading-tight">
+      <div className="flex items-center text-white">
         <div className="md:m-4 flex">
           {isRequestForm ? (
             <Link
@@ -63,7 +63,7 @@ const Header = () => {
           )}
         </div>
 
-        <div className="flex flex-wrap gap items-center justify-center m-4">
+        <div className="flex items-center md:m-4">
           <button
             onClick={handleLogout}
             className="flex items-center justify-center gap-1 text-white font-poppins font-semibold text-base transition-all duration-200 ease-in-out md:px-4 md:py-2 rounded-md hover:text-sidebar-accent-foreground cursor-pointer"

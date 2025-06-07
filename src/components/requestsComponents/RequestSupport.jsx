@@ -142,6 +142,7 @@ const RequestSupport = () => {
       timeRangeStartEnd:
         timeRange.startTime &&
         timeRange.endTime &&
+        dateRange.startDate === dateRange.endDate &&
         timeRange.startTime >= timeRange.endTime,
       selectedOption: !selectedOption,
       selectedAreas: selectedAreas.length === 0,
