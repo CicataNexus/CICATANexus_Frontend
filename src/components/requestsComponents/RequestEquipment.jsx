@@ -411,6 +411,7 @@ const RequestEquipment = () => {
                   name: eq.name,
                   brand: eq.brand,
                   location: eq.location,
+                  status: eq.status,
                 }))}
                 selectedItems={selectedItems}
                 onSelectedItemsChange={handleSelectedItemsChange}
