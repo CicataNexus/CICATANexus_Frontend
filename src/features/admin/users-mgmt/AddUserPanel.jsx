@@ -151,7 +151,7 @@ export default function AddUserPanel({
             (!formData.workArea || formData.workArea.length === 0)
         ) {
             newErrors.workArea =
-                "El usuario debe de tener por lo menos un área de trabajo";
+                "Este campo es obligatorio";
         }
 
         setErrors(newErrors);
@@ -485,7 +485,7 @@ export default function AddUserPanel({
                                         required
                                         showError={errors.workArea}
                                         errorMessage={errors.workArea}
-                                        className="mt-1 placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal min-h-8"
+                                        className="placeholder:text-xs placeholder:font-montserrat placeholder:font-normal font-normal min-h-8"
                                     />
                                 </label>
                             )}

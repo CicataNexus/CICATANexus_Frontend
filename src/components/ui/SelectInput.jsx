@@ -21,7 +21,15 @@ export default function SelectInput({
         onChange({ target: { name, value: newValue } });
     };
 
-	const selectedValue = value;
+	const selectedValue = isMulti
+		? value?.map((val) =>
+			typeof val === "object"
+				? val
+				: options.find((opt) => opt.value === val) || { label: val, value: val }
+			)
+		: typeof value === "object"
+		? value
+		: options.find((opt) => opt.value === value) || (value && { label: value, value });
 
     const SelectComponent = isCreatable ? CreatableSelect : Select;
 
@@ -47,7 +55,7 @@ export default function SelectInput({
 							? "#ef4444"
 							: state.isFocused
 							? "#5cb7e6"
-							: "#99a1af",
+							: "#6a7282",
 						borderRadius: "0.4rem",
 						height: isMulti && value.length > 1 ? "auto" : "2rem",
 						minHeight: "2rem",
@@ -59,7 +67,7 @@ export default function SelectInput({
 								? "#ef4444"
 								: state.isFocused
 								? "#5cb7e6"
-								: "#99a1af",
+								: "#6a7282",
 						},
 					}),
 					option: (base, state) => ({
@@ -102,6 +110,9 @@ export default function SelectInput({
 						margin: "0",
 						padding: "0",
 						lineHeight: "1.25rem",
+						fontFamily: "Montserrat, sans-serif",
+    					fontSize: "0.75rem",
+						color: "#676767",
 					}),
 					menuPortal: (base) => ({ 
 						...base, 
