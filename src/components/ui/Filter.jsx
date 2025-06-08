@@ -31,6 +31,7 @@ const filterOptions = {
     ],
     movements: [
         { label: 'Estado del equipo', value: 'status' },
+        { label: 'Área(s) de trabajo', value: 'workArea' },
     ],
 };
 
@@ -121,7 +122,6 @@ const filterValues = {
         { label: 'Tableta', value: 'Tableta' },
         { label: 'Unidades', value: 'Unidades' },
         { label: 'Lentejas', value: 'Lentejas' },
-        { label: 'Otros', value: 'Otros' },
     ],
 
     // Material
@@ -132,7 +132,6 @@ const filterValues = {
         { label: 'Cristaleria', value: 'Cristaleria' },
         { label: 'Herramienta', value: 'Herramienta' },
         { label: 'Limpieza', value: 'Limpieza' },
-        { label: 'Otros', value: 'Otros' },
     ],
 
     // User

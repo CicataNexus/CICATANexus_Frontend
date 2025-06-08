@@ -18,6 +18,59 @@ export default function AddUserPanel({
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [errors, setErrors] = useState({});
+    const [dynamicAreas, setDynamicAreas] = useState([]);
+    const handleCreateArea = (inputValue) => {
+        const newOption = {
+            label: inputValue,
+            value: inputValue.toUpperCase(),
+        };
+        setDynamicAreas((prev) => [...prev, newOption]);
+    };
+    const allWorkAreaOptions = [
+        {
+            label: 'Laboratorio de Biología Molecular',
+            value: 'LABORATORIO DE BIOLOGIA MOLECULAR',
+        },
+        {
+            label: 'Laboratorio de Cultivo Celular y Microscopía',
+            value: 'LABORATORIO DE CULTIVO CELULAR Y MICROSCOPIA',
+        },
+        {
+            label: 'Anexo de Cultivo Celular',
+            value: 'ANEXO DE CULTIVO CELULAR',
+        },
+        {
+            label: 'Laboratorio de Microbiología',
+            value: 'LABORATORIO DE MICROBIOLOGIA',
+        },
+        {
+            label: 'Laboratorio de Cromatografía y Espectrofotometría',
+            value: 'LABORATORIO DE CROMATOGRAFIA Y ESPECTROFOTOMETRIA',
+        },
+        {
+            label: 'Laboratorio de Bioprocesos',
+            value: 'LABORATORIO DE BIOPROCESOS',
+        },
+        {
+            label: 'Laboratorio de Acondicionamiento',
+            value: 'LABORATORIO DE ACONDICIONAMIENTO',
+        },
+        {
+            label: 'Cámara Fría',
+            value: 'CAMARA FRIA',
+        },
+        {
+            label: 'Bioterio',
+            value: 'BIOTERIO',
+        },
+        ...dynamicAreas,
+    ];
+
+    const normalizedWorkAreaOptions = allWorkAreaOptions.map((opt) => ({
+        label: opt.label || opt.value,
+        value: opt.value,
+    }));
+
     const requiredFields = [
         "name",
         "registrationNumber",
@@ -45,6 +98,19 @@ export default function AddUserPanel({
         role: "",
         workArea: [],
         ...initialData,
+    });
+
+    const selectedWorkAreas = formData.workArea.map((val) => {
+        const match = normalizedWorkAreaOptions.find((opt) => opt.value === val);
+        if (match) return match;
+        return {
+            label: val
+                .toLowerCase()
+                .replace(/\b\w/g, (l) => l.toUpperCase())
+                .replace(/ De /g, " de ")
+                .replace(/ Y /g, " y "),
+            value: val,
+        };
     });
 
     const handleChange = (e) => {
@@ -409,48 +475,13 @@ export default function AddUserPanel({
                                     </span>
                                     <SelectInput
                                         name="workArea"
-                                        value={formData.workArea}
+                                        value={selectedWorkAreas}
                                         onChange={handleChange}
                                         isMulti={true}
                                         placeholder="Seleccione una o varias áreas de trabajo"
-                                        options={[
-                                            {
-                                                label: 'Laboratorio de Biología Molecular',
-                                                value: 'LABORATORIO DE BIOLOGIA MOLECULAR',
-                                            },
-                                            {
-                                                label: 'Laboratorio de Cultivo Celular y Microscopía',
-                                                value: 'LABORATORIO DE CULTIVO CELULAR Y MICROSCOPIA',
-                                            },
-                                            {
-                                                label: 'Anexo de Cultivo Celular',
-                                                value: 'ANEXO DE CULTIVO CELULAR',
-                                            },
-                                            {
-                                                label: 'Laboratorio de Microbiología',
-                                                value: 'LABORATORIO DE MICROBIOLOGIA',
-                                            },
-                                            {
-                                                label: 'Laboratorio de Cromatografía y Espectrofotometría',
-                                                value: 'LABORATORIO DE CROMATOGRAFIA Y ESPECTROFOTOMETRIA',
-                                            },
-                                            {
-                                                label: 'Laboratorio de Bioprocesos',
-                                                value: 'LABORATORIO DE BIOPROCESOS',
-                                            },
-                                            {
-                                                label: 'Laboratorio de Acondicionamiento',
-                                                value: 'LABORATORIO DE ACONDICIONAMIENTO',
-                                            },
-                                            {
-                                                label: 'Cámara Fría',
-                                                value: 'CAMARA FRIA',
-                                            },
-                                            {
-                                                label: 'Bioterio',
-                                                value: 'BIOTERIO',
-                                            },
-                                        ]}
+                                        isCreatable={true}
+                                        onCreateOption={handleCreateArea}
+                                        options={normalizedWorkAreaOptions}
                                         required
                                         showError={errors.workArea}
                                         errorMessage={errors.workArea}

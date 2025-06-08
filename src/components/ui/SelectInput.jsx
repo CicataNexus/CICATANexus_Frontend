@@ -1,4 +1,5 @@
 import Select from "react-select";
+import CreatableSelect from "react-select/creatable";
 
 export default function SelectInput({
     name,
@@ -10,6 +11,8 @@ export default function SelectInput({
     errorMessage = "Este campo es obligatorio",
     className = "",
     isMulti = false,
+    isCreatable = false,
+    onCreateOption,
 }) {
     const handleChange = (selected) => {
         const newValue = isMulti
@@ -18,13 +21,13 @@ export default function SelectInput({
         onChange({ target: { name, value: newValue } });
     };
 
-	const selectedValue = isMulti
-		? options.filter((opt) => value.includes(opt.value))
-		: options.find((opt) => opt.value === value);
+	const selectedValue = value;
+
+    const SelectComponent = isCreatable ? CreatableSelect : Select;
 
     return (
         <div className="w-full mt-1">
-            <Select
+            <SelectComponent
                 isMulti={isMulti}
 				name={name}
 				options={options}
@@ -34,6 +37,7 @@ export default function SelectInput({
 				menuPortalTarget={document.body}
 				menuPosition="fixed"
 				className={className}
+				onCreateOption={isCreatable ? onCreateOption : undefined}
 				styles={{
 					control: (base, state) => ({
 						...base,

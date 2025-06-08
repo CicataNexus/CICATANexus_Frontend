@@ -42,6 +42,8 @@ const RequestSupport = () => {
   const [message, setMessage] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
   const [selectedAreas, setSelectedAreas] = useState([]);
+  const [otherArea, setOtherArea] = useState("");
+  const [isOtherChecked, setIsOtherChecked] = useState(false);
   const [observations, setObservations] = useState("");
   const [errors, setErrors] = useState({});
   const [occupiedTime, setOccupiedTime] = useState({
@@ -145,7 +147,7 @@ const RequestSupport = () => {
         dateRange.startDate === dateRange.endDate &&
         timeRange.startTime >= timeRange.endTime,
       selectedOption: !selectedOption,
-      selectedAreas: selectedAreas.length === 0,
+      selectedAreas: selectedAreas.length === 0 && (!isOtherChecked || !otherArea.trim()),
     };
     setErrors(newErrors);
 
@@ -160,7 +162,7 @@ const RequestSupport = () => {
     const formattedRequest = {
       typeOfRequest: "TA",
       requestSubtype: selectedOption,
-      workArea: selectedAreas,
+      workArea: [...selectedAreas, ...(isOtherChecked && otherArea.trim() ? [otherArea.trim()] : [])],
       requestDate: {
         startingDate: new Date(dateRange.startDate).toISOString(),
         finishingDate: new Date(dateRange.endDate).toISOString(),
@@ -351,6 +353,42 @@ const RequestSupport = () => {
                     </li>
                   );
                 })}
+                <li>
+                  <label className="flex items-center cursor-pointer mb-1">
+                    <div className="relative">
+                      <input
+                          type="checkbox"
+                          checked={isOtherChecked}
+                          onChange={(e) => setIsOtherChecked(e.target.checked)}
+                          className="sr-only peer"
+                        />
+                        <div className="w-4 h-4 border-2 border-primary-blue rounded-xs peer-checked:bg-primary-blue"></div>
+                        <svg
+                          className="absolute top-1/2 left-1/2 w-3.5 h-3.5 text-white transform -translate-x-1/2 -translate-y-1/2 pointer-events-none hidden peer-checked:block"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                    </div>
+                    <span className="ml-2">Otra área de trabajo</span>
+                  </label>
+                  {isOtherChecked && (
+                    <input
+                      type="text"
+                      className="ml-6 mt-1 border-b border-gray-400 text-sm w-full font-montserrat outline-none"
+                      placeholder="Escriba un área de trabajo"
+                      value={otherArea}
+                      onChange={(e) => setOtherArea(e.target.value)}
+                    />
+                  )}
+                </li>
               </ul>
               {errors.selectedAreas && (
                 <p className="mt-1 text-red-500 text-xs font-montserrat font-semibold">

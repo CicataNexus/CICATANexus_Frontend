@@ -35,6 +35,8 @@ const RequestMaterial = () => {
   });
   const [message, setMessage] = useState(false);
   const [selectedAreas, setSelectedAreas] = useState([]);
+  const [otherArea, setOtherArea] = useState("");
+  const [isOtherChecked, setIsOtherChecked] = useState(false);
   const [observations, setObservations] = useState("");
   const [errors, setErrors] = useState({});
   const [combinedItems, setCombinedItems] = useState([]);
@@ -139,7 +141,7 @@ const RequestMaterial = () => {
       dateRange: !dateRange.startDate,
       timeRange: !timeRange.startTime,
       selectedItems: selectedItems.length === 0,
-      selectedAreas: selectedAreas.length === 0,
+      selectedAreas: selectedAreas.length === 0 && (!isOtherChecked || !otherArea.trim()),
     };
     setErrors(newErrors);
 
@@ -163,7 +165,7 @@ const RequestMaterial = () => {
       occupiedMaterial: selectedItems.map((item) => ({
         barcode: item.barcode,
       })),
-      workArea: selectedAreas,
+      workArea: [...selectedAreas, ...(isOtherChecked && otherArea.trim() ? [otherArea.trim()] : [])],
       requestDate: {
         startingDate: new Date(dateRange.startDate).toISOString(),
         startingTime: timeRange.startTime,
@@ -323,6 +325,42 @@ const RequestMaterial = () => {
                     </li>
                   );
                 })}
+                <li>
+                  <label className="flex items-center cursor-pointer mb-1">
+                    <div className="relative">
+                      <input
+                          type="checkbox"
+                          checked={isOtherChecked}
+                          onChange={(e) => setIsOtherChecked(e.target.checked)}
+                          className="sr-only peer"
+                        />
+                        <div className="w-4 h-4 border-2 border-primary-blue rounded-xs peer-checked:bg-primary-blue"></div>
+                        <svg
+                          className="absolute top-1/2 left-1/2 w-3.5 h-3.5 text-white transform -translate-x-1/2 -translate-y-1/2 pointer-events-none hidden peer-checked:block"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                    </div>
+                    <span className="ml-2">Otra área de trabajo</span>
+                  </label>
+                  {isOtherChecked && (
+                    <input
+                      type="text"
+                      className="ml-6 mt-1 border-b border-gray-400 text-sm w-full font-montserrat outline-none"
+                      placeholder="Escriba un área de trabajo"
+                      value={otherArea}
+                      onChange={(e) => setOtherArea(e.target.value)}
+                    />
+                  )}
+                </li>
               </ul>
               {errors.selectedAreas && (
                 <p className="mt-1 text-red-500 text-xs font-montserrat font-semibold">

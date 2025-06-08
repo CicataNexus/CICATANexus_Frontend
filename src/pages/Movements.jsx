@@ -48,7 +48,14 @@ const Movements = () => {
                     });
                 });
 
-                setMovementsData(data);
+                setTotalItems(data.length);
+                setMovementsData(
+                    data.map(m => ({
+                        ...m,
+                        status: m.equipment?.status ?? "-",
+                        workArea: m.workArea ?? "-",
+                    }))
+                );
             } catch (err) {
                 console.error("Error al obtener los datos:", err);
             }
@@ -70,10 +77,18 @@ const Movements = () => {
             if (!searchedItem) return true;
             const bookerName = request.bookerName ?? "";
             const bookerRegistrationNumber = request.bookerRegistrationNumber ?? "";
+            const equipmentName = request.equipment.name ?? "";
+            const equipmentModel = request.equipment.model ?? "";
+            const equipmentLocation = request.equipment.location ?? "";
+            const equipmentBarcode = request.equipment.barcode ?? "";
 
             return (
                 normalizeText(bookerName).includes(searchedItem) ||
-                normalizeText(bookerRegistrationNumber).includes(searchedItem)
+                normalizeText(bookerRegistrationNumber).includes(searchedItem) ||
+                normalizeText(equipmentName).includes(searchedItem) ||
+                normalizeText(equipmentModel).includes(searchedItem) ||
+                normalizeText(equipmentLocation).includes(searchedItem) ||
+                equipmentBarcode === search
             );
         })();
 
@@ -89,6 +104,7 @@ const Movements = () => {
         return matchesSearch && matchesFilters;
     });
     
+    const paginatedData = filteredData.slice((page - 1) * pageSize, page * pageSize);
 
     const handleToggleDetails = (request) => {
         setSelectedMovement((prev) =>
@@ -137,7 +153,7 @@ const Movements = () => {
                     <>
                         <div className="min-h-[400px] flex flex-col justify-between">
                             <MovementsTable
-                                data={filteredData}
+                                data={paginatedData}
                                 columns={columns}
                                 selectedMovement={selectedMovement}
                                 onCloseDetails={() => setSelectedMovement(null)}
@@ -151,7 +167,7 @@ const Movements = () => {
                                 pageSize={pageSize}
                                 setPageSize={setPageSize}
                                 totalItems={totalItems}
-                                type="solicitud"
+                                type="movimientos"
                             />
                         </div>
                     </>

@@ -20,6 +20,7 @@ export default function PaginationControls({
             equipo: "equipos",
             reactivo: "reactivos",
             usuario: "usuarios",
+            movimiento: "movimientos"
         };
         if (count === 1) return word;
         if (irregulars[word]) return irregulars[word];
