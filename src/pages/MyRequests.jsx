@@ -84,12 +84,17 @@ const MyRequests = () => {
         setShowCancelModal(true);
     };
 
-    const handleConfirmCancel = async () => {
+    const handleConfirmCancel = async (comment) => {
         try {
             const data = await apiFetch(`/request/cancel/${requestToCancel.id}`,
                 {
                     method: "PUT",
-                    body: JSON.stringify({ registrationNumber }),
+                    body: JSON.stringify({
+                        registrationNumber,
+                        requestData: {
+                            observations: comment.trim(),
+                        },
+                    }),
                 }
             );
 

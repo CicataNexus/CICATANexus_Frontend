@@ -68,7 +68,7 @@ export default function ModalCancelReqConfirmation({
                         Cancelar
                     </Button>
                     <Button
-                        onClick={onConfirmCancel}
+                        onClick={() => onConfirmCancel(observationText)}
                         disabled={observationText.trim() === ""}
                         className={`w-full sm:w-40 ${
                             observationText.trim() === ""

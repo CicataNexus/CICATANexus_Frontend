@@ -151,6 +151,11 @@ const RequestSupport = () => {
     const hasErrors = Object.values(newErrors).some(Boolean);
     if (hasErrors) return;
 
+    const within24 = checkIfWithin24Hours(dateRange.startDate, timeRange.startTime);
+    if (within24) {
+      showToast("Recuerda hacer tu solicitud con anticipación", "warning");
+    }
+
     const formattedRequest = {
       typeOfRequest: "TA",
       requestSubtype: selectedOption,
@@ -304,15 +309,6 @@ const RequestSupport = () => {
               {errors.timeRangeStartEnd && (
                 <p className="text-red-500 text-xs font-montserrat font-semibold mt-1">
                   El tiempo final debe de ser mayor al de inicio
-                </p>
-              )}
-              {isWithin24Hours && (
-                <p className="flex justify-center items-center text-warning-toast-icon bg-warning-toast-icon-background text-xs font-montserrat font-semibold mt-2 p-2 w-fit rounded-full">
-                  <TiWarningOutline size={20} className="mr-1" />
-                  <p className="pr-2">
-                    Las solicitudes con menos de 24h de anticipación estan
-                    sujetas a disponibilidad
-                  </p>
                 </p>
               )}
             </div>

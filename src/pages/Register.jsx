@@ -48,7 +48,6 @@ function Register() {
         setErrors((prev) => ({ ...prev, [name]: false }));
     };
 
-
     const handleRegister = async () => {
         setGlobalError(""); // Limpiar el error
 

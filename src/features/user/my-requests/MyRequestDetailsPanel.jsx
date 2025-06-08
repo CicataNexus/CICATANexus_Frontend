@@ -105,6 +105,7 @@ export default function MyRequestDetailsPanel({ request, onCancel }) {
                                 {observations?.map((obs, index) => {
                                     const isSystemLog =
                                         obs.message.includes("ha iniciado") ||
+                                        obs.message.includes("ha cancelado") ||
                                         obs.message.includes("ha aprobado") ||
                                         obs.message.includes("ha rechazado");
 

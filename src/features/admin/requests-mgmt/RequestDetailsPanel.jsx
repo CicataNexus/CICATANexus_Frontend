@@ -419,6 +419,7 @@ export default function RequestDetailsPanel({ request, onClose, onCancel, setRel
                                         {observations?.map((obs, index) => {
                                             const isSystemLog =
                                                 obs?.message?.includes("ha iniciado") ||
+                                                obs?.message?.includes("ha cancelado") ||
                                                 obs?.message?.includes("ha aprobado") ||
                                                 obs?.message?.includes("ha rechazado");
 
@@ -568,7 +569,14 @@ export default function RequestDetailsPanel({ request, onClose, onCancel, setRel
                                 )}
                             </div>
                             {request.requestStatus === "Aprobada y notificada" ? (
-                                <div className="flex justify-end pt-1">
+                                <div className="flex justify-between pt-1">
+                                    <Button
+                                        onClick={onCancel}
+                                        className="bg-delete-btn hover:bg-delete-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-md transition inline-flex items-center cursor-pointer"
+                                        aria-label="Cancelar solicitud"
+                                    >
+                                        Cancelar solicitud
+                                    </Button>
                                     <Button
                                         disabled={request.requestStatus === "Aprobada y notificada" && observationText.trim() === ""}
                                         className={`text-base font-poppins font-semibold inline-flex items-center px-6 py-2 ${
@@ -583,7 +591,7 @@ export default function RequestDetailsPanel({ request, onClose, onCancel, setRel
                                     </Button>
                                 </div>
                             ) : (
-                                <div className="flex justify-between items-center pt-1">
+                                <div className={`flex items-center pt-1 ${role === ROLES.TECH ? "justify-end" : "justify-between"}`}>
                                     {role === ROLES.ADMIN && requestStatus !== "Cancelada" && (
                                         <Button
                                             onClick={onCancel}
