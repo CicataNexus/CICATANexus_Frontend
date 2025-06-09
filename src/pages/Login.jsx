@@ -19,7 +19,6 @@ function Login() {
                 };
                 navigate(roleHomeRoutes[role] || "/", { replace: true });
             } catch (error) {
-                console.error("Token inválido:", error);
                 localStorage.removeItem("token");
             }
         }

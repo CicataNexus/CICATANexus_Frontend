@@ -37,7 +37,7 @@ export default function RequestsStatus() {
                     },
                 ]);
             } catch (error) {
-                console.error("Error al obtener datos de status-summary:", error);
+                console.error("Error al obtener datos de las solicitudes:", error);
             }
         };
 

@@ -176,7 +176,6 @@ const RequestSupport = () => {
         .registrationNumber,
       observations: observations,
     };
-    console.log(formattedRequest);
     try {
       const data = await apiFetch("/request", {
         method: "POST",

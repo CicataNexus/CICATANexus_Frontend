@@ -33,7 +33,7 @@ export default function TotalRequests() {
                 const data = await apiFetch(url);
                 setTotal(data.total ?? 0);
             } catch (error) {
-                console.error("Error al obtener total:", error);
+                console.error("Error al obtener total de solicitudes:", error);
             }
         };
 

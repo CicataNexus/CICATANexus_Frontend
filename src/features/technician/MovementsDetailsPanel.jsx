@@ -30,7 +30,6 @@ export default function MovementsDetailsPanel({ request, onClose, setReload, }) 
     const handleConfirm = async () => {
         try {
             if (!["available", "inUse", "disabled"].includes(newStatus?.value)) {
-                console.warn("Estado no válido:", newStatus);
                 return;
             }
             
@@ -48,7 +47,6 @@ export default function MovementsDetailsPanel({ request, onClose, setReload, }) 
             onClose();
             setTimeout(() => setReload((prev) => !prev), 0);
         } catch (error) {
-            console.error("Error:", error);
             showToast("No se pudo actualizar el estado", "error");
         }
     };

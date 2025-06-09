@@ -141,7 +141,6 @@ export default function RequestDetailsPanel({ request, onClose, onCancel, setRel
         ) {
             nextStatus = "Aprobada y notificada";
         } else {
-            console.warn("No se puede aprobar en este estado con este rol.");
             return;
         }
 
@@ -158,7 +157,7 @@ export default function RequestDetailsPanel({ request, onClose, onCancel, setRel
             );
             setReload((prev) => !prev);
         } catch (error) {
-            console.error("Error approving request:", error);
+            console.error("Error al aprobar la solicitud:", error);
         }
     };
 
@@ -186,7 +185,6 @@ export default function RequestDetailsPanel({ request, onClose, onCancel, setRel
         ) {
             nextStatus = "Rechazada y notificada";
         } else {
-            console.warn("No se puede rechazar en este estado con este rol.");
             return;
         }
 
@@ -203,7 +201,7 @@ export default function RequestDetailsPanel({ request, onClose, onCancel, setRel
             );
             setReload((prev) => !prev);
         } catch (error) {
-            console.error("Error rejecting request:", error);
+            console.error("Error al rechazar la solicitud:", error);
         }
     };
     
@@ -353,7 +351,6 @@ export default function RequestDetailsPanel({ request, onClose, onCancel, setRel
                                                         showToast("Técnico reasignado exitosamente", "success");
                                                         setReload((prev) => !prev);
                                                     } catch (err) {
-                                                        console.error(err);
                                                         showToast("No se pudo asignar el técnico", "error");
                                                     }
                                                 }}

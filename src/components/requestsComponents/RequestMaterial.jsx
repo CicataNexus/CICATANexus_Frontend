@@ -90,7 +90,7 @@ const RequestMaterial = () => {
         const data = await apiFetch("/combined/basic");
         setCombinedItems(data);
       } catch (err) {
-        console.error(err);
+        console.error("Error al obtener los reactivos y materiales", err);
       }
     };
 
@@ -152,13 +152,6 @@ const RequestMaterial = () => {
     if (within24) {
       showToast("Recuerda hacer tu solicitud con anticipación", "warning");
     }
-
-    const token = localStorage.getItem("token");
-
-    console.log("Raw token:", token);
-
-    const decoded = jwtDecode(token);
-    console.log("Decoded token:", decoded);
 
     const formattedRequest = {
       typeOfRequest: "R&M",

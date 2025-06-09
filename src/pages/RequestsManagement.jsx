@@ -102,7 +102,7 @@ const Requests = () => {
                     }
                 }
             } catch (err) {
-                console.error("Error fetching requests:", err);
+                console.error("Error al obtener las solicitudes:", err);
             }
         };
 

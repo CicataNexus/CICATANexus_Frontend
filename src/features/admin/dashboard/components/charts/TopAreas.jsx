@@ -60,7 +60,7 @@ export default function TopAreas() {
                 })).slice(0, 5);;
                 setChartData(formattedData);
             } catch (error) {
-                console.error("Error al obtener datos de materiales más solicitados:", error);
+                console.error("Error al obtener datos de las áreas más solicitadas:", error);
             }
         };
 

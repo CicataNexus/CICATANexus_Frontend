@@ -15,7 +15,6 @@ export default function ProtectedRoutes({ allowedRoles }) {
     try {
         ({ role } = jwtDecode(token));
     } catch (error) {
-        console.error("Error decoding token:", error);
         return <Navigate to="/" replace />;
     }    
 

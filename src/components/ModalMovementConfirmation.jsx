@@ -17,7 +17,6 @@ export default function ModalMovementConfirmation({
 
         const handleKeyDown = (event) => {
             if (event.key === "Escape") {
-                console.log("Escape key pressed");
                 onClose();
             }
         };

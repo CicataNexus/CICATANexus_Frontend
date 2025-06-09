@@ -56,7 +56,7 @@ const Movements = () => {
                     }))
                 );
             } catch (err) {
-                console.error("Error al obtener los datos:", err);
+                console.error("Error al obtener los movimientos:", err);
             }
         };
 

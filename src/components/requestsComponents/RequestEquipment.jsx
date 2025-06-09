@@ -140,7 +140,7 @@ const RequestEquipment = () => {
         const data = await apiFetch("/equipment/basic");
         setEquipments(data);
       } catch (err) {
-        setError(err);
+        console.error("Error al obtener los equipos", err);
       }
     };
 
@@ -363,8 +363,6 @@ const RequestEquipment = () => {
         .registrationNumber, // placeholder
       observations: observations,
     };
-
-    console.log(formattedRequest);
 
     try {
       const data = await apiFetch("/request", {

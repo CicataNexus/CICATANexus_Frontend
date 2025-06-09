@@ -57,7 +57,6 @@ export default function FrequentHours() {
             const month = currentMonth;
             const englishDay = getEnglishDayName(currentDay);
             const url = `/analytics/hourly-frequency?month=${month}&dayString=${englishDay}&year=${year}`;
-            console.log(url)
 
             try {
                 const data = await apiFetch(url);

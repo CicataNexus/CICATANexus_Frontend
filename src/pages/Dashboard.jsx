@@ -34,7 +34,6 @@ function Dashboard() {
             window.URL.revokeObjectURL(url);
         } catch (error) {
             showToast("Error al exportar gráficas", "error");
-            console.error(error);
         }
     };
 

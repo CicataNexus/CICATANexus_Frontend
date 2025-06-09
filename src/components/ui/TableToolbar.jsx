@@ -62,7 +62,6 @@ export default function TableToolbar({
             window.URL.revokeObjectURL(url);
         } catch (error) {
             showToast("Requiere productos en las tres categorías", "error");
-            console.error(error);
         }
     };
 
