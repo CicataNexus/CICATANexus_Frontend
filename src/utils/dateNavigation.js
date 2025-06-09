@@ -10,7 +10,7 @@ export default function useDateNavigation(initialViewMode = 0) {
     const [currentDay, setCurrentDay] = useState(currentDaySystem);
     const [currentMonth, setCurrentMonth] = useState(currentMonthSystem);
     const [currentYear, setCurrentYear] = useState(currentYearSystem);
-    const lowestYear = 2020;
+    const lowestYear = 2025;
 
     const handleDayLeft = () => {
         if (!isDayLeftDisabled) {

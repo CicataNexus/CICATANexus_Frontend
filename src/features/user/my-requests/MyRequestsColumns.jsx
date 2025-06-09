@@ -4,6 +4,10 @@ import { mapRequestStatusForUser } from "@/utils/mapRequestStatus";
 
 export const MyRequestsColumns = (handleToggleDetails, selectedRequest) => [
     {
+        header: "Identificador",
+        accessorFn: (row) => row.logCode || "-",
+    },
+    {
         header: "Tipo",
         accessorKey: "typeOfRequest",
         cell: ({ getValue }) => {

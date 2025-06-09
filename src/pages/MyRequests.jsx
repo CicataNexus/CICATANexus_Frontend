@@ -46,6 +46,7 @@ const MyRequests = () => {
                     name: item.assignedTechnicianName,
                 },
                 observations: item.observations,
+                logCode: item.logCode,
             };
         });
     };
