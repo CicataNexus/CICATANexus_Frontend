@@ -167,7 +167,7 @@ export default function TopReagents() {
                     <Icon
                         icon="iconamoon:arrow-left-2-light"
                         className={`h-4 w-4 ${isLeftDisabled
-                            ? "text-gray-400"
+                            ? "text-gray-400 cursor-not-allowed"
                             : "text-blue-600 cursor-pointer"}`}
                         onClick={!isLeftDisabled ? handleLeftClick : undefined}
                     />
@@ -177,7 +177,7 @@ export default function TopReagents() {
                     <Icon
                         icon="iconamoon:arrow-right-2-light"
                         className={`h-4 w-4 ${isRightDisabled
-                            ? "text-gray-400"
+                            ? "text-gray-400 cursor-not-allowed"
                             : "text-blue-600 cursor-pointer"}`}
                         onClick={!isRightDisabled ? handleRightClick : undefined}
                     />

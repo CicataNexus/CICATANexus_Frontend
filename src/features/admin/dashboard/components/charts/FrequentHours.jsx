@@ -179,7 +179,7 @@ export default function FrequentHours() {
                         <Icon
                             icon="iconamoon:arrow-left-2-light"
                             className={`h-4 w-4 ${isDayLeftDisabled 
-                                ? "text-gray-400" 
+                                ? "text-gray-400 cursor-not-allowed" 
                                 : "text-blue-600 cursor-pointer"}`}
                             onClick={!isDayLeftDisabled ? handleDayLeft : undefined}
                         />
@@ -187,7 +187,7 @@ export default function FrequentHours() {
                         <Icon
                             icon="iconamoon:arrow-right-2-light"
                             className={`h-4 w-4 ${isDayRightDisabled 
-                                ? "text-gray-400" 
+                                ? "text-gray-400 cursor-not-allowed" 
                                 : "text-blue-600 cursor-pointer"}`}
                             onClick={!isDayRightDisabled ? handleDayRight : undefined}
                         />
@@ -196,7 +196,7 @@ export default function FrequentHours() {
                         <Icon
                             icon="iconamoon:arrow-left-2-light"
                             className={`h-4 w-4 ${isMonthLeftDisabled 
-                                ? "text-gray-400" 
+                                ? "text-gray-400 cursor-not-allowed" 
                                 : "text-blue-600 cursor-pointer"}`}
                             onClick={!isMonthLeftDisabled ? handleMonthLeft : undefined}
                         />
@@ -204,7 +204,7 @@ export default function FrequentHours() {
                         <Icon
                             icon="iconamoon:arrow-right-2-light"
                             className={`h-4 w-4 ${isMonthRightDisabled 
-                                ? "text-gray-400" 
+                                ? "text-gray-400 cursor-not-allowed" 
                                 : "text-blue-600 cursor-pointer"}`}
                             onClick={!isMonthRightDisabled ? handleMonthRight : undefined}
                         />
@@ -213,7 +213,7 @@ export default function FrequentHours() {
                         <Icon
                             icon="iconamoon:arrow-left-2-light"
                             className={`h-4 w-4 ${isYearLeftDisabled 
-                                ? "text-gray-400" 
+                                ? "text-gray-400 cursor-not-allowed" 
                                 : "text-blue-600 cursor-pointer"}`}
                             onClick={!isYearLeftDisabled ? handleYearLeft : undefined}
                         />
@@ -221,7 +221,7 @@ export default function FrequentHours() {
                         <Icon
                             icon="iconamoon:arrow-right-2-light"
                             className={`h-4 w-4 ${isYearRightDisabled 
-                                ? "text-gray-400" 
+                                ? "text-gray-400 cursor-not-allowed" 
                                 : "text-blue-600 cursor-pointer"}`}
                             onClick={!isYearRightDisabled ? handleYearRight : undefined}
                         />
