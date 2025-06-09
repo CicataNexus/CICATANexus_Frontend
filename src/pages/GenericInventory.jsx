@@ -38,19 +38,20 @@ export default function GenericInventory() {
     const [error, setError] = useState(null);
     const [reload, setReload] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
-    
-    useEffect(() => {
-        setSelectedProduct(null);
-    }, [type]);
     const [isAddingMode, setIsAddingMode] = useState(false);
 
     // Pagination
     const [page, setPage] = useState(1); // Current page
-    useEffect(() => {
-        setPage(1);
-    }, [type]);
     const [pageSize, setPageSize] = useState(5); // Number of items per page
     const [totalItems, setTotalItems] = useState(0); // Total number of items
+
+    useEffect(() => {
+        setSearch("");
+        setActiveFilters({});
+        setPage(1);
+        setSelectedProduct(null);
+        setIsAddingMode(false);
+    }, [type]);
 
     const getProductId = (product, type) => {
         // Function to get the product ID based on the type
@@ -80,11 +81,22 @@ export default function GenericInventory() {
             ? columnsMap[type](handleEdit, selectedProduct)
             : null;
 
+    const hasSearchOrFilters = !!search.trim() || Object.values(activeFilters).some(arr => Array.isArray(arr) && arr.length > 0);
+
     useEffect(() => {
+        if (hasSearchOrFilters) {
+            setPage(1);
+        }
+    }, [search, activeFilters]);
+
+    useEffect(() => {
+        const effectivePage = hasSearchOrFilters ? 1 : page;
+        const effectiveLimit = hasSearchOrFilters ? 9999999999 : pageSize;
+
         const fetchData = async () => {
             try {
                 const data = await apiFetch(
-                    `${apiEndpoints[type]}?page=${page}&limit=${pageSize}`
+                    `${apiEndpoints[type]}?page=${effectivePage}&limit=${effectiveLimit}`
                 );
                 const dataKey = dataKeyMap[type];
                 setData(data[dataKey]);
@@ -97,7 +109,7 @@ export default function GenericInventory() {
         if (!isAddingMode && !selectedProduct) {
             fetchData();
         }
-    }, [type, page, pageSize, reload, isAddingMode, selectedProduct]);
+    }, [type, page, pageSize, reload, isAddingMode, selectedProduct, hasSearchOrFilters]);
 
     if (!columns || !data) {
         return (
@@ -108,8 +120,8 @@ export default function GenericInventory() {
     }
 
     const normalizeText = (text) =>
-        text
-            ?.normalize("NFD")
+        (text ?? "")
+            .normalize("NFD")
             .replace(/[\u0301\u0300\u0302\u0308\u0304\u0307]/g, "")
             .toLowerCase();
 
@@ -172,6 +184,10 @@ export default function GenericInventory() {
         return matchesSearch && matchesFilters;
     });
 
+    const paginatedFilteredData = hasSearchOrFilters
+        ? filteredData.slice((page - 1) * pageSize, page * pageSize)
+        : filteredData;
+
     return (
         <section className="p-4 -mt-1 w-full max-w-full overflow-x-hidden">
             <h2 className="font-poppins text-2xl font-semibold mb-2">
@@ -219,7 +235,7 @@ export default function GenericInventory() {
                         <>
                             <div className="min-h-[400px] flex flex-col justify-between">
                                 <InventoryTable
-                                    data={filteredData}
+                                    data={paginatedFilteredData}
                                     columns={columns}
                                     selectedProduct={selectedProduct}
                                     type={type}
@@ -237,7 +253,7 @@ export default function GenericInventory() {
                                     setPage={setPage}
                                     pageSize={pageSize}
                                     setPageSize={setPageSize}
-                                    totalItems={totalItems}
+                                    totalItems={hasSearchOrFilters ? filteredData.length : totalItems}
                                     type={type}
                                 />
                             </div>

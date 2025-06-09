@@ -10,69 +10,99 @@ export default function useDateNavigation(initialViewMode = 0) {
     const [currentDay, setCurrentDay] = useState(currentDaySystem);
     const [currentMonth, setCurrentMonth] = useState(currentMonthSystem);
     const [currentYear, setCurrentYear] = useState(currentYearSystem);
+    const lowestYear = 2020;
 
     const handleDayLeft = () => {
-        setCurrentDay((prev) => (prev - 1 + 7) % 7);
+        if (!isDayLeftDisabled) {
+            setCurrentDay((prev) => (prev - 1 + 7) % 7);
+        }
     };
 
     const handleDayRight = () => {
-        setCurrentDay((prev) => (prev + 1) % 7);
+        if (!isDayRightDisabled) {
+            setCurrentDay((prev) => (prev + 1) % 7);
+        }
     };
 
-    const handleYearLeft = () => {
-        setCurrentYear((prev) => Math.max(2020, prev - 1));
-    };
+    const isDayLeftDisabled = currentDay === 1;
+    const isDayRightDisabled = currentDay === 0;
 
-    const handleYearRight = () => {
-        setCurrentYear((prev) => prev + 1);
-    };
-
-
-    const handleLeftClick = () => {
-        if (viewMode === 0 && currentMonth > 1) {
+    const handleMonthLeft = () => {
+        if (currentMonth > 1) {
             setCurrentMonth((prev) => prev - 1);
         }
-        if (viewMode === 1 && currentYear > 2022) {
+    };
+
+    const handleMonthRight = () => {
+        if (
+            currentYear < currentYearSystem ||
+            (currentYear === currentYearSystem && currentMonth < currentMonthSystem)
+        ) {
+            setCurrentMonth((prev) => prev + 1);
+        }
+    };
+
+    const isMonthLeftDisabled = currentMonth === 1;
+    const isMonthRightDisabled =
+        currentYear === currentYearSystem && currentMonth >= currentMonthSystem;
+
+    const handleYearLeft = () => {
+        if (currentYear > lowestYear) {
             setCurrentYear((prev) => prev - 1);
         }
     };
 
-    const handleRightClick = () => {
-        if (
-            viewMode === 0 &&
-            currentMonth < currentMonthSystem &&
-            currentYear === currentYearSystem
-        ) {
-            setCurrentMonth((prev) => prev + 1);
-        }
-        if (viewMode === 1 && currentYear < currentYearSystem) {
+    const handleYearRight = () => {
+        if (currentYear < currentYearSystem) {
             setCurrentYear((prev) => prev + 1);
         }
     };
 
+    const isYearLeftDisabled = currentYear <= lowestYear;
+    const isYearRightDisabled = currentYear >= currentYearSystem;
+
+    const handleLeftClick = () => {
+        if (viewMode === 0) handleMonthLeft();
+        if (viewMode === 1) handleYearLeft();
+    };
+
+    const handleRightClick = () => {
+        if (viewMode === 0) handleMonthRight();
+        if (viewMode === 1) handleYearRight();
+    };
+
     const isLeftDisabled =
-        (viewMode === 0 && currentMonth === 1) ||
-        (viewMode === 1 && currentYear === 2022);
+        (viewMode === 0 && isMonthLeftDisabled) ||
+        (viewMode === 1 && isYearLeftDisabled);
 
     const isRightDisabled =
-        (viewMode === 0 &&
-            currentMonth === currentMonthSystem &&
-            currentYear === currentYearSystem) ||
-        (viewMode === 1 && currentYear === currentYearSystem);
+        (viewMode === 0 && isMonthRightDisabled) ||
+        (viewMode === 1 && isYearRightDisabled);
 
     return {
         viewMode,
         setViewMode,
         currentDay,
-        setCurrentDay,
         currentMonth,
         currentYear,
-        handleLeftClick,
-        handleRightClick,
+
         handleDayLeft,
         handleDayRight,
+        isDayLeftDisabled,
+        isDayRightDisabled,
+
+        handleMonthLeft,
+        handleMonthRight,
+        isMonthLeftDisabled,
+        isMonthRightDisabled,
+
         handleYearLeft,
         handleYearRight,
+        isYearLeftDisabled,
+        isYearRightDisabled,
+
+        handleLeftClick,
+        handleRightClick,
         isLeftDisabled,
         isRightDisabled,
     };

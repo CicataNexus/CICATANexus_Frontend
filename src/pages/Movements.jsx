@@ -48,7 +48,6 @@ const Movements = () => {
                     });
                 });
 
-                setTotalItems(data.length);
                 setMovementsData(
                     data.map(m => ({
                         ...m,
@@ -166,7 +165,7 @@ const Movements = () => {
                                 setPage={setPage}
                                 pageSize={pageSize}
                                 setPageSize={setPageSize}
-                                totalItems={totalItems}
+                                totalItems={filteredData.length}
                                 type="movimientos"
                             />
                         </div>

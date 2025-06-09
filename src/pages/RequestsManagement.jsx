@@ -22,13 +22,24 @@ const Requests = () => {
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [requestToCancel, setRequestToCancel] = useState(null);
 
+    const hasSearchOrFilters = !!search.trim() || Object.values(activeFilters).some(arr => Array.isArray(arr) && arr.length > 0);
+
     useEffect(() => {
+        if (hasSearchOrFilters) {
+            setPage(1);
+        }
+    }, [search, activeFilters]);
+
+    useEffect(() => {
+        const effectivePage = hasSearchOrFilters ? 1 : page;
+        const effectiveLimit = hasSearchOrFilters ? 9999999999 : pageSize;
+
         const fetchRequests = async () => {
             try {
                 const { role, registrationNumber } = jwtDecode(localStorage.getItem("token"));
                 const endpoint = role === ROLES.TECH
-                    ? `/request/technician/${registrationNumber}?page=${page}&limit=${pageSize}`
-                    : `/request/paginated?page=${page}&limit=${pageSize}`;
+                    ? `/request/technician/${registrationNumber}?page=${effectivePage}&limit=${effectiveLimit}`
+                    : `/request/paginated?page=${effectivePage}&limit=${effectiveLimit}`;
                 const data = await apiFetch(endpoint);
 
                 const requestsArray = data.requests || data;
@@ -96,7 +107,7 @@ const Requests = () => {
         };
 
         fetchRequests();
-    }, [reload, page, pageSize]);
+    }, [reload, page, pageSize, hasSearchOrFilters]);
 
     const normalizeText = (text) =>
         text
@@ -183,6 +194,10 @@ const Requests = () => {
         [selectedRequest]
     );
 
+    const paginatedFilteredData = hasSearchOrFilters
+        ? filteredData.slice((page - 1) * pageSize, page * pageSize)
+        : filteredData;
+
     return (
         <>
             <section className="p-4 -mt-1 w-full max-w-full overflow-x-hidden">
@@ -220,7 +235,7 @@ const Requests = () => {
                     <>
                         <div className="min-h-[400px] flex flex-col justify-between">
                             <RequestsTable
-                                data={filteredData}
+                                data={paginatedFilteredData}
                                 columns={columns}
                                 selectedRequest={selectedRequest}
                                 onCloseDetails={() => setSelectedRequest(null)}
@@ -234,7 +249,7 @@ const Requests = () => {
                                 setPage={setPage}
                                 pageSize={pageSize}
                                 setPageSize={setPageSize}
-                                totalItems={totalItems}
+                                totalItems={hasSearchOrFilters ? filteredData.length : totalItems}
                                 type="solicitud"
                             />
                         </div>

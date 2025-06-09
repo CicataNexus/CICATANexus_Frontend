@@ -34,10 +34,21 @@ export default function UsersManagement() {
 
     const columns = UsersColumns(handleEdit, selectedUser);
 
+    const hasSearchOrFilters = !!search.trim() || Object.values(activeFilters).some(arr => Array.isArray(arr) && arr.length > 0);
+
     useEffect(() => {
+        if (hasSearchOrFilters) {
+            setPage(1);
+        }
+    }, [search, activeFilters]);
+
+    useEffect(() => {
+        const effectivePage = hasSearchOrFilters ? 1 : page;
+        const effectiveLimit = hasSearchOrFilters ? 9999999999 : pageSize;
+
         const fetchData = async () => {
             try {
-                const data = await apiFetch(`/user?page=${page}&limit=${pageSize}`);
+                const data = await apiFetch(`/user?page=${effectivePage}&limit=${effectiveLimit}`);
 
                 setData(data.users);
                 setTotalItems(data.total);
@@ -49,7 +60,7 @@ export default function UsersManagement() {
         if (!isAddingMode && !selectedUser) {
             fetchData();
         }
-    }, [page, pageSize, reload, isAddingMode, selectedUser]);
+    }, [page, pageSize, reload, isAddingMode, selectedUser, hasSearchOrFilters]);
 
     if (!data) {
         return (
@@ -89,6 +100,10 @@ export default function UsersManagement() {
         return matchesSearch && matchesFilters;
     });
 
+    const paginatedFilteredData = hasSearchOrFilters
+        ? filteredData.slice((page - 1) * pageSize, page * pageSize)
+        : filteredData;
+
     return (
         <div className="p-4 -mt-1 w-full max-w-full overflow-x-hidden">
             <h2 className="font-poppins text-2xl font-semibold mb-2">
@@ -126,7 +141,7 @@ export default function UsersManagement() {
                 <>
                     <div className="min-h-[400px] flex flex-col justify-between">
                         <UsersTable
-                            data={filteredData}
+                            data={paginatedFilteredData}
                             columns={columns}
                             selectedUser={selectedUser}
                             onCloseEdit={() => setSelectedUser(null)}
@@ -144,7 +159,7 @@ export default function UsersManagement() {
                             setPage={setPage}
                             pageSize={pageSize}
                             setPageSize={setPageSize}
-                            totalItems={totalItems}
+                            totalItems={hasSearchOrFilters ? filteredData.length : totalItems}
                             type="usuario"
                         />
                     </div>

@@ -17,7 +17,7 @@ import { useState, useEffect } from "react";
 export const description = "A simple area chart";
 
 const chartConfig = {
-    requests: {
+    count: {
         label: "Solicitudes",
         color: "var(--color-primary-green)",
     },
@@ -28,14 +28,18 @@ export default function FrequentHours() {
         currentDay,
         currentMonth,
         currentYear,
-        handleLeftClick,
-        handleRightClick,
         handleDayLeft,
         handleDayRight,
+        handleMonthLeft,
+        handleMonthRight,
         handleYearLeft,
         handleYearRight,
-        isLeftDisabled,
-        isRightDisabled,
+        isDayLeftDisabled,
+        isDayRightDisabled,
+        isMonthLeftDisabled,
+        isMonthRightDisabled,
+        isYearLeftDisabled,
+        isYearRightDisabled,
     } = useDateNavigation();
 
     const [chartData, setChartData] = useState([]);
@@ -49,26 +53,22 @@ export default function FrequentHours() {
 
     useEffect(() => {
         const fetchData = async () => {
+            const year = currentYear;
+            const month = currentMonth;
             const englishDay = getEnglishDayName(currentDay);
-            const url = `/analytics/hourly-frequency?month=${currentMonth}&dayString=${englishDay}&year=${currentYear}`;
+            const url = `/analytics/hourly-frequency?month=${month}&dayString=${englishDay}&year=${year}`;
+            console.log(url)
 
             try {
                 const data = await apiFetch(url);
 
-                const fixedHours = [
-                    "08:00", "09:00", "10:00", "11:00", "12:00",
-                    "13:00", "14:00", "15:00", "16:00"
-                ];
-
-                const formatted = fixedHours.map((hour) => {
-                    const match = data.find((item) => item.hour === hour);
+                const formattedData = data.map((item) => {
                     return {
-                        hour,
-                        requests: match ? match.count : 0,
+                        hour: item.hour,
+                        count: item.count,
                     };
                 });
-
-                setChartData(formatted);
+                setChartData(formattedData);
             } catch (error) {
                 console.error("Error al cargar datos de horarios frecuentes", error);
             }
@@ -84,7 +84,7 @@ export default function FrequentHours() {
                     Horarios más frecuentes
                 </CardTitle>
             </CardHeader>
-            {chartData.every((d) => d.requests === 0) ? (
+            {chartData.length === 0 ? (
                 <div className="h-full flex items-center justify-center">
                     <div className="text-gray-500 font-montserrat text-xl font-semibold text-center">
                         No hay solicitudes registradas
@@ -157,7 +157,7 @@ export default function FrequentHours() {
                                 </linearGradient>
                             </defs>
                             <Area
-                                dataKey="requests"
+                                dataKey="count"
                                 type="monotone"
                                 fill="url(#greenGradient)"
                                 fillOpacity={0.4}
@@ -173,44 +173,52 @@ export default function FrequentHours() {
                     <div className="flex items-center gap-2">
                         <Icon
                             icon="iconamoon:arrow-left-2-light"
-                            className="h-4 w-4 cursor-pointer text-blue-600"
-                            onClick={handleYearLeft}
+                            className={`h-4 w-4 ${isYearLeftDisabled 
+                                ? "text-gray-400" 
+                                : "text-blue-600 cursor-pointer"}`}
+                            onClick={!isYearLeftDisabled ? handleYearLeft : undefined}
                         />
                         <span className="font-montserrat font-medium">{currentYear}</span>
                         <Icon
                             icon="iconamoon:arrow-right-2-light"
-                            className="h-4 w-4 cursor-pointer text-blue-600"
-                            onClick={handleYearRight}
+                            className={`h-4 w-4 ${isYearRightDisabled 
+                                ? "text-gray-400" 
+                                : "text-blue-600 cursor-pointer"}`}
+                            onClick={!isYearRightDisabled ? handleYearRight : undefined}
                         />
                     </div>
                     <div className="flex items-center gap-2">
                         <Icon
                             icon="iconamoon:arrow-left-2-light"
-                            className={`h-4 w-4 ${isLeftDisabled
-                                ? "text-gray-400"
+                            className={`h-4 w-4 ${isMonthLeftDisabled 
+                                ? "text-gray-400" 
                                 : "text-blue-600 cursor-pointer"}`}
-                            onClick={!isLeftDisabled ? handleLeftClick : undefined}
+                            onClick={!isMonthLeftDisabled ? handleMonthLeft : undefined}
                         />
                         <span className="font-montserrat font-medium">{monthLabel}</span>
                         <Icon
                             icon="iconamoon:arrow-right-2-light"
-                            className={`h-4 w-4 ${isRightDisabled
-                                ? "text-gray-400"
+                            className={`h-4 w-4 ${isMonthRightDisabled 
+                                ? "text-gray-400" 
                                 : "text-blue-600 cursor-pointer"}`}
-                            onClick={!isRightDisabled ? handleRightClick : undefined}
+                            onClick={!isMonthRightDisabled ? handleMonthRight : undefined}
                         />
                     </div>
                     <div className="flex items-center gap-2">
                         <Icon
                             icon="iconamoon:arrow-left-2-light"
-                            className="h-4 w-4 cursor-pointer text-blue-600"
-                            onClick={handleDayLeft}
+                            className={`h-4 w-4 ${isDayLeftDisabled 
+                                ? "text-gray-400" 
+                                : "text-blue-600 cursor-pointer"}`}
+                            onClick={!isDayLeftDisabled ? handleDayLeft : undefined}
                         />
                         <span className="font-montserrat font-medium">{dayLabel}</span>
                         <Icon
                             icon="iconamoon:arrow-right-2-light"
-                            className="h-4 w-4 cursor-pointer text-blue-600"
-                            onClick={handleDayRight}
+                            className={`h-4 w-4 ${isDayRightDisabled 
+                                ? "text-gray-400" 
+                                : "text-blue-600 cursor-pointer"}`}
+                            onClick={!isDayRightDisabled ? handleDayRight : undefined}
                         />
                     </div>
                 </div>
