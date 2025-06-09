@@ -61,10 +61,16 @@ export default function FrequentHours() {
             try {
                 const data = await apiFetch(url);
 
-                const formattedData = data.map((item) => {
+                const fixedHours = [
+                    "08:00", "09:00", "10:00", "11:00", "12:00",
+                    "13:00", "14:00", "15:00", "16:00"
+                ];
+
+                const formattedData = fixedHours.map((hour) => {
+                    const match = data.find((item) => item.hour === hour);
                     return {
-                        hour: item.hour,
-                        count: item.count,
+                        hour,
+                        count: match ? match.count : 0,
                     };
                 });
                 setChartData(formattedData);
@@ -172,18 +178,18 @@ export default function FrequentHours() {
                     <div className="flex items-center gap-2">
                         <Icon
                             icon="iconamoon:arrow-left-2-light"
-                            className={`h-4 w-4 ${isYearLeftDisabled 
+                            className={`h-4 w-4 ${isDayLeftDisabled 
                                 ? "text-gray-400" 
                                 : "text-blue-600 cursor-pointer"}`}
-                            onClick={!isYearLeftDisabled ? handleYearLeft : undefined}
+                            onClick={!isDayLeftDisabled ? handleDayLeft : undefined}
                         />
-                        <span className="font-montserrat font-medium">{currentYear}</span>
+                        <span className="font-montserrat font-medium">{dayLabel}</span>
                         <Icon
                             icon="iconamoon:arrow-right-2-light"
-                            className={`h-4 w-4 ${isYearRightDisabled 
+                            className={`h-4 w-4 ${isDayRightDisabled 
                                 ? "text-gray-400" 
                                 : "text-blue-600 cursor-pointer"}`}
-                            onClick={!isYearRightDisabled ? handleYearRight : undefined}
+                            onClick={!isDayRightDisabled ? handleDayRight : undefined}
                         />
                     </div>
                     <div className="flex items-center gap-2">
@@ -206,18 +212,18 @@ export default function FrequentHours() {
                     <div className="flex items-center gap-2">
                         <Icon
                             icon="iconamoon:arrow-left-2-light"
-                            className={`h-4 w-4 ${isDayLeftDisabled 
+                            className={`h-4 w-4 ${isYearLeftDisabled 
                                 ? "text-gray-400" 
                                 : "text-blue-600 cursor-pointer"}`}
-                            onClick={!isDayLeftDisabled ? handleDayLeft : undefined}
+                            onClick={!isYearLeftDisabled ? handleYearLeft : undefined}
                         />
-                        <span className="font-montserrat font-medium">{dayLabel}</span>
+                        <span className="font-montserrat font-medium">{currentYear}</span>
                         <Icon
                             icon="iconamoon:arrow-right-2-light"
-                            className={`h-4 w-4 ${isDayRightDisabled 
+                            className={`h-4 w-4 ${isYearRightDisabled 
                                 ? "text-gray-400" 
                                 : "text-blue-600 cursor-pointer"}`}
-                            onClick={!isDayRightDisabled ? handleDayRight : undefined}
+                            onClick={!isYearRightDisabled ? handleYearRight : undefined}
                         />
                     </div>
                 </div>
