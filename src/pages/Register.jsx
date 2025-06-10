@@ -124,7 +124,7 @@ function Register() {
 
     return (
         <>
-            <div className="w-full h-screen flex items-center justify-center bg-gradient-to-b from-blue-bg-gradient to-dim-blue-background">
+            <div className="w-full min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-bg-gradient to-dim-blue-background">
                 <header className="fixed top-0 w-full flex items-center justify-between px-4 sm:px-8 py-3 gap-4 overflow-hidden">
                     <img
                         src="/SepWhite.png"
@@ -147,18 +147,18 @@ function Register() {
                 <div className="fixed bottom-20 left-3 w-65 h-65 bg-sphere-blue opacity-50 blur-[100px] rounded-full z-0"></div>
                 <div className="fixed top-10 right-3 w-65 h-65 bg-sphere-blue opacity-50 blur-[100px] rounded-full z-0"></div>
 
-                <div className="w-full max-w-xl px-4 sm:px-8 z-10">
+                <div className="w-full max-w-xl px-4 sm:px-8 z-10 pt-12">
                     <form
                         onSubmit={(e) => {
                             e.preventDefault();
                             handleRegister();
                         }}
                     >
-                        <div className="flex flex-col w-full max-h-[70vh] mx-auto items-center justify-center text-center px-6 py-10 gap-10 bg-white rounded-2xl">
+                        <div className="flex flex-col w-full max-h-fit mx-auto items-center justify-center text-center px-6 py-10 gap-10 bg-white rounded-2xl">
                             <h1 className="text-3xl text-black font-semibold font-poppins">
                                 Crear una cuenta
                             </h1>
-                            <div className="flex flex-col items-center min-w-[80%] justify-center text-center gap-5 flex-grow overflow-y-auto">
+                            <div className="flex flex-col items-center min-w-[80%] justify-center text-center gap-5 flex-grow overflow-y-auto overflow-x-hidden">
                                 <div className="flex flex-col w-full text-1xl text-left gap-1 font-montserrat">
                                     <span className="font-semibold">
                                         Nombre completo{" "}

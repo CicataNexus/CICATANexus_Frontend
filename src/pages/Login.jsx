@@ -121,7 +121,7 @@ function Login() {
                             <h1 className="text-3xl text-black font-semibold font-poppins">
                                 Iniciar Sesión
                             </h1>
-                            <div className="flex flex-col items-center min-w-[80%] justify-center text-center gap-5 flex-grow overflow-y-auto">
+                            <div className="flex flex-col items-center min-w-[80%] justify-center text-center gap-5 flex-grow overflow-y-auto overflow-x-hidden">
                                 <div className="flex flex-col w-full text-1xl text-left gap-1 font-montserrat">
                                     <span className="font-semibold">
                                         Clave de usuario
