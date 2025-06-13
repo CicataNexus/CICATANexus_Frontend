@@ -679,6 +679,7 @@ export default function AddMaterialPanel({
                                 onChange={handleChange}
                                 placeholder="Ingrese las observaciones"
                                 className="w-full h-20 rounded-md border border-gray-500 p-2 mt-1 font-normal placeholder:text-xs placeholder:font-montserrat placeholder:font-normal placeholder:text-placeholder-text focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-transparent focus:bg-input-background"
+                                maxLength={150}
                             />
                         </label>
                         <label className="flex flex-col font-montserrat font-semibold">

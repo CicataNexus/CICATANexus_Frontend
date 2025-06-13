@@ -471,6 +471,7 @@ export default function AddEquipmentPanel({
                                 onChange={handleChange}
                                 placeholder="Ingrese observaciones sobre el equipo"
                                 className="mt-1 w-full h-24 rounded-md border border-gray-500 p-2 placeholder:text-xs placeholder:font-montserrat font-normal focus:outline-none focus:ring-1 focus:ring-primary-blue focus:border-transparent focus:bg-input-background"
+                                maxLength={150}
                             />
                         </label>
                     </fieldset>

@@ -56,6 +56,7 @@ export default function ModalCancelReqConfirmation({
                     className="w-full my-3 border border-gray-400 rounded-md p-3 text-sm h-25 focus:outline-none focus:ring-1 focus:ring-primary-blue font-montserrat focus:border-white"
                     placeholder="Ej. No puedo llegar al horario establecido en la solicitud."
                     onChange={(e) => setObservationText(e.target.value)}
+                    maxLength={150}
                 />
 
                 {/* Buttons */}

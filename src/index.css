@@ -69,6 +69,9 @@ body {
     --color-cancelled-user: #F0F0F0;
     --color-cancelled-user-text: #515151;
 
+    /* Request Alerts */
+    --color-request-alert: #f2B527; 
+
     /* Toast */
     --color-success-toast-icon: #039855;
     --color-success-toast-icon-front: #D1FADF;

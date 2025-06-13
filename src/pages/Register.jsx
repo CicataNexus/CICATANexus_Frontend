@@ -172,7 +172,6 @@ function Register() {
                                         onChange={handleChange}
                                         className="rounded-md p-1 border-2 border-gray-200 outline-none focus:border-input-focus focus:bg-input-background placeholder:text-sm placeholder:text-placeholder-text"
                                         placeholder="Ingrese su nombre completo"
-                                        onKeyDown={blockNum}
                                     />
                                     {errors.name && (
                                         <span className="font-montserrat font-semibold text-red-500 text-sm">

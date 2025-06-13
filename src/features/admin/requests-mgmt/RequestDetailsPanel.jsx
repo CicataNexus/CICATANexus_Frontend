@@ -14,7 +14,12 @@ import { ROLES } from "@/constants/roles";
 import { AREAS } from "@/constants/areas";
 import SelectInput from "@/components/ui/SelectInput";
 
-export default function RequestDetailsPanel({ request, onClose, onCancel, setReload }) {
+export default function RequestDetailsPanel({
+    request,
+    onClose,
+    onCancel,
+    setReload,
+}) {
     const observationsRef = useRef(null);
     const [showModal, setShowModal] = useState(false);
     const [observationText, setObservationText] = useState("");
@@ -22,8 +27,7 @@ export default function RequestDetailsPanel({ request, onClose, onCancel, setRel
     useEffect(() => {
         const fetchTechnicians = async () => {
             try {
-                const data = await apiFetch(`/user`
-                );
+                const data = await apiFetch(`/user`);
 
                 const filtered = data.users.filter(
                     (user) => user.role === ROLES.TECH
@@ -52,11 +56,11 @@ export default function RequestDetailsPanel({ request, onClose, onCancel, setRel
 
     const requestedDate =
         requestDate?.startingDate && requestDate?.finishingDate
-            ? `${new Date(
-                  requestDate.startingDate
-              ).toLocaleDateString()} - ${new Date(
-                  requestDate.finishingDate
-              ).toLocaleDateString()}`
+            ? `${new Date(requestDate.startingDate).toLocaleDateString(
+                  "es-MX"
+              )} - ${new Date(requestDate.finishingDate).toLocaleDateString(
+                  "es-MX"
+              )}`
             : `${new Date(requestDate.startingDate).toLocaleDateString()}`;
     const requestedTime =
         requestDate?.startingTime && requestDate?.finishingTime
@@ -83,7 +87,6 @@ export default function RequestDetailsPanel({ request, onClose, onCancel, setRel
         "Rechazada y notificada",
         "Aprobada y notificada",
     ];
-
 
     const [observerChecks, setObserverChecks] = useState([]);
     useEffect(() => {
@@ -114,110 +117,101 @@ export default function RequestDetailsPanel({ request, onClose, onCancel, setRel
     const showActionButtons =
         visibleStatesByRole[role]?.includes(requestStatus) ?? false;
 
-    const handleAprove = async () => {
+    const handleAction = async (actionType) => {
         const { registrationNumber, role } = jwtDecode(
             localStorage.getItem("token")
         );
+        const isTech = role === ROLES.TECH;
         let nextStatus = null;
+        let endpointType = null;
 
-        if (
-            role === ROLES.ADMIN &&
-            requestStatus === "Pendiente de aprobación (Jefe de departamento)"
-        ) {
-            nextStatus = "Pendiente de aprobación (Técnico)";
-        } else if (
-            role === ROLES.TECH &&
-            requestStatus === "Pendiente de aprobación (Técnico)"
-        ) {
-            nextStatus = "Aprobada por técnico";
-        } else if (
-            role === ROLES.ADMIN &&
-            requestStatus === "Aprobada por técnico"
-        ) {
-            nextStatus = "Aprobada y notificada";
-        } else if (
-            role === ROLES.ADMIN &&
-            requestStatus === "Rechazada por Técnico"
-        ) {
-            nextStatus = "Aprobada y notificada";
-        } else {
-            return;
+        if (actionType === "approve") {
+            if (
+                role === ROLES.ADMIN &&
+                requestStatus ===
+                    "Pendiente de aprobación (Jefe de departamento)"
+            ) {
+                nextStatus = "Pendiente de aprobación (Técnico)";
+                endpointType = "admin";
+            } else if (
+                isTech &&
+                requestStatus === "Pendiente de aprobación (Técnico)"
+            ) {
+                nextStatus = "Aprobada por técnico";
+                endpointType = "technician";
+            } else if (
+                role === ROLES.ADMIN &&
+                ["Aprobada por técnico", "Rechazada por Técnico"].includes(
+                    requestStatus
+                )
+            ) {
+                nextStatus = "Aprobada y notificada";
+                endpointType = "final";
+            }
+        } else if (actionType === "reject") {
+            if (
+                isTech &&
+                requestStatus === "Pendiente de aprobación (Técnico)"
+            ) {
+                nextStatus = "Rechazada por Técnico";
+                endpointType = "technician";
+            } else if (
+                role === ROLES.ADMIN &&
+                [
+                    "Pendiente de aprobación (Jefe de departamento)",
+                    "Aprobada por técnico",
+                ].includes(requestStatus)
+            ) {
+                nextStatus = "Rechazada y notificada";
+                endpointType = "admin";
+            } else if (
+                role === ROLES.ADMIN &&
+                requestStatus === "Rechazada por Técnico"
+            ) {
+                nextStatus = "Rechazada y notificada";
+                endpointType = "final";
+            }
         }
 
+        if (!nextStatus || !endpointType) return;
+
+        const endpointMap = {
+            admin: `/request/admin-action/${request.id}`,
+            technician: `/request/technician-action/${request.id}`,
+            final: `/request/final-action/${request.id}`,
+        };
+
         try {
-            const data = await apiFetch(`/request/admin-action/${request.id}`,
-                {
-                    method: "PUT",
-                    body: JSON.stringify({
-                        registrationNumber,
-                        requestStatus: nextStatus,
-                        observations: getObservationText(),
-                    }),
-                }
-            );
+            await apiFetch(endpointMap[endpointType], {
+                method: "PUT",
+                body: JSON.stringify({
+                    registrationNumber,
+                    requestStatus: nextStatus,
+                    observations: getObservationText(),
+                }),
+            });
             setReload((prev) => !prev);
         } catch (error) {
-            console.error("Error al aprobar la solicitud:", error);
+            console.error(
+                `Error al ${
+                    actionType === "approve" ? "aprobar" : "rechazar"
+                } la solicitud:`,
+                error
+            );
         }
     };
 
-    const handleReject = async () => {
-        const { registrationNumber, role } = jwtDecode(
-            localStorage.getItem("token")
-        );
-        let nextStatus = null;
-
-        if (
-            role === ROLES.ADMIN &&
-            (requestStatus ===
-                "Pendiente de aprobación (Jefe de departamento)" ||
-                requestStatus === "Aprobada por técnico")
-        ) {
-            nextStatus = "Rechazada y notificada";
-        } else if (
-            role === ROLES.TECH &&
-            requestStatus === "Pendiente de aprobación (Técnico)"
-        ) {
-            nextStatus = "Rechazada por Técnico";
-        } else if (
-            role === ROLES.ADMIN &&
-            requestStatus === "Rechazada por Técnico"
-        ) {
-            nextStatus = "Rechazada y notificada";
-        } else {
-            return;
-        }
-
-        try {
-            const data = await apiFetch(`/request/admin-action/${request.id}`,
-                {
-                    method: "PUT",
-                    body: JSON.stringify({
-                        registrationNumber,
-                        requestStatus: nextStatus,
-                        observations: getObservationText(),
-                    }),
-                }
-            );
-            setReload((prev) => !prev);
-        } catch (error) {
-            console.error("Error al rechazar la solicitud:", error);
-        }
-    };
-    
     const handleComment = async () => {
         const { registrationNumber } = jwtDecode(localStorage.getItem("token"));
 
         try {
-            const data = await apiFetch(`/request/observation/${request.id}`,
-                {
-                    method: "PUT",
-                    body: JSON.stringify({
-                        registrationNumber,
-                        observation: observationText.trim(),
-                    }),
-                }
-            );
+            const data = await apiFetch(`/request/observation/${request.id}`, {
+                method: "PUT",
+                body: JSON.stringify({
+                    registrationNumber,
+                    observation: observationText.trim(),
+                }),
+            });
 
             showToast("Comentario agregado correctamente", "success");
             setObservationText("");
@@ -229,7 +223,8 @@ export default function RequestDetailsPanel({ request, onClose, onCancel, setRel
 
     useEffect(() => {
         if (observationsRef.current) {
-            observationsRef.current.scrollTop = observationsRef.current.scrollHeight;
+            observationsRef.current.scrollTop =
+                observationsRef.current.scrollHeight;
         }
     }, [request?.observations?.length]);
 
@@ -237,8 +232,11 @@ export default function RequestDetailsPanel({ request, onClose, onCancel, setRel
         (tech) => tech.name === assignedTechnicianName
     );
 
-    const allChecked = observerChecks.length > 0 && observerChecks.every((t) => t.check);
-    const isDisabled = request.requestStatus === "Aprobada y notificada" && observationText.trim() === "";
+    const allChecked =
+        observerChecks.length > 0 && observerChecks.every((t) => t.check);
+    const isDisabled =
+        request.requestStatus === "Aprobada y notificada" &&
+        observationText.trim() === "";
 
     return (
         <>
@@ -248,25 +246,18 @@ export default function RequestDetailsPanel({ request, onClose, onCancel, setRel
                     onClose={() => setShowModal(false)}
                     onConfirm={async () => {
                         setShowModal(false);
-                        if (modalAction === "approve") {
-                            await handleAprove();
-                            showToast(
-                                "La solicitud se aprobó correctamente",
-                                "success"
-                            );
-                        } else {
-                            await handleReject();
-                            showToast(
-                                "La solicitud se rechazó correctamente",
-                                "success"
-                            );
-                        }
+                        await handleAction(modalAction);
+                        showToast(
+                            `La solicitud se ${
+                                modalAction === "approve" ? "aprobó" : "rechazó"
+                            } correctamente`,
+                            "success"
+                        );
                         onClose();
                     }}
                     action={modalAction}
                 />
             )}
-
             <div className="w-full max-w-4xl flex justify-center py-2 place-self-center">
                 <section>
                     <article className="flex flex-col items-center justify-center p-4 w-full max-w-4xl rounded-xl bg-white font-montserrat text-sm shadow-sm">
@@ -301,7 +292,11 @@ export default function RequestDetailsPanel({ request, onClose, onCancel, setRel
                                     <strong>Área(s) de trabajo</strong>
                                     <br />
                                     {Array.isArray(workArea)
-                                        ? workArea.map((area) => AREAS[area] || area).join(", ")
+                                        ? workArea
+                                              .map(
+                                                  (area) => AREAS[area] || area
+                                              )
+                                              .join(", ")
                                         : AREAS[workArea] || workArea}
                                 </p>
                                 <p className="mb-3">
@@ -323,7 +318,8 @@ export default function RequestDetailsPanel({ request, onClose, onCancel, setRel
                                 <div className="mb-3">
                                     <strong>Técnico asignado</strong>
                                     <br />
-                                    {role === ROLES.TECH || noReassignment.includes(requestStatus) ? (
+                                    {role === ROLES.TECH ||
+                                    noReassignment.includes(requestStatus) ? (
                                         <>{assignedTechnicianName}</>
                                     ) : (
                                         <>
@@ -331,27 +327,49 @@ export default function RequestDetailsPanel({ request, onClose, onCancel, setRel
                                                 className="w-auto text-xs font-montserrat"
                                                 value={selectedTechnicianId}
                                                 onChange={async (e) => {
-                                                    const selectedTechnicianId = e.target.value;
-                                                    setSelectedTechnicianId(selectedTechnicianId);
-
-                                                    const selectedTechnician = availableTechnicians.find(
-                                                        (tech) => tech._id === selectedTechnicianId
+                                                    const selectedTechnicianId =
+                                                        e.target.value;
+                                                    setSelectedTechnicianId(
+                                                        selectedTechnicianId
                                                     );
 
-                                                    if (!selectedTechnician) return;
+                                                    const selectedTechnician =
+                                                        availableTechnicians.find(
+                                                            (tech) =>
+                                                                tech._id ===
+                                                                selectedTechnicianId
+                                                        );
+
+                                                    if (!selectedTechnician)
+                                                        return;
 
                                                     try {
-                                                        const data = await apiFetch(`/request/${request.id}`, {
-                                                            method: "PUT",
-                                                            body: JSON.stringify({
-                                                                registrationNumber: selectedTechnician.registrationNumber,
-                                                            }),
-                                                        });
+                                                        const data =
+                                                            await apiFetch(
+                                                                `/request/${request.id}`,
+                                                                {
+                                                                    method: "PUT",
+                                                                    body: JSON.stringify(
+                                                                        {
+                                                                            registrationNumber:
+                                                                                selectedTechnician.registrationNumber,
+                                                                        }
+                                                                    ),
+                                                                }
+                                                            );
 
-                                                        showToast("Técnico reasignado exitosamente", "success");
-                                                        setReload((prev) => !prev);
+                                                        showToast(
+                                                            "Técnico reasignado exitosamente",
+                                                            "success"
+                                                        );
+                                                        setReload(
+                                                            (prev) => !prev
+                                                        );
                                                     } catch (err) {
-                                                        showToast("No se pudo asignar el técnico", "error");
+                                                        showToast(
+                                                            "No se pudo asignar el técnico",
+                                                            "error"
+                                                        );
                                                     }
                                                 }}
                                                 options={availableTechnicians.map(
@@ -368,7 +386,9 @@ export default function RequestDetailsPanel({ request, onClose, onCancel, setRel
                                     <strong>
                                         {typeOfRequest === "EQ" ? (
                                             <div className="flex items-center gap-1">
-                                                <span>Equipo(s) que utilizará</span>
+                                                <span>
+                                                    Equipo(s) que utilizará
+                                                </span>
                                                 <Tooltip>
                                                     <TooltipTrigger asChild>
                                                         <button
@@ -387,19 +407,18 @@ export default function RequestDetailsPanel({ request, onClose, onCancel, setRel
                                                         sideOffset={8}
                                                         className="bg-white border border-primary-blue text-black rounded-md shadow-lg text-xs font-poppins font-medium w-auto"
                                                     >
-                                                        Verifica disponibilidad en "Movimientos".
+                                                        Verifica disponibilidad
+                                                        en "Movimientos".
                                                     </TooltipContent>
                                                 </Tooltip>
                                             </div>
-                                        )
-                                            : typeOfRequest === "R&M"
-                                            ? "Reactivo(s) o Material(es) que utilizará"
-                                            : "Tipo de apoyo"}
+                                        ) : typeOfRequest === "R&M" ? (
+                                            "Reactivo(s) o Material(es) que utilizará"
+                                        ) : (
+                                            "Tipo de apoyo"
+                                        )}
                                     </strong>
-                                    {typeOfRequest === "EQ"
-                                        ? ""
-                                        : <br />
-                                    }
+                                    {typeOfRequest === "EQ" ? "" : <br />}
                                     {typeOfRequest === "TA"
                                         ? requestSubtype || "-"
                                         : occupiedMaterial?.length > 0
@@ -411,19 +430,30 @@ export default function RequestDetailsPanel({ request, onClose, onCancel, setRel
                                 <p>
                                     <strong>Observaciones</strong>
                                 </p>
-                                <div ref={observationsRef} className="max-h-32 overflow-y-auto border border-gray-400 rounded-md p-2">
+                                <div
+                                    ref={observationsRef}
+                                    className="max-h-32 overflow-y-auto border border-gray-400 rounded-md p-2"
+                                >
                                     <ul className="flex flex-col gap-2 text-xs font-montserrat">
                                         {observations?.map((obs, index) => {
                                             const isSystemLog =
-                                                obs?.message?.includes("ha iniciado") ||
-                                                obs?.message?.includes("ha cancelado") ||
-                                                obs?.message?.includes("ha aprobado") ||
-                                                obs?.message?.includes("ha rechazado");
+                                                obs?.message?.includes(
+                                                    "ha iniciado"
+                                                ) ||
+                                                obs?.message?.includes(
+                                                    "ha cancelado"
+                                                ) ||
+                                                obs?.message?.includes(
+                                                    "ha aprobado"
+                                                ) ||
+                                                obs?.message?.includes(
+                                                    "ha rechazado"
+                                                );
 
                                             return (
                                                 <li
                                                     key={index}
-                                                    className={`rounded-md p-2 ${
+                                                    className={`rounded-md p-2 break-words ${
                                                         isSystemLog
                                                             ? "bg-gray-100 text-gray-700 italic"
                                                             : "bg-blue-50 text-black"
@@ -438,7 +468,9 @@ export default function RequestDetailsPanel({ request, onClose, onCancel, setRel
                                                         (
                                                         {new Date(
                                                             obs.timestamp
-                                                        ).toLocaleString()}
+                                                        ).toLocaleString(
+                                                            "es-MX"
+                                                        )}
                                                         )
                                                     </span>
                                                 </li>
@@ -455,7 +487,13 @@ export default function RequestDetailsPanel({ request, onClose, onCancel, setRel
                             <h2 className="text-base font-semibold font-poppins text-gray-800 border-b border-b-primary-blue pb-2">
                                 Revisión de la solicitud
                             </h2>
-                            <div className={`grid gap-4 ${role === ROLES.TECH ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
+                            <div
+                                className={`grid gap-4 ${
+                                    role === ROLES.TECH
+                                        ? "grid-cols-1 md:grid-cols-2"
+                                        : "grid-cols-1"
+                                }`}
+                            >
                                 <div className="flex flex-col w-full">
                                     <div className="flex items-center gap-1 mb-1">
                                         <label
@@ -493,15 +531,16 @@ export default function RequestDetailsPanel({ request, onClose, onCancel, setRel
                                         className="border border-gray-400 rounded-md p-3 text-sm h-25 focus:outline-none focus:ring-1 focus:ring-primary-blue font-montserrat focus:border-white"
                                         placeholder="Ej. El equipo no requiere calibración extra. Se entrega a las 10:00 AM."
                                         value={observationText}
-                                        onChange={(e) => setObservationText(e.target.value)}
+                                        onChange={(e) =>
+                                            setObservationText(e.target.value)
+                                        }
+                                        maxLength={150}
                                     />
                                 </div>
                                 {role === ROLES.TECH && (
                                     <div className="flex flex-col w-full">
                                         <div className="flex items-center gap-1 mb-1">
-                                            <label
-                                                className="font-medium text-sm"
-                                            >
+                                            <label className="font-medium text-sm">
                                                 Técnicos subasignados
                                             </label>
 
@@ -523,7 +562,8 @@ export default function RequestDetailsPanel({ request, onClose, onCancel, setRel
                                                     sideOffset={8}
                                                     className="bg-white border border-primary-blue text-black rounded-md shadow-lg text-xs font-poppins font-medium w-auto"
                                                 >
-                                                    Validar con técnicos subasignados.
+                                                    Validar con técnicos
+                                                    subasignados.
                                                 </TooltipContent>
                                             </Tooltip>
                                         </div>
@@ -540,7 +580,11 @@ export default function RequestDetailsPanel({ request, onClose, onCancel, setRel
                                                             className="sr-only peer"
                                                             checked={tech.check}
                                                             onChange={(e) =>
-                                                                handleCheckChange(tech._id, e.target.checked)
+                                                                handleCheckChange(
+                                                                    tech._id,
+                                                                    e.target
+                                                                        .checked
+                                                                )
                                                             }
                                                         />
                                                         <div className="w-4 h-4 border-2 border-primary-blue rounded-xs peer-checked:bg-primary-blue" />
@@ -558,14 +602,17 @@ export default function RequestDetailsPanel({ request, onClose, onCancel, setRel
                                                             />
                                                         </svg>
                                                     </div>
-                                                    <span className="font-poppins text-sm">{tech.name}</span>
+                                                    <span className="font-poppins text-sm">
+                                                        {tech.name}
+                                                    </span>
                                                 </label>
                                             ))}
                                         </div>
                                     </div>
                                 )}
                             </div>
-                            {request.requestStatus === "Aprobada y notificada" ? (
+                            {request.requestStatus ===
+                            "Aprobada y notificada" ? (
                                 <div className="flex justify-between pt-1">
                                     <Button
                                         onClick={onCancel}
@@ -575,7 +622,11 @@ export default function RequestDetailsPanel({ request, onClose, onCancel, setRel
                                         Cancelar solicitud
                                     </Button>
                                     <Button
-                                        disabled={request.requestStatus === "Aprobada y notificada" && observationText.trim() === ""}
+                                        disabled={
+                                            request.requestStatus ===
+                                                "Aprobada y notificada" &&
+                                            observationText.trim() === ""
+                                        }
                                         className={`text-base font-poppins font-semibold inline-flex items-center px-6 py-2 ${
                                             isDisabled
                                                 ? "cursor-not-allowed bg-gray-200 text-gray-400"
@@ -588,21 +639,32 @@ export default function RequestDetailsPanel({ request, onClose, onCancel, setRel
                                     </Button>
                                 </div>
                             ) : (
-                                <div className={`flex items-center pt-1 ${role === ROLES.TECH ? "justify-end" : "justify-between"}`}>
-                                    {role === ROLES.ADMIN && requestStatus !== "Cancelada" && (
-                                        <Button
-                                            onClick={onCancel}
-                                            className="bg-delete-btn hover:bg-delete-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-md transition inline-flex items-center cursor-pointer"
-                                            aria-label="Cancelar solicitud"
-                                        >
-                                            Cancelar solicitud
-                                        </Button>
-                                    )}
+                                <div
+                                    className={`flex items-center pt-1 ${
+                                        role === ROLES.TECH
+                                            ? "justify-end"
+                                            : "justify-between"
+                                    }`}
+                                >
+                                    {role === ROLES.ADMIN &&
+                                        requestStatus !== "Cancelada" && (
+                                            <Button
+                                                onClick={onCancel}
+                                                className="bg-delete-btn hover:bg-delete-btn-hover text-white text-base font-poppins font-semibold py-2 px-4 rounded-md transition inline-flex items-center cursor-pointer"
+                                                aria-label="Cancelar solicitud"
+                                            >
+                                                Cancelar solicitud
+                                            </Button>
+                                        )}
                                     <div className="flex gap-4">
                                         <Button
-                                            disabled={role === ROLES.TECH && !allChecked}
+                                            disabled={
+                                                role === ROLES.TECH &&
+                                                !allChecked
+                                            }
                                             className={`text-base font-poppins font-semibold inline-flex items-center px-6 py-2 w-32 ${
-                                                role === ROLES.TECH && !allChecked
+                                                role === ROLES.TECH &&
+                                                !allChecked
                                                     ? "cursor-not-allowed bg-gray-200 text-gray-400"
                                                     : "bg-reject-btn hover:bg-reject-btn-hover text-white transition cursor-pointer"
                                             }`}
@@ -616,9 +678,13 @@ export default function RequestDetailsPanel({ request, onClose, onCancel, setRel
                                         </Button>
 
                                         <Button
-                                            disabled={role === ROLES.TECH && !allChecked}
+                                            disabled={
+                                                role === ROLES.TECH &&
+                                                !allChecked
+                                            }
                                             className={`text-base font-poppins font-semibold inline-flex items-center px-6 py-2 w-32 ${
-                                                role === ROLES.TECH && !allChecked
+                                                role === ROLES.TECH &&
+                                                !allChecked
                                                     ? "cursor-not-allowed bg-gray-200 text-gray-400"
                                                     : "bg-approve-btn hover:bg-approve-btn-hover text-white transition cursor-pointer"
                                             }`}

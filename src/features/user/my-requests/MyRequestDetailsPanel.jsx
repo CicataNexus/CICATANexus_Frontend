@@ -18,9 +18,13 @@ export default function MyRequestDetailsPanel({ request, onCancel }) {
     } = request;
 
     const userStatus = mapRequestStatusForUser(requestStatus);
-    const fechaRequiere = requestDate?.startingDate
-        ? new Date(requestDate.startingDate).toLocaleDateString()
-        : "-";
+    const fechaRequiere = requestDate?.startingDate && requestDate?.finishingDate
+            ? `${new Date(
+                  requestDate.startingDate
+              ).toLocaleDateString("es-MX")} - ${new Date(
+                  requestDate.finishingDate
+              ).toLocaleDateString("es-MX")}`
+            : `${new Date(requestDate.startingDate).toLocaleDateString("es-MX")}`;
     const horaRequiere = requestDate?.startingTime
         ? requestDate?.finishingTime
             ? `${requestDate.startingTime} - ${requestDate.finishingTime}`
@@ -112,7 +116,7 @@ export default function MyRequestDetailsPanel({ request, onCancel }) {
                                     return (
                                         <li
                                             key={index}
-                                            className={`rounded-md p-2 ${
+                                            className={`rounded-md p-2 break-words ${
                                                 isSystemLog
                                                     ? "bg-gray-100 text-gray-700 italic"
                                                     : "bg-blue-50 text-black"
@@ -127,7 +131,7 @@ export default function MyRequestDetailsPanel({ request, onCancel }) {
                                                 (
                                                 {new Date(
                                                     obs.timestamp
-                                                ).toLocaleString()}
+                                                ).toLocaleString("es-MX")}
                                                 )
                                             </span>
                                         </li>
